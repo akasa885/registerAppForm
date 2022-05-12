@@ -1,0 +1,26 @@
+.fileinput-new img{
+    height: 10rem !important;
+}
+
+.feature-img a#lfm{
+    color: #FFF;
+}
+
+.feature-img input#thumbnail{
+    margin: 0;
+    padding: .2em;
+    height: fit-content;
+}
+
+.app-sidebar .app-sidebar__inner li.mm-active{
+    background: linear-gradient(80deg, #242e40, transparent);
+}
+
+#tag-post .form-control{
+    height: auto !important;
+}
+
+#ModalComment.modal .modal-body{
+    height: 50vh;
+    overflow-y: auto !important;
+}
