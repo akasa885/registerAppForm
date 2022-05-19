@@ -4,6 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+use App\Models\MailPayment;
+
 class CreateMailPaymentsTable extends Migration
 {
     /**
@@ -17,6 +19,7 @@ class CreateMailPaymentsTable extends Migration
             $table->id();
             $table->unsignedBigInteger('link_id')->nullable();
             $table->text('information')->nullable();
+            $table->enum('type', MailPayment::TYPE_INFORMATION)->nullable();
             $table->timestamps();
         });
     }
