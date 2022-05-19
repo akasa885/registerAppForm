@@ -82,6 +82,37 @@
                             </a>
                           </li>
                           @endif
+                          <li class="app-sidebar__heading">Settings</li>
+                          @can('isAdmin')                            
+                          <li>
+                              <a id="settingLink" href="#">
+                                  <i class="metismenu-icon pe-7s-display2"></i>
+                                  Setting
+                              </a>
+                          </li>
+                          @elsecan('isSuperAdmin')
+                          <li>
+                            <a id="settingLink" href="#">
+                                <i class="metismenu-icon pe-7s-display2"></i>
+                                Setting
+                            </a>
+                           </li>
+                           @if(Route::currentRouteName() == 'admin.users.view')
+                           <li class="mm-active">
+                            <a id="settingLink" href="{{route('admin.users.view')}}">
+                                <i class="metismenu-icon pe-7s-display2"></i>
+                                Users
+                            </a>
+                           </li>
+                           @else
+                           <li>
+                            <a id="settingLink" href="{{route('admin.users.view')}}">
+                                <i class="metismenu-icon pe-7s-display2"></i>
+                                Users
+                            </a>
+                           </li>
+                           @endif
+                          @endcan
                           <li>
                               <a href="{{ route('admin.logout') }}" onclick="event.preventDefault();
                                             document.getElementById('logout-form').submit();">
