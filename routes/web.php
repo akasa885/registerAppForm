@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MemberController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
 
@@ -28,6 +29,13 @@ Route::prefix('form')->name('form.')->group(function(){
 });
 
 Route::middleware('auth')->group(function(){
+    // < ------------------------------- Artisan Route Start ----------------------------------------- >
+    Route::get('/linkstorage', function () {Artisan::call('storage:link');});
+    Route::get('/optimize', function () {Artisan::call('optimize');});
+    Route::get('/route-cache', function () {Artisan::call('route:cache');});
+    Route::get('/config-cache', function () {Artisan::call('config:cache');});
+    // < ------------------------------- Artisan Route End ----------------------------------------- >    
+
     Route::group(['prefix' => 'laravel-filemanager'], function () {
         \UniSharp\LaravelFilemanager\Lfm::routes();
     });
@@ -40,6 +48,7 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         });
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // < ------------------------------- Link Control ----------------------------------------- >
         Route::prefix('link')->name('link.')->group(function(){
             Route::get('/', [LinkController::class, 'index'])->name('view');
             Route::get('/add', [LinkController::class, 'create'])->name('create');
@@ -50,6 +59,21 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
             Route::get('/dtable', [LinkController::class, 'dtb_link'])->name('dtable');
             Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');
         });
+        // < ------------------------------- Link Control ----------------------------------------- >
+
+        // < ------------------------------- Users Admin ----------------------------------------- >
+        Route::prefix('users-setting')->name('users.')->group(function(){
+            Route::get('/list', [UserController::class, 'index'])->name('view');
+            Route::get('/add', [UserController::class, 'create'])->name('create');
+            Route::post('/add', [UserController::class, 'store'])->name('store');
+            Route::get('/edit/{id}', [UserController::class, 'show'])->name('edit');
+            Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
+            Route::delete('/deactive/{id}', [UserController::class, 'deactive'])->name('deactive');
+            Route::put('/active/{id}', [UserController::class, 'active'])->name('active');
+            Route::get('/user-view', [UserController::class, 'dtUser'])->name('dtb_list');
+        });
+        // < ------------------------------- Users Admin ----------------------------------------- >
+
     });
 
     Auth::routes();
