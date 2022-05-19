@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Menambah Link Baru')
 @section('content')
 <div class="container">
     <form action="{{ route('admin.link.store') }}" method="POST">
@@ -31,15 +31,15 @@
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Deskripsi</label>
-                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">
-                                {{old('desc')}}
-                            </textarea>
+                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{old('desc')}}</textarea>
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Isi Email Pembayaran</label>
-                            <textarea required name="email_isi" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">
-                                {{old('email_isi')}}
-                            </textarea>
+                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{old('email_isi')}}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="desc" class="form-label">Isi Email Pembayaran Terkonfirmasi</label>
+                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{old('email_isi')}}</textarea>
                         </div>
                     </div>                    
                 </div>                              

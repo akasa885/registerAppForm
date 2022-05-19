@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Mengedit Link')
 @section('content')
 <div class="container">
     <form action="{{ route('admin.link.update', ['id' => $link_detail->id]) }}" method="POST">
@@ -33,10 +33,20 @@
                             <label for="desc" class="form-label">Deskripsi</label>
                             <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{$link_detail->description}}</textarea>
                         </div>
+                        @foreach ($link_detail->mails as $item)
+                        @if($item->type == 'confirmation')
                         <div class="mb-3">
                             <label for="desc" class="form-label">Isi Email Pembayaran</label>
-                            <textarea required name="email_isi" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{$link_detail->mails->information}}</textarea>
+                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{$item->information}}</textarea>
                         </div>
+                        @endif
+                        @if($item->type == 'confirmed')
+                        <div class="mb-3">
+                            <label for="desc" class="form-label">Isi Email Pembayaran Terkonfirmasi</label>
+                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{$item->information}}</textarea>
+                        </div>
+                        @endif
+                        @endforeach
                     </div>                    
                 </div>                              
         </div>
@@ -49,7 +59,19 @@
                 </div> 
                 <div class="col-auto align-self-center my-2">
                     <div class="fileinput-new thumbnail" id="holder" style="max-width: 200px; max-height: 150px;">
-                        <img id="previewimg_thumb" src="{{ asset('/images/default/no-image.png') }}" alt="" />
+                        <img id="previewimg_thumb" src="
+                        @php 
+                        $temp = explode('/', $link_detail->banner);
+                        $size = sizeof($temp);
+                        if($link_detail->banner == null){
+                            echo asset('/images/default/no-image.png');
+                        }else{
+                            $url2= str_replace(basename($link_detail->banner) , '', $link_detail->banner  ) ;
+                            $url2=$url2.'thumbs/'.basename($link_detail->banner);
+                        
+                            echo $url2;
+                        }
+                        @endphp" alt="banner" />
                     </div>
                   </div>
                   <div class="col p-4">
@@ -59,7 +81,7 @@
                             <i class="fa fa-picture-o"></i> Choose
                           </a>
                         </span>
-                        <input id="thumbnail" class="form-control" type="text" name="filepath">
+                        <input id="thumbnail" class="form-control" value="{{$link_detail->banner}}" type="text" name="filepath">
                       </div>
                 </div> 
             </div>
