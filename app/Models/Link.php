@@ -4,13 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Link extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'link_path', 'title', 'description', 'banner', 'active_from', 'active_until'
+        'link_path', 'title', 'description', 'banner', 'active_from', 'active_until', 'created_by'
     ];
 
     /**
@@ -23,19 +25,34 @@ class Link extends Model
         return $this->hasMany(Member::class, 'link_id', 'id');
     }
 
+    public function scopeLatestFirst($query)
+    {
+      return $query->orderBy('id','DESC');
+    }
+
+    /**
+     * Get the user that owns the Link
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
+    }
+
     public function ownsMember(Member $member)
     {
       return $this->id === $member->link->id;
     }
 
     /**
-     * Get the mails associated with the Link
+     * Get all of the mails for the Link
      *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function mails()
+    public function mails(): HasMany
     {
-        return $this->hasOne(MailPayment::class, 'link_id', 'id');
+        return $this->hasMany(MailPayment::class, 'link_id', 'id');
     }
 
     public function getNumber()

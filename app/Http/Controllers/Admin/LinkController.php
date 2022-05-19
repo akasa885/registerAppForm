@@ -5,15 +5,20 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Http\Traits\MailPaymentTrait;
+
 use App\Models\Link;
 use App\Models\Member;
 use App\Models\MailPayment;
 use App\Models\Invoice;
+use App\Models\User;
+
 use DataTables;
 use Carbon;
 
 class LinkController extends Controller
 {
+    use MailPaymentTrait;
     /**
      * Display a listing of the resource.
      *
@@ -45,7 +50,8 @@ class LinkController extends Controller
         $this->validate($request, [
             'title' => ['required'],
             'desc' => ['required'],
-            'email_isi' => ['required'],
+            'email_confirmation' => ['required'],
+            'email_confirmed' => ['required'],
             'open_date' => ['required'],
             'close_date' => ['required']
         ]);
@@ -60,12 +66,11 @@ class LinkController extends Controller
             $link->description = $request->desc;
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
+            $link->created_by = auth()->id();
             $link->save();
 
-            $mail_tmp = new MailPayment;
-            $mail_tmp->link_id = $link->id;
-            $mail_tmp->information = $request->email_isi;
-            $mail_tmp->save();
+            $this->saveEmailTemplate($link, $request->email_confirmation, 'confirmation');
+            $this->saveEmailTemplate($link, $request->email_confirmed, 'confirmed');
 
             return redirect()->route('admin.link.view')->with([
                 'stored' => true
@@ -112,7 +117,8 @@ class LinkController extends Controller
         $this->validate($request, [
             'title' => ['required'],
             'desc' => ['required'],
-            'email_isi' => ['required'],
+            'email_confirmation' => ['required'],
+            'email_confirmed' => ['required'],
             'open_date' => ['required'],
             'close_date' => ['required']
         ]);
@@ -120,14 +126,16 @@ class LinkController extends Controller
         try {
             $link = Link::findorfail($id);
             $link->title = $request->title;
+            if($request->filepath != null){
+                $link->banner = $request->filepath;
+            }
             $link->description = $request->desc;
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->save();
             
-            $mail = MailPayment::findorfail($id);
-            $mail->information = $request->email_isi;
-            $mail->save();
+            $this->updateEmailTemplate($link, $request->email_confirmation, 'confirmation');
+            $this->updateEmailTemplate($link, $request->email_confirmed, 'confirmed');
 
             return redirect()->route('admin.link.view')->with([
                 'stored' => true
@@ -195,9 +203,11 @@ class LinkController extends Controller
         ->make(true);
     }
 
-    public function dtb_link()
+    public function dtb_link(User $user)
     {
-        $data = Link::withCount('members')->get();
+        $id = auth()->id();
+        $data = $this->IncludeLink($user, $id);
+        // $data = Link::withCount('members')->get();
         $edit ='';
         return DataTables::of($data)
         ->editColumn("link_path", function($data){
@@ -273,5 +283,13 @@ class LinkController extends Controller
       }
 
       return $randomString;
+    }
+
+    private function IncludeLink(User $user, $id)
+    {
+        $sel = $user->find($id);
+        $links = $sel->links()->latestfirst()->withCount('members')->get();
+
+        return $links;
     }
 }

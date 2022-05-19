@@ -17,6 +17,7 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+    const TYPE_ROLE = ['admin', 'super admin'];
     protected $fillable = [
         'name',
         'email',
@@ -41,4 +42,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function links()
+    {
+      return $this->hasMany(Link::class, 'created_by');
+    }
+
+    public function ownsLink(Link $link)
+    {
+      return auth()->id() === $link->user->id;
+    }
 }
