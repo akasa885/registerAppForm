@@ -6,7 +6,9 @@
         <section class="flex flex-col break-words bg-white sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
 
             @if($expire)
-                <h3 class="font-semibold p-10 sm:mx-auto">Link Pembayaran Telah Expired</h3>
+                <h3 class="font-semibold p-10 sm:mx-auto">Link Pembayaran Telah Kadaluarsa</h3>
+            @elseif($used)
+            <h3 class="font-semibold p-10 sm:mx-auto">Link Pembayaran Telah Digunakan</h3>
             @elseif($message = Session::get('success'))
             <div class="alert bg-green-100 rounded-lg py-5 px-6 text-base text-green-700 inline-flex items-center w-full alert-dismissible fade show" role="alert">
                 <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="check-circle" class="w-4 h-4 mr-2 fill-current" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
