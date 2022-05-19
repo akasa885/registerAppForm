@@ -21,6 +21,7 @@ class CreateLinksTable extends Migration
             $table->string('banner')->nullable();
             $table->date('active_from');
             $table->date('active_until')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
             $table->timestamps();
         });
     }
