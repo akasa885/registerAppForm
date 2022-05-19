@@ -64,19 +64,39 @@ class FormController extends Controller
     {
         $pay_detail = Invoice::where('token', $payment)->first();
         $expired = false;
+        $used = false;
         if($pay_detail != null){
             $member = $pay_detail->member;
             $link_detail = Link::find($member->link_id);
             $date = date("Y-m-d");
+            if($pay_detail->status != 1){
+                $used = true;
+                return view('pages.pendaftaran.upPay', 
+                ['pay_code' => $payment, 
+                'member' => $member,
+                'link' => $link_detail,
+                'expire' => $expired,
+                'used' => $used]);
+            }
             if($date <= date("Y-m-d", strtotime($pay_detail->valid_until)) ){
                 if($link == $link_detail->link_path){
-                    return view('pages.pendaftaran.upPay', ['pay_code' => $payment, 'member' => $member, 'link' => $link_detail, 'expire' => $expired]);
+                    return view('pages.pendaftaran.upPay', 
+                    ['pay_code' => $payment,
+                    'member' => $member,
+                    'link' => $link_detail,
+                    'expire' => $expired,
+                    'used' => $used]);
                 }else{
                     abort(404);
                 }
             }else{
                 $expired = true;
-                return view('pages.pendaftaran.upPay', ['pay_code' => $payment, 'member' => $member, 'link' => $link_detail, 'expire' => $expired]);
+                return view('pages.pendaftaran.upPay', 
+                ['pay_code' => $payment,
+                'member' => $member,
+                'link' => $link_detail,
+                'expire' => $expired,
+                'used' => $used]);
             }
         }else{
             abort(404);
