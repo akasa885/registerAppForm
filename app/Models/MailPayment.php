@@ -9,6 +9,8 @@ class MailPayment extends Model
 {
     use HasFactory;
 
+    const TYPE_INFORMATION = ['confirmation', 'received', 'confirmed', 'reminder'];
+
     protected $fillable = ['link_id', 'information'];
 
     /**
