@@ -25,21 +25,30 @@
         <div class="col-md-8">            
                 <div class="card mb-3">
                     <div class="card-body">
+                        @if (count($errors) > 0)
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="mb-3">
                             <label for="title" class="form-label">Judul</label>
-                            <input type="text" required class="form-control" value="{{old('title')}}" name="title" id="title">
+                            <input type="text" class="form-control" value="{{old('title')}}" name="title" id="title">
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Deskripsi</label>
                             <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{old('desc')}}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Isi Email Pembayaran</label>
-                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{old('email_isi')}}</textarea>
+                            <label for="desc" class="form-label">Pesan Email Permintaan Pembayaran</label>
+                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-1" cols="30" rows="5">{!!old('email_confirmation')!!}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Isi Email Pembayaran Terkonfirmasi</label>
-                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{old('email_isi')}}</textarea>
+                            <label for="desc" class="form-label">Pesan Email Pembayaran Terkonfirmasi</label>
+                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-2" cols="30" rows="5">{!!old('email_confirmed')!!}</textarea>
                         </div>
                     </div>                    
                 </div>                              
@@ -110,5 +119,14 @@
             format: 'dd-mm-yyyy'
         });
     });
+    var options = {
+        filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+        filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+        filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+        filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+    };
+
+    CKEDITOR.replace('my-editor-1', options);
+    CKEDITOR.replace('my-editor-2', options);
 </script>
 @endpush

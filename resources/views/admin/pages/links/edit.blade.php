@@ -36,14 +36,14 @@
                         @foreach ($link_detail->mails as $item)
                         @if($item->type == 'confirmation')
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Isi Email Pembayaran</label>
-                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{$item->information}}</textarea>
+                            <label for="desc" class="form-label">Pesan Email Permintaan Pembayaran</label>
+                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-1" cols="30" rows="5">{!!$item->information!!}</textarea>
                         </div>
                         @endif
                         @if($item->type == 'confirmed')
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Isi Email Pembayaran Terkonfirmasi</label>
-                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor" cols="30" rows="5">{{$item->information}}</textarea>
+                            <label for="desc" class="form-label">Pesan Email Pembayaran Terkonfirmasi</label>
+                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-2" cols="30" rows="5">{!!$item->information!!}</textarea>
                         </div>
                         @endif
                         @endforeach
@@ -117,6 +117,8 @@
 @endsection
 
 @push('scripts')
+<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+<script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         $('#datepicker-1').datepicker({
@@ -126,5 +128,14 @@
             format: 'dd-mm-yyyy'
         });
     });
+    var options = {
+        filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+        filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+        filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+        filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+    };
+
+    CKEDITOR.replace('my-editor-1', options);
+    CKEDITOR.replace('my-editor-2', options);
 </script>
 @endpush
