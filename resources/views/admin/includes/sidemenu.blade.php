@@ -82,6 +82,12 @@
                             </a>
                           </li>
                           @endif
+                          <li>
+                            <a id="contentLink" href="#">
+                                <i class="metismenu-icon pe-7s-paper-plane"></i>
+                                Absensi
+                            </a>
+                          </li>
                           <li class="app-sidebar__heading">Settings</li>
                           @can('isAdmin')                            
                           <li>
