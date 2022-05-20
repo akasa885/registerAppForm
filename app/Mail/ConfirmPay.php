@@ -31,6 +31,10 @@ class ConfirmPay extends Mailable
      */
     public function build()
     {
-        return $this->from($this->from_mail)->subject('Upload Bukti Bayar')->view('mails.bukti_bayar')->with('data', $this->data);
+        return $this
+        ->from($this->from_mail, "Event Organizer Upquality")
+        ->subject('Upload Bukti Bayar')
+        ->view('mails.bukti_bayar')
+        ->with('data', $this->data);
     }
 }
