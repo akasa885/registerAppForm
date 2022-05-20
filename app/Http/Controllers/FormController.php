@@ -19,22 +19,30 @@ use App\Models\MailPayment;
 use App\Models\Email;
 
 use App\Http\Traits\FileUploadTrait;
+use App\Http\Traits\FormRegistrationTrait;
 
 class FormController extends Controller
 {
     use FileUploadTrait;
+    use FormRegistrationTrait;
 
     public function storeIdentity(Request $request)
     {
         $this->validate($request, [
             'fullname' => ['required', new FullnameRule()],
-            'email' => ['required', 'unique:members', 'email'],
+            'email' => ['required', 'email'],
             'no_telpon' => ['numeric', 'digits_between:8,13'],
             'instansi' => ['required']
         ]);
 
         try {
             $link_coll = Link::where('link_path', $request->link)->first();
+            $current_member = $link_coll->members;
+            if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $request->email)){
+                return back()
+                ->withInput($request->all())
+                ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
+            }
             $member = new Member;
             $member->link_id = $link_coll->id;
             $member->full_name = $request->fullname;
@@ -43,11 +51,12 @@ class FormController extends Controller
             $member->corporation = $request->instansi;
             $member->save();
 
-            $dt_carbon = Carbon::now()->addDays(3);
+            // $dt_carbon = Carbon::now()->addDays(3);
             $invoice = new Invoice;
             $invoice->member_id = $member->id;
             $invoice->token = $this->getToken();
-            $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
+            // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
+            $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
             $invoice->status = 0;
             $invoice->save();
 
@@ -56,7 +65,8 @@ class FormController extends Controller
             return redirect()->route('form.link.pay', ['link' => $link_coll->link_path, 'payment' => $invoice->token]);
 
         } catch (\Throwable $th) {
-            throw $th;
+            // throw $th;
+            abort(500);
         }
     }
 
@@ -69,7 +79,7 @@ class FormController extends Controller
             $member = $pay_detail->member;
             $link_detail = Link::find($member->link_id);
             $date = date("Y-m-d");
-            if($pay_detail->status != 1){
+            if($pay_detail->status != 0){
                 $used = true;
                 return view('pages.pendaftaran.upPay', 
                 ['pay_code' => $payment, 
@@ -114,16 +124,18 @@ class FormController extends Controller
                 // request save file to server
                 $filesimpan = $this->saveInvoice($request->file('bukti'));
                 
-                // request save file to db
-                $invo->status = 1;
-                $invo->save();
+                if($filesimpan){
+                    // request save file to db
+                    $invo->status = 1;
+                    $invo->save();
 
-                if($invo->status == 1){
-                    $member_pay = Member::findorfail($invo->member_id);
-                    $member_pay->bukti_bayar = $filesimpan;
-                    $member_pay->save();
+                    if($invo->status == 1){
+                        $member_pay = Member::findorfail($invo->member_id);
+                        $member_pay->bukti_bayar = $filesimpan;
+                        $member_pay->save();
+                    }
+                    return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
                 }
-                return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
             }else{
                 abort(404);
             }
@@ -174,10 +186,15 @@ class FormController extends Controller
     }
 
     public function sendMailPayment($link, $member, $invoice){
+        foreach($link->mails as $item){
+            if($item->type == 'confirmation'){
+                $information = $item->information;
+            }
+        }
         $data = array(
             'name'      =>  $member->full_name,
             'acara'     => $link->title,
-            'message'   =>   $link->mails->information,
+            'message'   =>   $information,
             'valid_until' => $invoice->valid_until,
             'link_pay'  => route('form.link.pay', ['link' => $link->link_path, 'payment' => $invoice->token])
         );
@@ -188,7 +205,7 @@ class FormController extends Controller
             $mail_db = new Email;
             $mail_db->send_from = $from_mail;
             $mail_db->send_to = $member->email;
-            $mail_db->message = $link->mails->information;
+            $mail_db->message = $information;
             $mail_db->user_id = $member->id;
             $mail_db->type_email = Email::TYPE_EMAIL[0];
             $mail_db->sent_count = 1;
