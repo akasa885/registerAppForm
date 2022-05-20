@@ -18,9 +18,11 @@ class CreateMailPaymentsTable extends Migration
         Schema::create('mail_payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('link_id')->nullable();
-            $table->text('information')->nullable();
+            $table->longText('information')->nullable();
             $table->enum('type', MailPayment::TYPE_INFORMATION)->nullable();
             $table->timestamps();
+
+            $table->foreign('link_id')->references('id')->on('links')->onDelete('cascade');
         });
     }
 

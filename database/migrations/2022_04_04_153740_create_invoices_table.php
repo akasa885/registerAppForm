@@ -20,6 +20,8 @@ class CreateInvoicesTable extends Migration
             $table->date('valid_until');
             $table->tinyInteger('status')->nullable()->default(0);
             $table->timestamps();
+
+            $table->foreign('member_id')->references('id')->on('members')->onDelete('cascade');
         });
     }
 

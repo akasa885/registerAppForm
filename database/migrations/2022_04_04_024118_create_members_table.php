@@ -24,6 +24,8 @@ class CreateMembersTable extends Migration
             $table->string('corporation');
             $table->string('bukti_bayar')->nullable();
             $table->timestamps();
+
+            $table->foreign('link_id')->references('id')->on('links')->onDelete('restrict');
         });
     }
 

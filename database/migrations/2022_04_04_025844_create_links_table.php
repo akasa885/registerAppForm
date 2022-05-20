@@ -22,7 +22,10 @@ class CreateLinksTable extends Migration
             $table->date('active_from');
             $table->date('active_until')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
+            $table->bigInteger('viewed_count')->default(0);
             $table->timestamps();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
