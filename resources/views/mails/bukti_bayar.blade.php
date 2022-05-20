@@ -8,7 +8,7 @@
 <body>
     <p>Kepada : <strong>{{ucwords($data['name'])}}</strong></p>
     <p>Yang mendaftar pada acara {{$data['acara']}}</p>
-    <p>{{ucwords($data['message'])}}</p>
+    {!!$data['message']!!}
     <h4><strong>Link konfirmasi pembayaran : </strong></h4>
     <h5> <strong>Batas Waktu : {{$data['valid_until']}}</strong> </h5>
     <a href="{{$data['link_pay']}}" 
