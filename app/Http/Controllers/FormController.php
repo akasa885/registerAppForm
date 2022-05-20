@@ -54,7 +54,7 @@ class FormController extends Controller
             // $dt_carbon = Carbon::now()->addDays(3);
             $invoice = new Invoice;
             $invoice->member_id = $member->id;
-            $invoice->token = $this->getToken();
+            $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
             // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
             $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
             $invoice->status = 0;
@@ -144,7 +144,7 @@ class FormController extends Controller
         }
     }
 
-    private function getToken()
+    private function getToken($lenght_token = 10)
     {
         $fix_token = '';
         $lock = 0;
@@ -153,7 +153,7 @@ class FormController extends Controller
             $loop = count($data_token);
             for ($i=0; $i < $loop;) {
                 foreach ($data_token as $tok) {
-                    $temp = $this->generate_token();
+                    $temp = $this->generate_token($lenght_token);
                     if ($tok->token != $temp) {
                     $lock ++;
                     }else{
@@ -169,7 +169,7 @@ class FormController extends Controller
             }
             return $fix_token;
         }else{
-            return $this->generate_token();
+            return $this->generate_token($lenght_token);
         }
     }
 

@@ -13,6 +13,8 @@ use App\Models\MailPayment;
 use App\Models\Invoice;
 use App\Models\User;
 
+use App\Http\Requests\LinkRequest;
+
 use DataTables;
 use Carbon;
 
@@ -45,20 +47,11 @@ class LinkController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(LinkRequest $request)
     {
-        $this->validate($request, [
-            'title' => ['required'],
-            'desc' => ['required'],
-            'email_confirmation' => ['required'],
-            'email_confirmed' => ['required'],
-            'open_date' => ['required'],
-            'close_date' => ['required']
-        ]);
-
         try {
             $link = new Link;
-            $link->link_path = $this->getToken();
+            $link->link_path = $this->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
             if($request->filepath != null){
                 $link->banner = $request->filepath;
@@ -77,7 +70,8 @@ class LinkController extends Controller
             ]);
 
         } catch (\Throwable $th) {
-            return $th;
+            // return $th;
+            abort(500);
         }
     }
 
@@ -112,16 +106,8 @@ class LinkController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(LinkRequest $request, $id)
     {
-        $this->validate($request, [
-            'title' => ['required'],
-            'desc' => ['required'],
-            'email_confirmation' => ['required'],
-            'email_confirmed' => ['required'],
-            'open_date' => ['required'],
-            'close_date' => ['required']
-        ]);
 
         try {
             $link = Link::findorfail($id);
@@ -244,7 +230,7 @@ class LinkController extends Controller
         ->make(true);
     }
 
-    private function getToken()
+    private function getToken($length_token = 5)
     {
         $fix_token = '';
         $lock = 0;
@@ -253,7 +239,7 @@ class LinkController extends Controller
             $loop = count($data_token);
             for ($i=0; $i < $loop;) {
                 foreach ($data_token as $tok) {
-                    $temp = $this->generate_token();
+                    $temp = $this->generate_token($length_token);
                     if ($tok->link_path != $temp) {
                     $lock ++;
                     }else{
@@ -269,7 +255,7 @@ class LinkController extends Controller
             }
             return $fix_token;
         }else{
-            return $this->generate_token();
+            return $this->generate_token($length_token);
         }
     }
 

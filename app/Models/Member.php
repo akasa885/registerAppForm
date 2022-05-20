@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Member extends Model
 {
     use HasFactory;
+    const PAYMENT_TOKEN_LENGTH = 10;
+
     protected $fillable = [
         'link_id','prefix', 'full_name', 'suffix', 'email', 'contact_number', 'corporation', 'bukti_bayar', 'lunas'
     ];
