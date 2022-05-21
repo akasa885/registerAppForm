@@ -18,6 +18,12 @@
 </div>
 
 <div class="row justify-content-md-center">
+    @if ($message = Session::get('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ $message }}</strong>
+            <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <div class="col-md-11 col-lg-11">
         <div class="mb-3 card">
             <div class="card-header-tab card-header-tab-animation card-header">
@@ -27,7 +33,13 @@
                 </div>
                 <div class="btn-actions-pane-right">
                     <div class="nav">
-                        <a href="{{route('admin.link.create')}}" class="border-0 btn-transition btn btn-outline-success">Add Link Pendaftaran</a>                          
+                        <div class="dropdown d-inline-block">
+                            <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle btn btn-outline-success">Add Link Pendaftaran</button>
+                            <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu">
+                                <a href="{{route('admin.link.create')}}" tabindex="0" class="dropdown-item">Pendaftaran berbayar</a>
+                                <a href="{{route('admin.link.create.free')}}" tabindex="0" class="dropdown-item">Pendaftaran gratis</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
