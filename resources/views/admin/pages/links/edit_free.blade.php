@@ -31,7 +31,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Deskripsi</label>
-                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{$link_detail->description}}</textarea>
+                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor-1" cols="30" rows="10">{!!$link_detail->description!!}</textarea>
                         </div>
                     </div>                    
                 </div>                              
@@ -104,6 +104,7 @@
 
 @push('scripts')
 <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+<script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
         $('#datepicker-1').datepicker({
@@ -113,5 +114,13 @@
             format: 'dd-mm-yyyy'
         });
     });
+    var options = {
+        filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+        filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+        filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+        filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+    };
+
+    CKEDITOR.replace('my-editor-1', options);
 </script>
 @endpush

@@ -40,7 +40,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Deskripsi</label>
-                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{old('desc')}}</textarea>
+                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor-3" cols="30" rows="10">{!!old('desc')!!}</textarea>
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Pesan Email Permintaan Pembayaran</label>
@@ -128,5 +128,6 @@
 
     CKEDITOR.replace('my-editor-1', options);
     CKEDITOR.replace('my-editor-2', options);
+    CKEDITOR.replace('my-editor-3', options);
 </script>
 @endpush
