@@ -111,6 +111,12 @@ class LinkController extends Controller
         return view('admin.pages.links.edit_pay', ['link_detail' => $edit_link]);
     }
 
+    public function editFree($id)
+    {
+        $edit_link = Link::findorfail($id);
+        return view('admin.pages.links.edit_free', ['link_detail' => $edit_link]);
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -207,12 +213,21 @@ class LinkController extends Controller
             
         })
         ->addColumn("options", function($data) {
-            $edit = "<a href=\"".route('admin.link.edit', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
+            if($data->link_type == "pay"){
+                $edit = "<a href=\"".route('admin.link.edit', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                       <i class=\"pe-7s-rocket fa-w-20\"></i>
                   </span>
                   Edit
                 </a>";
+            }else{
+                $edit = "<a href=\"".route('admin.link.edit.free', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
+                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                      <i class=\"pe-7s-rocket fa-w-20\"></i>
+                  </span>
+                  Edit
+                </a>";
+            }
             $edit .= "<a href=\"".route('admin.link.detail', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
                 <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                     <i class=\"pe-7s-rocket fa-w-20\"></i>
