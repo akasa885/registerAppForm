@@ -51,18 +51,23 @@ class FormController extends Controller
             $member->corporation = $request->instansi;
             $member->save();
 
-            // $dt_carbon = Carbon::now()->addDays(3);
-            $invoice = new Invoice;
-            $invoice->member_id = $member->id;
-            $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
-            // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
-            $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
-            $invoice->status = 0;
-            $invoice->save();
+            if ($link_coll->link_type == 'free') {
+                return back()->with('success', 'Pendaftaran berhasil dilakukan. Terima kasih telah mendaftar');
+            }
+            if($link_coll->link_type == 'pay'){
+                // $dt_carbon = Carbon::now()->addDays(3);
+                $invoice = new Invoice;
+                $invoice->member_id = $member->id;
+                $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
+                // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
+                $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
+                $invoice->status = 0;
+                $invoice->save();
 
-            $this->sendMailPayment($link_coll, $member, $invoice);
+                $this->sendMailPayment($link_coll, $member, $invoice);
 
-            return redirect()->route('form.link.pay', ['link' => $link_coll->link_path, 'payment' => $invoice->token]);
+                return redirect()->route('form.link.pay', ['link' => $link_coll->link_path, 'payment' => $invoice->token]);
+            }
 
         } catch (\Throwable $th) {
             // throw $th;

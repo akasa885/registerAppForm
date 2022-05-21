@@ -19,7 +19,7 @@ class CreateMembersTable extends Migration
             $table->string('prefix')->nullable();
             $table->string('full_name');
             $table->string('suffix')->nullable();
-            $table->string('email')->unique();
+            $table->string('email');
             $table->string('contact_number');
             $table->string('corporation');
             $table->string('bukti_bayar')->nullable();
