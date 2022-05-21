@@ -18,7 +18,7 @@ class CreateLinksTable extends Migration
             $table->id();
             $table->string('link_path');
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->longText('description')->nullable();
             $table->string('banner')->nullable();
             $table->date('active_from');
             $table->date('active_until')->nullable();
