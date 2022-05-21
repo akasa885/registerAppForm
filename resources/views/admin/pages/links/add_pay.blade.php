@@ -1,10 +1,10 @@
 @extends('admin.layouts.app')
-@section('title', 'Mengedit Link')
+@section('title', 'Menambah Link Event Baru - Berbayar')
 @section('content')
 <div class="container">
-    <form action="{{ route('admin.link.update', ['id' => $link_detail->id]) }}" method="POST">
+    <form action="{{ route('admin.link.store') }}" method="POST">
         @csrf
-        <input type="hidden" name="post_type" value="post">
+        <input type="hidden" name="event_type" value="pay">
     <div class="row justify-content-center">
         <div class="col-md-12 col-lg-12">
             <div class="mb-3 card">
@@ -25,28 +25,31 @@
         <div class="col-md-8">            
                 <div class="card mb-3">
                     <div class="card-body">
+                        @if (count($errors) > 0)
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
                         <div class="mb-3">
                             <label for="title" class="form-label">Judul</label>
-                            <input type="text" required class="form-control" value="{{$link_detail->title}}" name="title" id="title">
+                            <input type="text" class="form-control" value="{{old('title')}}" name="title" id="title">
                         </div>
                         <div class="mb-3">
                             <label for="desc" class="form-label">Deskripsi</label>
-                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{$link_detail->description}}</textarea>
+                            <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor" cols="30" rows="10">{{old('desc')}}</textarea>
                         </div>
-                        @foreach ($link_detail->mails as $item)
-                        @if($item->type == 'confirmation')
                         <div class="mb-3">
                             <label for="desc" class="form-label">Pesan Email Permintaan Pembayaran</label>
-                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-1" cols="30" rows="5">{!!$item->information!!}</textarea>
+                            <textarea required name="email_confirmation" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-1" cols="30" rows="5">{!!old('email_confirmation')!!}</textarea>
                         </div>
-                        @endif
-                        @if($item->type == 'confirmed')
                         <div class="mb-3">
                             <label for="desc" class="form-label">Pesan Email Pembayaran Terkonfirmasi</label>
-                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-2" cols="30" rows="5">{!!$item->information!!}</textarea>
+                            <textarea required name="email_confirmed" placeholder="isikan pesan email yang dikirim untuk pemberitahuan upload bayar" class="my-editor form-control" id="my-editor-2" cols="30" rows="5">{!!old('email_confirmed')!!}</textarea>
                         </div>
-                        @endif
-                        @endforeach
                     </div>                    
                 </div>                              
         </div>
@@ -59,19 +62,7 @@
                 </div> 
                 <div class="col-auto align-self-center my-2">
                     <div class="fileinput-new thumbnail" id="holder" style="max-width: 200px; max-height: 150px;">
-                        <img id="previewimg_thumb" src="
-                        @php 
-                        $temp = explode('/', $link_detail->banner);
-                        $size = sizeof($temp);
-                        if($link_detail->banner == null){
-                            echo asset('/images/default/no-image.png');
-                        }else{
-                            $url2= str_replace(basename($link_detail->banner) , '', $link_detail->banner  ) ;
-                            $url2=$url2.'thumbs/'.basename($link_detail->banner);
-                        
-                            echo $url2;
-                        }
-                        @endphp" alt="banner" />
+                        <img id="previewimg_thumb" src="{{ asset('/images/default/no-image.png') }}" alt="" />
                     </div>
                   </div>
                   <div class="col p-4">
@@ -81,7 +72,7 @@
                             <i class="fa fa-picture-o"></i> Choose
                           </a>
                         </span>
-                        <input id="thumbnail" class="form-control" value="{{$link_detail->banner}}" type="text" name="filepath">
+                        <input id="thumbnail" class="form-control" type="text" name="filepath">
                       </div>
                 </div> 
             </div>
@@ -93,7 +84,7 @@
                 </div>
                 <div class="col-auto align-self-center my-2">
                     <div class="form-group">
-                        <input type='text' name="open_date" value="{{ date('d-m-Y', strtotime($link_detail->active_from)) }}" required class="form-control" id='datepicker-1' placeholder="dd-mm-yy">
+                        <input type='text' name="open_date" value="{{old('open_date')}}" required class="form-control" id='datepicker-1' placeholder="dd-mm-yy">
                     </div>
                 </div>
             </div>
@@ -105,8 +96,7 @@
                 </div>
                 <div class="col-auto align-self-center my-2">
                     <div class="form-group">
-                        <input type='text' name="close_date" 
-                        value="{{ date('d-m-Y', strtotime($link_detail->active_until)) }}" required class="form-control" id='datepicker-2' placeholder="dd-mm-yy">
+                        <input type='text' name="close_date" value="{{old('close_date')}}" required class="form-control" id='datepicker-2' placeholder="dd-mm-yy">
                     </div>
                 </div>
             </div>
@@ -120,6 +110,7 @@
 <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
 <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
+    $('#lfm').filemanager('image');
     $(document).ready(function(){
         $('#datepicker-1').datepicker({
             format: 'dd-mm-yyyy'
