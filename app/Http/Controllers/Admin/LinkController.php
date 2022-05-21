@@ -36,9 +36,14 @@ class LinkController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createPay()
     {
-        return view('admin.pages.links.add');
+        return view('admin.pages.links.add_pay');
+    }
+
+    public function createFree()
+    {
+        return view('admin.pages.links.add_free');
     }
 
     /**
@@ -60,14 +65,21 @@ class LinkController extends Controller
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->created_by = auth()->id();
+            if($request->event_type == 'pay'){
+                $link->link_type = Link::LINK_TYPE[0];
+            }
+            if ($request->event_type == 'free') {
+                $link->link_type = Link::LINK_TYPE[1];
+            }
+            $link->viewed_count = 0;
             $link->save();
 
-            $this->saveEmailTemplate($link, $request->email_confirmation, 'confirmation');
-            $this->saveEmailTemplate($link, $request->email_confirmed, 'confirmed');
+            if($request->event_type == 'pay'){
+                $this->saveEmailTemplate($link, $request->email_confirmation, 'confirmation');
+                $this->saveEmailTemplate($link, $request->email_confirmed, 'confirmed');
+            }
 
-            return redirect()->route('admin.link.view')->with([
-                'stored' => true
-            ]);
+            return redirect()->route('admin.link.view')->with('success', 'Berhasil ditambah');
 
         } catch (\Throwable $th) {
             // return $th;
@@ -96,7 +108,7 @@ class LinkController extends Controller
     public function edit($id)
     {
         $edit_link = Link::findorfail($id);
-        return view('admin.pages.links.edit', ['link_detail' => $edit_link]);
+        return view('admin.pages.links.edit_pay', ['link_detail' => $edit_link]);
     }
 
     /**
@@ -120,8 +132,10 @@ class LinkController extends Controller
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->save();
             
-            $this->updateEmailTemplate($link, $request->email_confirmation, 'confirmation');
-            $this->updateEmailTemplate($link, $request->email_confirmed, 'confirmed');
+            if($request->event_type == 'pay'){
+                $this->updateEmailTemplate($link, $request->email_confirmation, 'confirmation');
+                $this->updateEmailTemplate($link, $request->email_confirmed, 'confirmed');
+            }
 
             return redirect()->route('admin.link.view')->with([
                 'stored' => true
@@ -161,32 +175,13 @@ class LinkController extends Controller
     {
         $link = Link::find($id);
         $data = $link->members;
-        $edit ='';
-        return DataTables::of($data)
-        ->addColumn("status", function($data) {
-            $date = date("Y-m-d");
-            if($data->invoices->status == 0 ){
-                return '<div class="mb-2 mr-2 badge badge-danger">'.Invoice::INVO_STATUS[0].'</div>';
-            }
-            if($data->invoices->status == 1){
-                return '<div class="mb-2 mr-2 badge badge-warning">'.Invoice::INVO_STATUS[1].'</div>';
-            }
-            if($data->invoices->status == 2){
-                return '<div class="mb-2 mr-2 badge badge-success">'.Invoice::INVO_STATUS[2].'</div>';
-            }
-            
-        })
-        ->addColumn("options", function($data) {
-            $edit = "<a href=\"".route('admin.link.edit', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Detail
-                </a>";
-            return $edit;
-        })
-        ->rawColumns(['status', 'options'])
-        ->make(true);
+        $edit = '';
+        if($link->link_type == 'pay'){
+            return $this->payMemberList($data);
+        }else{
+            return $this->freeMemberList($data);
+        }
+        
     }
 
     public function dtb_link(User $user)
@@ -277,5 +272,52 @@ class LinkController extends Controller
         $links = $sel->links()->latestfirst()->withCount('members')->get();
 
         return $links;
+    }
+
+    public function payMemberList($data)
+    {
+        return DataTables::of($data)
+        ->addColumn("status", function($data) {
+            $date = date("Y-m-d");
+            if($data->invoices->status == 0 ){
+                return '<div class="mb-2 mr-2 badge badge-danger">'.Invoice::INVO_STATUS[0].'</div>';
+            }
+            if($data->invoices->status == 1){
+                return '<div class="mb-2 mr-2 badge badge-warning">'.Invoice::INVO_STATUS[1].'</div>';
+            }
+            if($data->invoices->status == 2){
+                return '<div class="mb-2 mr-2 badge badge-success">'.Invoice::INVO_STATUS[2].'</div>';
+            }
+        })
+        ->addColumn("options", function($data) {
+            if ($data->invoices->status == 1) {
+                $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(".$data->id.");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                      <i class=\"pe-7s-rocket fa-w-20\"></i>
+                  </span>
+                  Bukti Bayar
+                </a>";
+            }else{
+                $edit = '';
+            }
+            return $edit;
+        })
+        ->rawColumns(['status', 'options'])
+        ->make(true);
+    }
+
+    public function freeMemberList($data)
+    {
+        return DataTables::of($data)
+        ->addColumn("status", function($data) {
+            $date = date("Y-m-d");
+            return '<div class="mb-2 mr-2 badge badge-success">Terdaftar</div>';
+        })
+        ->addColumn("options", function($data) {
+            $edit = '';
+            return $edit;
+        })
+        ->rawColumns(['status', 'options'])
+        ->make(true);
     }
 }

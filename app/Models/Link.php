@@ -11,6 +11,7 @@ class Link extends Model
 {
     use HasFactory;
     const TOKEN_LENGTH = 5;
+    const LINK_TYPE = ['pay', 'free'];
 
     protected $fillable = [
         'link_path', 'title', 'description', 'banner', 'active_from', 'active_until', 'created_by'

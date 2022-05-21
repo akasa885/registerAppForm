@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use App\Models\Link;
 
 class CreateLinksTable extends Migration
 {
@@ -22,6 +23,7 @@ class CreateLinksTable extends Migration
             $table->date('active_from');
             $table->date('active_until')->nullable();
             $table->unsignedBigInteger('created_by')->nullable();
+            $table->enum('link_type', Link::LINK_TYPE)->default(Link::LINK_TYPE[0]);
             $table->bigInteger('viewed_count')->default(0);
             $table->timestamps();
 
