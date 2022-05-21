@@ -105,16 +105,17 @@ class MemberController extends Controller
     public function updateBukti(Request $request, Member $member)
     {
         try {
-            $member = $member->findorfail($request->id);
-            $invoice = Invoice::findorfail($member->id);
+            $data = $member->findorfail($request->id);
+            $invoice = Invoice::where('member_id', $data->id)->first();
             $invoice->status = 2;
 
-            $this->sendMailPaymentReceived($member->link, $member);
+            $this->sendMailPaymentReceived($data->link, $data);
             $invoice->save();
 
             return response()->json(['success' => true, 'message' => 'Pembayaran Diterima']);
         } catch (\Throwable $th) {
             // throw $th;
+            // return $data->id;
             // return $member->link;
             return response()->json(['success' => false, 'message' => 'Request Error'], 500);
         }
