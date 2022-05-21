@@ -7,7 +7,9 @@
 </head>
 <body>
     <p>Kepada : <strong>{{ucwords($data['name'])}}</strong></p>
-    <p>Yang mendaftar pada acara {{$data['acara']}}</p>
+    <p>Yang mendaftar pada acara <strong>{{$data['acara']}}</strong></p>
     {!!$data['message']!!}
+    <p>---------- Terima kasih telah menggunakan layanan kami. -----------</p>
+    <p><a href="https://upquality.net">Website Kami.</a></p>
 </body>
 </html>
