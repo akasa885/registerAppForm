@@ -11,6 +11,7 @@ use App\Rules\FullnameRule;
 
 //mail
 use App\Mail\ConfirmPay;
+use App\Mail\EventInfo;
 
 use App\Models\Member;
 use App\Models\Invoice;
@@ -52,6 +53,7 @@ class FormController extends Controller
             $member->save();
 
             if ($link_coll->link_type == 'free') {
+                $this->sendMailEventDeskripsi($link_coll, $member);
                 return back()->with('success', 'Pendaftaran berhasil dilakukan. Terima kasih telah mendaftar');
             }
             if($link_coll->link_type == 'pay'){
@@ -213,6 +215,30 @@ class FormController extends Controller
             $mail_db->message = $information;
             $mail_db->user_id = $member->id;
             $mail_db->type_email = Email::TYPE_EMAIL[0];
+            $mail_db->sent_count = 1;
+            $mail_db->save();
+        } catch (\Throwable $th) {
+            abort(500);
+        }
+    }
+
+    public function sendMailEventDeskripsi($link, $member){
+        $information = $link->description;
+        $data = array(
+            'name'      =>  $member->full_name,
+            'acara'     => $link->title,
+            'message'   =>   $link->description,
+        );
+        $from_mail = Email::EMAIL_FROM;
+
+        try {
+            Mail::to($member->email)->send(new EventInfo($data, $from_mail));
+            $mail_db = new Email;
+            $mail_db->send_from = $from_mail;
+            $mail_db->send_to = $member->email;
+            $mail_db->message = $information;
+            $mail_db->user_id = $member->id;
+            $mail_db->type_email = Email::TYPE_EMAIL[3];
             $mail_db->sent_count = 1;
             $mail_db->save();
         } catch (\Throwable $th) {
