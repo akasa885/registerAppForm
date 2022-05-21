@@ -43,17 +43,6 @@
                             <th style="width: 20%">Options</th>
                         </tr>
                     </thead>
-                    {{-- <tbody>
-                        @foreach ($member as $item)
-                            <tr>
-                                <td>{{$item->full_name}}</td>
-                                <td>{{$item->email}}</td>
-                                <td>{{$item->corporation}}</td>
-                                <td>{{$item->invoices->status}}</td>
-                                <td>{{$item->email}}</td>
-                            </tr>
-                        @endforeach
-                    </tbody> --}}
                 </table>
             </div>
             </div>
@@ -61,6 +50,33 @@
     </div>
 </div>
 @endsection
+
+@push('modal')
+{{-- ============================= Modal  Section================================ --}}
+<div class="modal fade" id="ModalViewPict" tabindex="-1" role="dialog" aria-labelledby="ModalViewPictLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalViewPictLabel">Bukti Terupload</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="pict-payment">
+                    <input type="hidden" id="bukti_id_member" value="" name="id_member">
+                    <img src="{{ asset('/images/default/no-image.png') }}" id="bukti-img" class="img-fluid" alt="bukti">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="bukti-diterima" class="btn btn-outline-success">Bukti Diterima</button>
+                <button type="button" id="bukti-ditolak" class="btn btn-outline-danger">Bukti Salah</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
 
 @push('scripts')
 <script>
@@ -98,5 +114,65 @@
             ]
         });
     });
+    $(document).ready(function(){
+        $('#bukti-diterima').on('click', function(){
+            // $('#ModalViewPict :input[type="button"]').prop('disabled', true);
+            offBuktiButton();
+            let memberId = document.getElementById("bukti_id_member").value;
+            $.ajax({
+                type: "post",
+                url: "{{route('admin.member.up.bukti')}}",
+                data: {id:memberId},
+                cache: false,
+                success: function(data){
+                    if (data.success) {
+                        alert(data.message);
+                        onBuktiButton();
+                        location.reload();
+                    }else{
+                        alert(data.message);
+                        console.log(data.error);
+                        onBuktiButton();
+                    }
+                },
+                error: function(data){
+                    alert("Response server error");
+                    onBuktiButton();
+                }
+            })
+        });
+    });
+    function viewPayment(member_id) {
+        buktiReset();
+        let url = "{{route('admin.member.lihat.bukti', ['id' => ":id"])}}";
+        url = url.replace(':id', member_id);
+        $.ajax({
+            type: "get",
+            url: url,
+            cache: true,
+            success: function(data){
+                if (data.success) {
+                    document.getElementById("bukti-img").src = data.bukti;
+                    document.getElementById("bukti_id_member").value = data.memberId;
+                }else{
+                    alert(data.message);
+                }
+            },
+            error: function(data){
+                alert('response server error');
+            }
+        })
+    }
+    function buktiReset(){
+        document.getElementById("bukti-img").src = '{{ asset('/images/default/no-image.png') }}';
+    }
+    function offBuktiButton(){
+        $('#bukti-diterima').prop('disabled', true);
+        $('#bukti-ditolak').prop('disabled', true);
+    }
+    function onBuktiButton(){
+        $('#bukti-diterima').prop('disabled', false);
+        $('#bukti-ditolak').prop('disabled', false);
+    }
 </script>
 @endpush
