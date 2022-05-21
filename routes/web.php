@@ -51,10 +51,12 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         // < ------------------------------- Link Control ----------------------------------------- >
         Route::prefix('link')->name('link.')->group(function(){
             Route::get('/', [LinkController::class, 'index'])->name('view');
-            Route::get('/add', [LinkController::class, 'create'])->name('create');
+            Route::get('/add-event-payment', [LinkController::class, 'createPay'])->name('create');
+            Route::get('/add-event-free', [LinkController::class, 'createFree'])->name('create.free');
             Route::post('/store', [LinkController::class, 'store'])->name('store');
             Route::get('/members/{id}', [LinkController::class, 'show'])->name('detail');
-            Route::get('/edit/{id}', [LinkController::class, 'edit'])->name('edit');
+            Route::get('/edit-event-payment/{id}', [LinkController::class, 'edit'])->name('edit');
+            Route::get('/edit-event-free/{id}', [LinkController::class, 'editFree'])->name('edit.free');
             Route::post('/update/{id}', [LinkController::class, 'update'])->name('update');
             Route::get('/dtable', [LinkController::class, 'dtb_link'])->name('dtable');
             Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');
@@ -73,6 +75,13 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
             Route::get('/user-view', [UserController::class, 'dtUser'])->name('dtb_list');
         });
         // < ------------------------------- Users Admin ----------------------------------------- >
+
+        // < ------------------------------- Members Admin ----------------------------------------- >
+        Route::prefix('member')->name('member.')->group(function(){
+            Route::get('/pay-sheet/{id}', [MemberController::class, 'viewSheet'])->name('lihat.bukti');
+            Route::post('/accepted-receipt', [MemberController::class, 'updateBukti'])->name('up.bukti');
+        });
+        // < ------------------------------- Members Admin ----------------------------------------- >
 
     });
 
