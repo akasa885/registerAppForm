@@ -23,13 +23,34 @@ class LinkRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'title' => ['required'],
-            'desc' => ['required'],
-            'email_confirmation' => ['required', 'max:500'],
-            'email_confirmed' => ['required', 'max:500'],
-            'open_date' => ['required'],
-            'close_date' => ['required']
-        ];
+        return $this->customRules($this->input('event_type'));
+    }
+
+    public function customRules($type)
+    {
+        $rules = [];
+
+        switch($type){
+            case "pay" :
+                $rules = [
+                    'title' => ['required'],
+                    'desc' => ['required'],
+                    'email_confirmation' => ['required', 'max:500'],
+                    'email_confirmed' => ['required', 'max:500'],
+                    'open_date' => ['required'],
+                    'close_date' => ['required']
+                ];
+                break;
+            case "free" :
+                $rules = [
+                    'title' => ['required'],
+                    'desc' => ['required'],
+                    'open_date' => ['required'],
+                    'close_date' => ['required']
+                ];
+                break;
+        }
+
+        return $rules;
     }
 }
