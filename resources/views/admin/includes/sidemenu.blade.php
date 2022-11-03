@@ -66,24 +66,15 @@
                             </li>
                           @endif
                           @endcan                  
-                          <li class="app-sidebar__heading">Content</li>                          
-                          @if(Request::route()->getPrefix() == 'dpanel/link')                          
-                          <li class="mm-active">
+                          <li class="app-sidebar__heading">Content</li>
+                          <li class="@if(Request::routeIs('admin.link*')) mm-active @endif">
                             <a id="contentLink" href="{{route('admin.link.view')}}">
                                 <i class="metismenu-icon pe-7s-diamond"></i>
                                 Link
                             </a>
                           </li>
-                          @else
-                          <li>
-                            <a id="contentLink" href="{{route('admin.link.view')}}">
-                                <i class="metismenu-icon pe-7s-diamond"></i>
-                                Link
-                            </a>
-                          </li>
-                          @endif
-                          <li>
-                            <a id="contentLink" href="#">
+                          <li class="@if(Request::routeIs('admin.attendance*')) mm-active @endif">
+                            <a id="contentLink" href="{{route('admin.attendance.view')}}">
                                 <i class="metismenu-icon pe-7s-paper-plane"></i>
                                 Absensi
                             </a>
