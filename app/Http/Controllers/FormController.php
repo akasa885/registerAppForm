@@ -72,7 +72,7 @@ class FormController extends Controller
             }
 
         } catch (\Throwable $th) {
-            // throw $th;
+            throw $th;
             abort(500);
         }
     }
@@ -242,7 +242,8 @@ class FormController extends Controller
             $mail_db->sent_count = 1;
             $mail_db->save();
         } catch (\Throwable $th) {
-            abort(500);
+            throw $th;
+            // abort(500);
         }
     }
 }
