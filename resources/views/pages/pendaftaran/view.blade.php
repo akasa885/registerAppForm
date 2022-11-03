@@ -1,4 +1,5 @@
 @extends('layouts.app')
+@section('title', 'Pendaftaran '.$link->title)
 
 @section('content')
 <main class="flex justify-center py-10 sm:container sm:mx-auto">
