@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Auth;
 use Gate;
 use App\Models\User;
+use DataTables;
 
 class UserController extends Controller
 {
@@ -77,15 +78,18 @@ class UserController extends Controller
 
         try {
             $user  = User::findorfail($id);
-            $user->log_name = $request->name;
-            $user->log_password = ($request->new_password!= null ? Hash::make($request->password) : $user->log_password);
+            ($request->new_password!= null 
+                ? $user->password = Hash::make($request->password) 
+                : '');
             $user->email = $request->email;
             $user->name = ucwords($request->name);            
             $user->role = $request->role;
             $user->save();
+
             return redirect()->route('admin.users.view');
         } catch (\Throwable $th) {
             abort(500);
+            return redirect()->back()->withInput()->with('error', 'Something went wrong !');
         }
     }
 
