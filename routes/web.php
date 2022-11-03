@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
 
@@ -62,6 +63,15 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
             Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');
         });
         // < ------------------------------- Link Control ----------------------------------------- >
+        // < ------------------------------- Attendance Control ----------------------------------------- >
+        Route::prefix('attendance')->name('attendance.')->group(function(){
+            Route::get('/', [Attendancecontroller::class, 'index'])->name('view');
+            Route::get('/create/session/{type}', [Attendancecontroller::class, 'create'])->where(['type' => 'day|hourly'])->name('create');
+            Route::post('/store/session/{type}', [Attendancecontroller::class, 'store'])->where(['type' => 'day|hourly'])->name('store');
+            Route::delete('/delete/session/{attendance}', [Attendancecontroller::class, 'destroy'])->name('delete');
+            Route::get('/dtable', [Attendancecontroller::class, 'dtb_member'])->name('dtable');
+        });
+        // < ------------------------------- Attendance Control ----------------------------------------- >
 
         // < ------------------------------- Users Admin ----------------------------------------- >
         Route::prefix('users-setting')->name('users.')->group(function(){
