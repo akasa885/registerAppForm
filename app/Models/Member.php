@@ -11,7 +11,8 @@ class Member extends Model
     const PAYMENT_TOKEN_LENGTH = 10;
 
     protected $fillable = [
-        'link_id','prefix', 'full_name', 'suffix', 'email', 'contact_number', 'corporation', 'bukti_bayar', 'lunas'
+        'link_id','prefix', 'full_name', 'first_name', 'last_name',
+        'suffix', 'email', 'contact_number', 'corporation', 'bukti_bayar', 'lunas'
     ];
 
     /**
