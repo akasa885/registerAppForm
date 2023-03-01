@@ -6,8 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 
-//rule
-use App\Rules\FullnameRule;
+// request
+use App\Http\Requests\StoreFormUserRequest;
 
 //mail
 use App\Mail\ConfirmPay;
@@ -27,30 +27,20 @@ class FormController extends Controller
     use FileUploadTrait;
     use FormRegistrationTrait;
 
-    public function storeIdentity(Request $request)
+    public function storeIdentity(StoreFormUserRequest $request)
     {
-        $this->validate($request, [
-            'fullname' => ['required', new FullnameRule()],
-            'email' => ['required', 'email'],
-            'no_telpon' => ['numeric', 'digits_between:8,13'],
-            'instansi' => ['required']
-        ]);
+        $validated = $request->validated();
 
         try {
-            $link_coll = Link::where('link_path', $request->link)->first();
+            $link_coll = Link::where('link_path', $validated['link'])->first();
             $current_member = $link_coll->members;
-            if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $request->email)){
+            if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])){
                 return back()
                 ->withInput($request->all())
                 ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
             }
-            $member = new Member;
-            $member->link_id = $link_coll->id;
-            $member->full_name = $request->fullname;
-            $member->email = $request->email;
-            $member->contact_number = $request->no_telpon;
-            $member->corporation = $request->instansi;
-            $member->save();
+            $validated['link_id'] = $link_coll->id;
+            $member = Member::create($validated);
 
             if ($link_coll->link_type == 'free') {
                 $this->sendMailEventDeskripsi($link_coll, $member);
