@@ -5,7 +5,6 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\UserController;
-use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
 
@@ -22,19 +21,11 @@ use App\Http\Controllers\IndexController;
 
 Route::get('/', [IndexController::class, 'index'])->name('home');
 
-Route::prefix('form')->name('form.')->group(function(){
-    Route::get('/{link}', [LinkController::class, 'page'])->name('link.view');
-    Route::post('/{link}', [FormController::class, 'storeIdentity'])->name('link.store');
-    Route::get('/{link}/{payment}', [FormController::class, 'paymentUp'])->name('link.pay');
-    Route::post('/bukti/{payment}', [FormController::class, 'payStore'])->name('pay.store');
-});
+Route::prefix('form')->name('form.')->group(__DIR__ . '/v1/user/form.php');
 
 Route::middleware('auth')->group(function(){
     // < ------------------------------- Artisan Route Start ----------------------------------------- >
-    Route::get('/linkstorage', function () {Artisan::call('storage:link');});
-    Route::get('/optimize', function () {Artisan::call('optimize');});
-    Route::get('/route-cache', function () {Artisan::call('route:cache');});
-    Route::get('/config-cache', function () {Artisan::call('config:cache');});
+    Route::group(__DIR__ . '/artisan/artisan.php');
     // < ------------------------------- Artisan Route End ----------------------------------------- >    
 
     Route::group(['prefix' => 'laravel-filemanager'], function () {
@@ -63,27 +54,13 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
             Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');
         });
         // < ------------------------------- Link Control ----------------------------------------- >
+        
         // < ------------------------------- Attendance Control ----------------------------------------- >
-        Route::prefix('attendance')->name('attendance.')->group(function(){
-            Route::get('/', [Attendancecontroller::class, 'index'])->name('view');
-            Route::get('/create/session/{type}', [Attendancecontroller::class, 'create'])->where(['type' => 'day|hourly'])->name('create');
-            Route::post('/store/session/{type}', [Attendancecontroller::class, 'store'])->where(['type' => 'day|hourly'])->name('store');
-            Route::delete('/delete/session/{attendance}', [Attendancecontroller::class, 'destroy'])->name('delete');
-            Route::get('/dtable', [Attendancecontroller::class, 'dtb_member'])->name('dtable');
-        });
+        Route::prefix('attendance')->name('attendance.')->group(__DIR__.'/v1/admin/attendance.php');
         // < ------------------------------- Attendance Control ----------------------------------------- >
 
         // < ------------------------------- Users Admin ----------------------------------------- >
-        Route::prefix('users-setting')->name('users.')->group(function(){
-            Route::get('/list', [UserController::class, 'index'])->name('view');
-            Route::get('/add', [UserController::class, 'create'])->name('create');
-            Route::post('/add', [UserController::class, 'store'])->name('store');
-            Route::get('/edit/{id}', [UserController::class, 'show'])->name('edit');
-            Route::post('/update/{id}', [UserController::class, 'update'])->name('update');
-            Route::delete('/deactive/{id}', [UserController::class, 'deactive'])->name('deactive');
-            Route::put('/active/{id}', [UserController::class, 'active'])->name('active');
-            Route::get('/user-view', [UserController::class, 'dtUser'])->name('dtb_list');
-        });
+        Route::prefix('users-setting')->name('users.')->group(__DIR__.'/v1/admin/setting_user.php');
         // < ------------------------------- Users Admin ----------------------------------------- >
 
         // < ------------------------------- Members Admin ----------------------------------------- >
