@@ -25,7 +25,7 @@ Route::prefix('form')->name('form.')->group(__DIR__ . '/v1/user/form.php');
 
 Route::middleware('auth')->group(function(){
     // < ------------------------------- Artisan Route Start ----------------------------------------- >
-    Route::group(__DIR__ . '/artisan/artisan.php');
+    Route::name('artisan')->group(__DIR__ . '/artisan/artisan.php');
     // < ------------------------------- Artisan Route End ----------------------------------------- >    
 
     Route::group(['prefix' => 'laravel-filemanager'], function () {
