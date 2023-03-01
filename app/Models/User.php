@@ -20,6 +20,8 @@ class User extends Authenticatable
     const TYPE_ROLE = ['admin', 'super admin'];
     protected $fillable = [
         'name',
+        'first_name',
+        'last_name',
         'email',
         'password',
     ];
