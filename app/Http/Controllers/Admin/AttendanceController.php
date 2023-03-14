@@ -169,7 +169,11 @@ class AttendanceController extends Controller
         ->addColumn('attend_count', function($data) {
             $member = count($data->link->members);
             $attending = count($data->member_attend);
-            $html = $attending . ' / ' . $member. ' (' . round($attending / $member * 100, 2) . '%)';
+            if ($member != 0) {
+                $html = $attending . ' / ' . $member. ' (' . round($attending / $member * 100, 2) . '%)';
+            } else {
+                $html = $attending . ' / ' . $member. ' (0%)';
+            }
             
             return $html;
         })
