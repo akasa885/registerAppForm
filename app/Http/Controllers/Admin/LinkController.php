@@ -179,9 +179,11 @@ class LinkController extends Controller
         if($data != null){
             if($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ){
                 $expired = false;
+                $data->viewed_count += 1;
+                $data->save();
             }
         }
-        return view('pages.pendaftaran.viewV01', ['link' => $data, 'show'=> $expired]);
+        return view('pages.pendaftaran.view', ['link' => $data, 'show'=> $expired]);
     }
 
 
