@@ -6,9 +6,9 @@
         @csrf
         @method('PUT')
         <input type="hidden" name="event_type" value="{{$type_reg}}">
-        @if ($type_reg = 'pay')
+        @if ($type_reg == 'pay')
         @include('admin.pages.links.edit_pay')
-        @elseif ($type_reg = 'free')
+        @elseif ($type_reg == 'free')
         @include('admin.pages.links.edit_free')
         @else
         <h2> Requested Url Not Found ! </h2>
@@ -36,6 +36,12 @@
         filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
     };
 
-    CKEDITOR.replace('my-editor-1', options);
+    @if ($type_reg == 'pay')
+        CKEDITOR.replace('my-editor-1', options);
+        CKEDITOR.replace('my-editor-2', options);
+        CKEDITOR.replace('my-editor-3', options);
+    @else
+        CKEDITOR.replace('my-editor-1', options);
+    @endif
 </script>
 @endpush
