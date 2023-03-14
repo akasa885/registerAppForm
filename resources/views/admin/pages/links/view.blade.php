@@ -95,7 +95,23 @@
                     data: 'options',
                     name: 'Options'
                 }
-            ]
+            ],
+            columnDefs: [
+                {
+                    targets: 4,
+                    className: 'text-center'
+                },
+                {
+                    targets: 1,
+                    render: function (data, type, row) {
+                        let html = "";
+                        html += `<span class="fw-bolder">${data}</span><br/>`;
+                        html += `<span class="text-muted">Tipe: <span class="text-danger">${row.link_type}</span></span><br/>`;
+                        html += row.date_status;
+                        return html;
+                    },
+                },
+            ],
         });
     });
 </script>
