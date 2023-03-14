@@ -8,7 +8,7 @@ use App\Rules\FullnameRule;
 
 class StoreFormUserRequest extends FormRequest
 {
-    private $ver_control = 'v1';
+    private $ver_control = 'v0';
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -82,7 +82,11 @@ class StoreFormUserRequest extends FormRequest
     {
         $validated = parent::validated();
 
-        $validated['full_name'] = $validated['first_name'] . ' ' . $validated['last_name'];
+        if ($this->ver_control == 'v1') {
+            $validated['full_name'] = $validated['first_name'] . ' ' . $validated['last_name'];
+        } else {
+            $validated['full_name'] = $validated['fullname'];
+        }
         // no telpon -> contact number
         $validated['contact_number'] = $validated['no_telpon'];
         unset($validated['no_telpon']);
