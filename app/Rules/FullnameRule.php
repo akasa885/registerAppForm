@@ -25,10 +25,10 @@ class FullnameRule implements Rule
      */
     public function passes($attribute, $value)
     {
-        if(preg_match('/^[a-zA-Z]+(?:\s[a-zA-Z]+)+$/', $value)){
-            return true;
-        }else {
+        if(preg_match('~[0-9]~', $value)){
             return false;
+        }else {
+            return true;
         }
     }
 
