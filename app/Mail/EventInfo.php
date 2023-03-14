@@ -12,16 +12,18 @@ class EventInfo extends Mailable
     use Queueable, SerializesModels;
     public $data;
     public $from_mail;
+    public $subject;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data, $from)
+    public function __construct($data, $from, $subject = 'Informasi acara')
     {
         $this->data = $data;
         $this->from_mail = $from;
+        $this->subject = $subject;
     }
 
     /**
@@ -33,7 +35,7 @@ class EventInfo extends Mailable
     {
         return $this
         ->from($this->from_mail, "Event Organizer Upquality")
-        ->subject('Informasi Acara')
+        ->subject($this->subject)
         ->view('mails.event_info')
         ->with('data', $this->data);
     }
