@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Models\MemberAttend;
 use App\Models\Attendance;
 use App\Models\Link;
 
 use App\Http\Traits\GenerateTokenUniqueColumnTrait;
 
 use App\Http\Requests\AttendanceRequest;
+use App\Http\Requests\AttendingRequest;
 
 use DataTables;
 use Carbon;
@@ -113,6 +115,42 @@ class AttendanceController extends Controller
     public function destroy(Attendance $attendance)
     {
         //
+    }
+
+    public function page ($link)
+    {
+        $show = true;
+        $date = date("Y-m-d H:i:s");
+        $attendance = Attendance::where('attendance_path', $link)->first();
+        if (!$attendance) {
+            $show = false;
+        }
+
+        if ($attendance) {
+            if($date >= date("Y-m-d H:i:s", strtotime($attendance->active_from)) && $date <= date("Y-m-d H:i:s", strtotime($attendance->active_until)) ){
+                $show = true;
+            }else{
+                $show = false;
+            }
+            $link = $attendance->link;
+        }
+        
+        return view('pages.absensi.page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
+    }
+
+    public function attending(AttendingRequest $request, Attendance $attendance)
+    {
+        $validated = $request->validated();
+        // check if member already attend
+        $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
+        if ($member_attend) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Anda sudah melakukan absensi !']);
+        }
+        $MemberAttend = MemberAttend::create($validated);
+
+        return back()->with('success', 'Anda berhasil melakukan absensi !');
     }
 
     public function dtb_attendance()
