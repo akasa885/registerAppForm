@@ -4,7 +4,6 @@
 <div class="container">
     <form action="{{ route('admin.attendance.store', ['type' => $type]) }}" method="POST">
         @csrf
-        @method('PUT')
         <input type="hidden" name="attendance_type" value="{{$type}}">
         @if ($type == 'day')
         @include('admin.pages.attendance.cDay')
