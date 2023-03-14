@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class LinkRequest extends FormRequest
 {
+    private $event_type;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -29,10 +30,12 @@ class LinkRequest extends FormRequest
     public function customRules($type)
     {
         $rules = [];
+        $this->event_type = $type;
 
         switch($type){
             case "pay" :
                 $rules = [
+                    'event_type' => ['required'],
                     'title' => ['required'],
                     'desc' => ['required'],
                     'email_confirmation' => ['required', 'max:500'],
@@ -43,6 +46,7 @@ class LinkRequest extends FormRequest
                 break;
             case "free" :
                 $rules = [
+                    'event_type' => ['required'],
                     'title' => ['required'],
                     'desc' => ['required'],
                     'open_date' => ['required'],
@@ -52,5 +56,26 @@ class LinkRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function attributes()
+    {
+        $attributes = [];
+        $attributes = [
+            'event_type' => 'Tipe Event',
+            'title' => 'Judul Event',
+            'desc' => 'Deskripsi Event',
+            'open_date' => 'Tanggal Buka Event',
+            'close_date' => 'Tanggal Tutup Event'
+        ];
+
+        switch ($this->event_type) {
+            case "pay":
+                $attributes['email_confirmation'] = 'Email Konfirmasi Pembayaran';
+                $attributes['email_confirmed'] = 'Email Konfirmasi Pembayaran';
+                break;
+        }
+
+        return $attributes;
     }
 }
