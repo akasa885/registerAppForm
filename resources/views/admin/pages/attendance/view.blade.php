@@ -36,8 +36,8 @@
                         <div class="dropdown d-inline-block">
                             <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown" class="dropdown-toggle btn btn-outline-success">Add Sesi Absensi</button>
                             <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu">
-                                <a href="{{route('admin.link.create')}}" tabindex="0" class="dropdown-item">Absensi Full Day</a>
-                                <a href="{{route('admin.link.create.free')}}" tabindex="0" class="dropdown-item">Absensi Dalam Jam</a>
+                                <a href="{{route('admin.attendance.create', ['type' => 'day'])}}" tabindex="0" class="dropdown-item">Absensi Full Day</a>
+                                <a href="{{route('admin.attendance.create', ['type' => 'hourly'])}}" tabindex="0" class="dropdown-item">Absensi Dalam Jam</a>
                             </div>
                         </div>
                     </div>
