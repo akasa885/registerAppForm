@@ -205,6 +205,17 @@ class LinkController extends Controller
         // $data = Link::withCount('members')->get();
         $edit ='';
         return DataTables::of($data)
+        ->removeColumn('id', 'created_at', 'updated_at', 'description')
+        ->addColumn('date_status', function($data){
+            $date = date("Y-m-d");
+            if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ) {
+                return '<div class="mb-2 mr-2 badge badge-info">Tutup Pada: '.$data->active_until.'</div>';
+            } else if ($date <= date("Y-m-d", strtotime($data->active_from))) {
+                return '<div class="mb-2 mr-2 badge badge-warning">Buka Pada: '.$data->active_from.'</div>';
+            } else if ($date >= date("Y-m-d", strtotime($data->active_until))) {
+                return '<div class="mb-2 mr-2 badge badge-danger">Selesai</div>';
+            }
+        })
         ->editColumn("link_path", function($data){
             return route('form.link.view', ['link' => $data->link_path]);
         })
@@ -244,7 +255,7 @@ class LinkController extends Controller
               </a>";
             return $edit;
         })
-        ->rawColumns(['link_path','members_count','status', 'options'])
+        ->rawColumns(['date_status','link_path','members_count','status', 'options'])
         ->make(true);
     }
 
