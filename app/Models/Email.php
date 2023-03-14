@@ -10,7 +10,7 @@ class Email extends Model
 {
     use HasFactory;
 
-    const EMAIL_FROM = "rizky@upquality.net";
+    const EMAIL_FROM = "no-reply@upquality.net";
     const TYPE_EMAIL = ['confirmation_pay', 'reminder_pay', 'confirmed_pay', 'event_info'];
 
     protected $fillable = ['send_from', 'send_to', 'message', 'type_email', 'user_id', 'sent_count'];
