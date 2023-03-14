@@ -219,10 +219,11 @@ class FormController extends Controller
             'acara'     => $link->title,
             'message'   =>   $link->description,
         );
+        $subject = 'Registrasi '.$link->title;
         $from_mail = Email::EMAIL_FROM;
 
         try {
-            Mail::to($member->email)->send(new EventInfo($data, $from_mail));
+            Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
             $mail_db = new Email;
             $mail_db->send_from = $from_mail;
             $mail_db->send_to = $member->email;
