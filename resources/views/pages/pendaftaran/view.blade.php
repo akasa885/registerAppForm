@@ -40,9 +40,10 @@
                         <input id="input-1" type="text"
                             class="form-input w-full @error('fullname') border-red-500 @enderror" name="fullname"
                             value="{{ old('fullname') }}" required autofocus>
+                        <span class="text-gray-600 text-xs italic mt-2 w-full">Silahkan isikan bersama gelar anda ! (Apabila ada !)</span><br/>
 
                         @error('fullname')
-                        <p class="text-red-500 text-xs italic mt-4">
+                        <p class="text-red-500 text-xs italic mt-2">
                             {{ $message }}
                         </p>
                         @enderror
