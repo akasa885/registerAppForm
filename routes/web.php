@@ -22,6 +22,7 @@ use App\Http\Controllers\IndexController;
 Route::get('/', [IndexController::class, 'index'])->name('home');
 
 Route::prefix('form')->name('form.')->group(__DIR__ . '/v1/user/form.php');
+Route::prefix('attend')->name('attend.')->group(__DIR__ . '/v1/user/attend.php');
 
 Route::middleware('auth')->group(function(){
     // < ------------------------------- Artisan Route Start ----------------------------------------- >
