@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 @section('title', 'Halaman Pengelola Link')
 
+<x-sweet-alert />
+
 @section('content')
 <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -45,7 +47,7 @@
             </div>
             <div class="card-body">
             <div class="table-responsive">
-                <table id="data_users_side" class="mb-0 table display" style="width:100%">
+                <table id="data_attend_side" class="mb-0 table display" style="width:100%">
                     <thead>
                         <tr>
                             <th style="min-width: 150px;">Title</th>
@@ -72,7 +74,58 @@
       }
     });
     $(function() {
-
+        $('#data_attend_side').DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{{ route('admin.attendance.dt.attendance') }}",
+            columns: [{
+                    data: 'link.title',
+                    name: 'title'
+                },
+                {
+                    data: 'attend_path',
+                    name: 'link'
+                },
+                {
+                    data: 'members_count',
+                    name: 'pendaftar'
+                },
+                {
+                    data: 'attend_count',
+                    name: 'hadir'
+                },
+                {
+                    data: 'status',
+                    name: 'status'
+                },
+                {
+                    data: 'options',
+                    name: 'Options'
+                }
+            ],
+            columnDefs: [
+                {
+                    targets: 2,
+                    render: function (data, type, row) {
+                        return `<span class="badge badge-primary">${data} Orang</span>`;
+                    }
+                },
+                {
+                    targets: 3,
+                    render: function (data, type, row) {
+                        return `<span class="badge badge-primary">${data} Orang</span>`;
+                    }
+                },
+                {
+                    targets: 1,
+                    render: function (data, type, row) {
+                        let html = "";
+                        html += `<span class="fw-bolder">${data}</span>`;
+                        return html;
+                    },
+                },
+            ],
+        });
     });
 </script>
 @endpush
