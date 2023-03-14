@@ -29,7 +29,18 @@ class Link extends Model
 
     public function scopeLatestFirst($query)
     {
-      return $query->orderBy('id','DESC');
+        return $query->orderBy('id','DESC');
+    }
+
+    public static function filterActiveMyLinks()
+    {
+        $user = auth()->user();
+        $links = $user->links;
+        $date = date("Y-m-d");
+    
+        return $links->filter(function ($link) use ($date) {
+            return date("Y-m-d", strtotime($link->active_from)) <= $date && date("Y-m-d", strtotime($link->active_until)) >= $date;
+        });
     }
 
     /**
