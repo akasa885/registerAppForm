@@ -108,13 +108,13 @@ class LinkController extends Controller
     public function edit($id)
     {
         $edit_link = Link::findorfail($id);
-        return view('admin.pages.links.edit_pay', ['link_detail' => $edit_link]);
+        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'pay']);
     }
 
     public function editFree($id)
     {
         $edit_link = Link::findorfail($id);
-        return view('admin.pages.links.edit_free', ['link_detail' => $edit_link]);
+        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'free']);
     }
 
     /**
@@ -128,14 +128,19 @@ class LinkController extends Controller
     {
 
         try {
-            $link = Link::findorfail($id);
-            $link->title = $request->title;
+            $validated = $request->validated();
+            $link = Link::findorfail($id); // will return 404 if not found
+            $link->title = $validated['title'];
             if($request->filepath != null){
-                $link->banner = $request->filepath;
+                // compare if the file is different
+                if($link->banner != $request->filepath){
+                    // delete the old file
+                    $link->banner = $request->filepath;
+                }
             }
-            $link->description = $request->desc;
-            $link->active_from = date("Y-m-d", strtotime($request->open_date));
-            $link->active_until = date("Y-m-d", strtotime($request->close_date));
+            $link->description = $validated['desc'];
+            $link->active_from = date("Y-m-d", strtotime($validated['open_date']));
+            $link->active_until = date("Y-m-d", strtotime($validated['close_date']));
             $link->save();
             
             if($request->event_type == 'pay'){
@@ -144,11 +149,14 @@ class LinkController extends Controller
             }
 
             return redirect()->route('admin.link.view')->with([
-                'stored' => true
+                'stored' => true,
+                'success' => 'Berhasil diubah'
             ]);
 
         } catch (\Throwable $th) {
-            return $th;
+            if (config('app.debug'))
+                return $th;
+            return abort(500, 'Request failed');
         }
     }
 
@@ -173,7 +181,7 @@ class LinkController extends Controller
                 $expired = false;
             }
         }
-        return view('pages.pendaftaran.view', ['link' => $data, 'show'=> $expired]);
+        return view('pages.pendaftaran.viewV01', ['link' => $data, 'show'=> $expired]);
     }
 
 
