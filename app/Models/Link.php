@@ -14,7 +14,26 @@ class Link extends Model
     const LINK_TYPE = ['pay', 'free'];
 
     protected $fillable = [
-        'link_path', 'title', 'description', 'banner', 'active_from', 'active_until', 'created_by'
+        'link_path', 
+        'title', 
+        'description',
+        'registration_info',
+        'banner', 
+        'active_from', 
+        'active_until', 
+        'created_by',
+        'link_type',
+        'has_member_limit',
+        'member_limit'
+    ];
+
+    protected $dates = [
+        'active_from',
+        'active_until'
+    ];
+
+    protected $casts = [
+        'has_member_limit' => 'boolean'
     ];
 
     /**
