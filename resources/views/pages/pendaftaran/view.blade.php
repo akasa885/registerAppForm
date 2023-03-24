@@ -2,7 +2,7 @@
 @section('title', 'Pendaftaran '.$link->title)
 
 @section('content')
-<main class="flex justify-center py-10 sm:container sm:mx-auto">
+<main class="flex justify-center container px-7 sm:px-8 md:px-2 lg:px-0 py-10 sm:container sm:mx-auto">
     <div class="lg:w-6/12 sm:px-6 sm:w-10/12">
         <section class="flex flex-col break-words bg-white sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
             @if($message = Session::get('success'))
@@ -16,8 +16,8 @@
             @elseif($show)
                 <h3 class="font-semibold p-10 sm:mx-auto">Link Pendaftaran Tidak Tersedia</h3>
             @else
-                <header class="font-semibold flex justify-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
-                    Form Pendaftaran {{$link->title}}
+                <header class="font-semibold flex justify-center text-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
+                    Form Pendaftaran <br> {{$link->title}}
                 </header>
 
                 <div class="">
@@ -51,9 +51,10 @@
                         <input id="input-2" type="email"
                             class="form-input w-full @error('email') border-red-500 @enderror" name="email"
                             value="{{ old('email') }}" required autofocus>
+                            <span class="text-gray-600 text-xs italic mt-2 w-full">Silahkan isikan alamat email aktif anda !</span><br/>
 
                         @error('email')
-                        <p class="text-red-500 text-xs italic mt-4">
+                        <p class="text-red-500 text-xs italic mt-2">
                             {{ $message }}
                         </p>
                         @enderror
