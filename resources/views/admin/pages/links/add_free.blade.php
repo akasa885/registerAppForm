@@ -35,12 +35,16 @@
                             </div>
                         @endif
                         <div class="mb-3">
-                            <label for="title" class="form-label">Judul</label>
+                            <label for="title" class="form-label required">Judul</label>
                             <input type="text" class="form-control" value="{{old('title')}}" name="title" id="title">
                         </div>
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Deskripsi</label>
+                            <label for="desc" class="form-label required">Deskripsi</label>
                             <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor-1" cols="30" rows="10">{!!old('desc')!!}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="desc" class="form-label">Infomarsi Acara</label>
+                            <textarea required name="registration_info" placeholder="informasi acara" class="my-editor form-control" id="my-editor-2" cols="30" rows="10">{!!old('registration_info')!!}</textarea>
                         </div>
                     </div>                    
                 </div>                              
@@ -119,5 +123,6 @@
     };
 
     CKEDITOR.replace('my-editor-1', options);
+    CKEDITOR.replace('my-editor-2', options);
 </script>
 @endpush

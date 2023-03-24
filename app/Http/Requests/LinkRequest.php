@@ -29,29 +29,26 @@ class LinkRequest extends FormRequest
 
     public function customRules($type)
     {
-        $rules = [];
+        $rules = [
+            'event_type' => ['required'],
+            'title' => ['required'],
+            'desc' => ['required'],
+            'registration_info' => ['required', 'max:500'],
+            'open_date' => ['required'],
+            'close_date' => ['required']
+        ];
         $this->event_type = $type;
 
         switch($type){
             case "pay" :
-                $rules = [
-                    'event_type' => ['required'],
-                    'title' => ['required'],
-                    'desc' => ['required'],
+                // append rules
+                $rules += [
                     'email_confirmation' => ['required', 'max:500'],
                     'email_confirmed' => ['required', 'max:500'],
-                    'open_date' => ['required'],
-                    'close_date' => ['required']
                 ];
                 break;
             case "free" :
-                $rules = [
-                    'event_type' => ['required'],
-                    'title' => ['required'],
-                    'desc' => ['required'],
-                    'open_date' => ['required'],
-                    'close_date' => ['required']
-                ];
+                // nothing to do
                 break;
         }
 
@@ -65,6 +62,7 @@ class LinkRequest extends FormRequest
             'event_type' => 'Tipe Event',
             'title' => 'Judul Event',
             'desc' => 'Deskripsi Event',
+            'registration_info' => 'Informasi Pendaftaran',
             'open_date' => 'Tanggal Buka Event',
             'close_date' => 'Tanggal Tutup Event'
         ];

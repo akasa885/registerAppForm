@@ -62,6 +62,7 @@ class LinkController extends Controller
                 $link->banner = $request->filepath;
             }
             $link->description = $request->desc;
+            $link->registration_info = $request->registration_info;
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->created_by = auth()->id();
