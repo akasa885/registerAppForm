@@ -80,6 +80,22 @@
                       </div>
                 </div> 
             </div>
+            <!--begin:: kuota-->
+            <div class="card mb-3 d-flex flex-column">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Batas Kuota Pendaftar (Opsional)
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="form-group">
+                        <input type='number' min="0" name="member_limit" value="{{ old('member_limit') }}"
+                            required class="form-control" id='member-limit'>
+                        <small class="form-text text-muted">Beri angka 0, apabila tidak ada batasan</small>
+                    </div>
+                </div>
+            </div>
+            <!--end:: kuota-->
             <div class="card mb-3 d-flex flex-column">
                 <div class="card-header-tab card-header-tab-animation card-header">
                     <div class="card-header-title">
