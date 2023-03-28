@@ -64,8 +64,9 @@ class FormController extends Controller
                 $invoice = new Invoice;
                 $invoice->member_id = $member->id;
                 $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
-                // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
-                $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
+                $currentDateTime = Carbon::now();
+                $newDateTime = Carbon::now()->addHours(24);
+                $invoice->valid_until = $newDateTime;
                 $invoice->status = 0;
                 $invoice->save();
 
