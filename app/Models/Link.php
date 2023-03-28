@@ -20,7 +20,8 @@ class Link extends Model
         'registration_info',
         'banner', 
         'active_from', 
-        'active_until', 
+        'active_until',
+        'event_date',
         'created_by',
         'link_type',
         'has_member_limit',
@@ -29,7 +30,8 @@ class Link extends Model
 
     protected $dates = [
         'active_from',
-        'active_until'
+        'active_until',
+        'event_date'
     ];
 
     protected $casts = [
