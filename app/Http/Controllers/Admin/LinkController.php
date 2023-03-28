@@ -210,10 +210,13 @@ class LinkController extends Controller
     {
         $id = auth()->id();
         $data = $this->IncludeLink($user, $id);
+        // sort data by id desc
+        $data = $data->sortByDesc('id');
         // $data = Link::withCount('members')->get();
         $edit ='';
         return DataTables::of($data)
-        ->removeColumn('id', 'created_at', 'updated_at', 'description')
+        ->addIndexColumn()
+        ->removeColumn('created_at', 'updated_at', 'description')
         ->addColumn('date_status', function($data){
             $date = date("Y-m-d");
             if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ) {
