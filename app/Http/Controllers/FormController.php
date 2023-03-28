@@ -39,6 +39,19 @@ class FormController extends Controller
                 ->withInput($request->all())
                 ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
             }
+            if($link_coll->has_member_limit){
+                if($link_coll->link_type == 'free'){
+                    if(!$check_quota = $this->isRegistrationMemberQuota($current_member, $link_coll->member_limit)){
+                        quotaFullMessage:
+                        return back()
+                        ->withErrors(['message' => 'Maaf, Quota pendaftaran sudah penuh!']);
+                    }
+                } else {
+                    if(!$check_quota = $this->isRegistrationPaidMemberQuota($current_member, $link_coll->member_limit)){
+                        goto quotaFullMessage;
+                    }
+                }
+            }
             $validated['link_id'] = $link_coll->id;
             $member = Member::create($validated);
 
@@ -51,8 +64,9 @@ class FormController extends Controller
                 $invoice = new Invoice;
                 $invoice->member_id = $member->id;
                 $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
-                // $invoice->valid_until = date("Y-m-d", strtotime($dt_carbon->toDateString()));
-                $invoice->valid_until = date("Y-m-d", strtotime($link_coll->active_until));
+                $currentDateTime = Carbon::now();
+                $newDateTime = Carbon::now()->addHours(24);
+                $invoice->valid_until = $newDateTime;
                 $invoice->status = 0;
                 $invoice->save();
 
@@ -213,11 +227,11 @@ class FormController extends Controller
     }
 
     public function sendMailEventDeskripsi($link, $member){
-        $information = $link->description;
+        $information = $link->registration_info ?? $link->description;
         $data = array(
             'name'      =>  $member->full_name,
             'acara'     => $link->title,
-            'message'   =>   $link->description,
+            'message'   =>   $link->registration_info ?? $link->description,
         );
         $subject = 'Registrasi '.$link->title;
         $from_mail = Email::EMAIL_FROM;

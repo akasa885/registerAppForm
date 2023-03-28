@@ -15,6 +15,10 @@ class Invoice extends Model
         'LUNAS'
     ];
 
+    protected $casts = [
+        'valid_until' => 'datetime',
+    ];
+
     protected $fillable = ['member_id', 'token', 'valid_until', 'status'];
 
     /**
