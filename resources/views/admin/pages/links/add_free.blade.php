@@ -47,7 +47,7 @@
                                     cols="30" rows="10">{!! old('desc') !!}</textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="desc" class="form-label">Infomarsi Acara</label>
+                                <label for="desc" class="form-label">Infomarsi Acara (email)</label>
                                 <textarea required name="registration_info" placeholder="informasi acara" class="my-editor form-control"
                                     id="my-editor-2" cols="30" rows="10">{!! old('registration_info') !!}</textarea>
                             </div>
