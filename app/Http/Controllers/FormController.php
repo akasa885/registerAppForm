@@ -39,6 +39,19 @@ class FormController extends Controller
                 ->withInput($request->all())
                 ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
             }
+            if($link_coll->has_member_limit){
+                if($link_coll->link_type == 'free'){
+                    if(!$check_quota = $this->isRegistrationMemberQuota($current_member, $link_coll->member_limit)){
+                        quotaFullMessage:
+                        return back()
+                        ->withErrors(['message' => 'Maaf, Quota pendaftaran sudah penuh!']);
+                    }
+                } else {
+                    if(!$check_quota = $this->isRegistrationPaidMemberQuota($current_member, $link_coll->member_limit)){
+                        goto quotaFullMessage;
+                    }
+                }
+            }
             $validated['link_id'] = $link_coll->id;
             $member = Member::create($validated);
 
