@@ -10,7 +10,7 @@
     <p>Yang mendaftar pada acara <strong>{{$data['acara']}}</strong></p>
     {!!$data['message']!!}
     <h4><strong>Link konfirmasi pembayaran : </strong></h4>
-    <h5> <strong>Batas Waktu : {{$data['valid_until']}}</strong> </h5>
+    <h5> <strong>Batas Waktu : {{ date('d-m-Y H:i', strtotime($data['valid_until'])) }}</strong> </h5>
     <a href="{{$data['link_pay']}}" 
     style="font-size: 14px; padding: 10px 15px; background-color:darkcyan; text-align: center;
     text-decoration: none; color: #FFF; width: 100%; border-radius: 10px; ">
