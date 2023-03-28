@@ -227,11 +227,11 @@ class FormController extends Controller
     }
 
     public function sendMailEventDeskripsi($link, $member){
-        $information = $link->description;
+        $information = $link->registration_info ?? $link->description;
         $data = array(
             'name'      =>  $member->full_name,
             'acara'     => $link->title,
-            'message'   =>   $link->description,
+            'message'   =>   $link->registration_info ?? $link->description,
         );
         $subject = 'Registrasi '.$link->title;
         $from_mail = Email::EMAIL_FROM;
