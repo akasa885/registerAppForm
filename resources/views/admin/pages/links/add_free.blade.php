@@ -128,7 +128,7 @@
 @endsection
 
 @push('scripts')
-    <script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+    <script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
     <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
     <script type="text/javascript">
         $('#lfm').filemanager('image');
