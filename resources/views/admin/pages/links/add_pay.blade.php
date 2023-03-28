@@ -43,7 +43,7 @@
                             <textarea required name="desc" placeholder="deskripsi acara" class="my-editor form-control" id="my-editor-3" cols="30" rows="10">{!!old('desc')!!}</textarea>
                         </div>
                         <div class="mb-3">
-                            <label for="desc" class="form-label">Infomarsi Acara</label>
+                            <label for="desc" class="form-label">Infomarsi Acara (email)</label>
                             <textarea required name="registration_info" placeholder="informasi acara" class="my-editor form-control" id="my-editor-4" cols="30" rows="10">{!!old('registration_info')!!}</textarea>
                         </div>
                         <div class="mb-3">
@@ -80,6 +80,22 @@
                       </div>
                 </div> 
             </div>
+            <!--begin:: kuota-->
+            <div class="card mb-3 d-flex flex-column">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Batas Kuota Pendaftar (Opsional)
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="form-group">
+                        <input type='number' min="0" name="member_limit" value="{{ old('member_limit') }}"
+                            required class="form-control" id='member-limit'>
+                        <small class="form-text text-muted">Beri angka 0, apabila tidak ada batasan</small>
+                    </div>
+                </div>
+            </div>
+            <!--end:: kuota-->
             <div class="card mb-3 d-flex flex-column">
                 <div class="card-header-tab card-header-tab-animation card-header">
                     <div class="card-header-title">

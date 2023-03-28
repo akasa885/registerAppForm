@@ -34,6 +34,7 @@ class LinkRequest extends FormRequest
             'title' => ['required'],
             'desc' => ['required'],
             'registration_info' => ['required', 'max:500'],
+            'member_limit' => ['required', 'numeric', 'min:0'],
             'open_date' => ['required'],
             'close_date' => ['required']
         ];
@@ -63,6 +64,7 @@ class LinkRequest extends FormRequest
             'title' => 'Judul Event',
             'desc' => 'Deskripsi Event',
             'registration_info' => 'Informasi Pendaftaran',
+            'member_limit' => 'Batas Peserta',
             'open_date' => 'Tanggal Buka Event',
             'close_date' => 'Tanggal Tutup Event'
         ];

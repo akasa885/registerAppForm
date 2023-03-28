@@ -63,6 +63,11 @@ class LinkController extends Controller
             }
             $link->description = $request->desc;
             $link->registration_info = $request->registration_info;
+            if($request->member_limit > 0)
+            {
+                $link->has_member_limit = true;
+                $link->member_limit = $request->member_limit;
+            }
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->created_by = auth()->id();
@@ -205,10 +210,13 @@ class LinkController extends Controller
     {
         $id = auth()->id();
         $data = $this->IncludeLink($user, $id);
+        // sort data by id desc
+        $data = $data->sortByDesc('id');
         // $data = Link::withCount('members')->get();
         $edit ='';
         return DataTables::of($data)
-        ->removeColumn('id', 'created_at', 'updated_at', 'description')
+        ->addIndexColumn()
+        ->removeColumn('created_at', 'updated_at', 'description')
         ->addColumn('date_status', function($data){
             $date = date("Y-m-d");
             if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ) {

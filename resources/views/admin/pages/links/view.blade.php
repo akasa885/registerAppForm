@@ -48,8 +48,9 @@
                 <table id="data_users_side" class="mb-0 table display" style="width:100%">
                     <thead>
                         <tr>
+                            <th style="width: 15px">No</th>
                             <th style="width: 30%">Title</th>
-                            <th style="width: 30%">Link</th>
+                            <th style="width: 27%">Link</th>
                             <th style="width: 10%">Pendaftar</th>
                             <th style="width: 10%">Status</th>
                             <th style="width: 20%">Options</th>
@@ -75,7 +76,12 @@
             processing: true,
             serverSide: true,
             ajax: "{{route('admin.link.dtable')}}",
-            columns: [{
+            columns: [
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex'
+                },
+                {
                     data: 'title',
                     name: 'title'
                 },
@@ -98,11 +104,15 @@
             ],
             columnDefs: [
                 {
+                    targets: 0,
+                    className: 'text-center'
+                },
+                {
                     targets: 4,
                     className: 'text-center'
                 },
                 {
-                    targets: 1,
+                    targets: 2,
                     render: function (data, type, row) {
                         let html = "";
                         html += `<span class="fw-bolder">${data}</span><br/>`;
