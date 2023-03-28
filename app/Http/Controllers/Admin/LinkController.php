@@ -63,6 +63,11 @@ class LinkController extends Controller
             }
             $link->description = $request->desc;
             $link->registration_info = $request->registration_info;
+            if($request->member_limit > 0)
+            {
+                $link->has_member_limit = true;
+                $link->member_limit = $request->member_limit;
+            }
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
             $link->created_by = auth()->id();
