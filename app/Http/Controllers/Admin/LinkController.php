@@ -102,7 +102,7 @@ class LinkController extends Controller
     public function show($id)
     {   
         $link = Link::findorfail($id);
-        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title]);
+        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link]);
     }
 
     /**
