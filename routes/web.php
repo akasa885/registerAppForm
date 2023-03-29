@@ -53,6 +53,10 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         Route::prefix('users-setting')->name('users.')->group(__DIR__.'/v1/admin/setting_user.php');
         // < ------------------------------- Users Admin ----------------------------------------- >
 
+        // < -------------------------------Export ----------------------------------------- >
+        Route::prefix('export')->name('export.')->group(__DIR__.'/v1/export.php');
+        // < -------------------------------Export ----------------------------------------- >
+
         // < ------------------------------- Members Admin ----------------------------------------- >
         Route::prefix('member')->name('member.')->group(function(){
             Route::get('/pay-sheet/{id}', [MemberController::class, 'viewSheet'])->name('lihat.bukti');
