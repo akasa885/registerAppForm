@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 
 Route::get('/list', [UserController::class, 'index'])->name('view');
 Route::get('/add', [UserController::class, 'create'])->name('create');
