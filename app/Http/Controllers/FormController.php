@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 // request
 use App\Http\Requests\StoreFormUserRequest;
@@ -32,6 +34,7 @@ class FormController extends Controller
         $validated = $request->validated();
 
         try {
+            DB::beginTransaction();
             $link_coll = Link::where('link_path', $validated['link'])->first();
             $current_member = $link_coll->members;
             if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])){
@@ -57,6 +60,9 @@ class FormController extends Controller
 
             if ($link_coll->link_type == 'free') {
                 $this->sendMailEventDeskripsi($link_coll, $member);
+
+                DB::commit();
+
                 return back()->with('success', 'Pendaftaran berhasil dilakukan. Terima kasih telah mendaftar');
             }
             if($link_coll->link_type == 'pay'){
@@ -72,12 +78,17 @@ class FormController extends Controller
 
                 $this->sendMailPayment($link_coll, $member, $invoice);
 
+                DB::commit();
+
                 return redirect()->route('form.link.pay', ['link' => $link_coll->link_path, 'payment' => $invoice->token]);
             }
 
         } catch (\Throwable $th) {
-            throw $th;
-            abort(500);
+            if (config('app.debug')) throw $th;
+            DB::rollback();
+            Log::error('Failed, run form storeIdentity');
+            Log::error("error : ". $th->getMessage());
+            return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
         }
     }
 
@@ -120,7 +131,7 @@ class FormController extends Controller
                 'used' => $used]);
             }
         }else{
-            abort(404);
+            abort(404, 'Confirmation Code Not Found!');
         }
     }
 
@@ -132,6 +143,7 @@ class FormController extends Controller
         try {
             $invo = Invoice::where('token', $payment)->first();
             if($invo != null){
+                DB::beginTransaction();
                 // request save file to server
                 $filesimpan = $this->saveInvoice($request->file('bukti'));
                 
@@ -145,13 +157,20 @@ class FormController extends Controller
                         $member_pay->bukti_bayar = $filesimpan;
                         $member_pay->save();
                     }
+
+                    DB::commit();
+
                     return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
                 }
             }else{
                 abort(404);
             }
         } catch (\Throwable $th) {
-            return $th;
+            if (config('app.debug')) throw $th;
+            DB::rollback();
+            Log::error('Failed, run payStore');
+            Log::error("error : ". $th->getMessage());
+            return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
         }
     }
 
