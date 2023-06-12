@@ -9,6 +9,8 @@
 
     <title>@yield('title', config('app.name', 'Laravel'))</title>
 
+    <link rel="shortcut icon" href="{{ asset('icon/favicon.png') }}" />
+
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     
