@@ -97,41 +97,58 @@ class FormController extends Controller
         $pay_detail = Invoice::where('token', $payment)->first();
         $expired = false;
         $used = false;
+        $not_found = false;
+
+        $dataReturn = [
+            'expired' => $expired,
+            'used' => $used,
+            'not_found' => $not_found];
+
         if($pay_detail != null){
             $member = $pay_detail->member;
             $link_detail = Link::find($member->link_id);
-            $date = date("Y-m-d");
+            $date = date("Y-m-d H:i:s");
             if($pay_detail->status != 0){
                 $used = true;
-                return view('pages.pendaftaran.upPay', 
-                ['pay_code' => $payment, 
-                'member' => $member,
-                'link' => $link_detail,
-                'expire' => $expired,
-                'used' => $used]);
+                $dataReturn['link'] = $link_detail;
+                $dataReturn['member'] = $member;
+                $dataReturn['pay_code'] = $payment;
+                $dataReturn['used'] = $used;
+                $dataReturn['expired'] = $expired;
+
+                return view('pages.pendaftaran.upPay', $dataReturn);
             }
-            if($date <= date("Y-m-d", strtotime($pay_detail->valid_until)) ){
+            if($date <= date("Y-m-d H:i:s", strtotime($pay_detail->valid_until)) ){
                 if($link == $link_detail->link_path){
-                    return view('pages.pendaftaran.upPay', 
-                    ['pay_code' => $payment,
-                    'member' => $member,
-                    'link' => $link_detail,
-                    'expire' => $expired,
-                    'used' => $used]);
+                    $dataReturn['link'] = $link_detail;
+                    $dataReturn['member'] = $member;
+                    $dataReturn['pay_code'] = $payment;
+                    $dataReturn['used'] = $used;
+                    $dataReturn['expired'] = $expired;
+
+                    return view('pages.pendaftaran.upPay', $dataReturn);
                 }else{
                     abort(404);
                 }
             }else{
                 $expired = true;
-                return view('pages.pendaftaran.upPay', 
-                ['pay_code' => $payment,
-                'member' => $member,
-                'link' => $link_detail,
-                'expire' => $expired,
-                'used' => $used]);
+                $member->delete();
+                $dataReturn['link'] = $link_detail;
+                $dataReturn['member'] = $member;
+                $dataReturn['pay_code'] = $payment;
+                $dataReturn['used'] = $used;
+                $dataReturn['expired'] = $expired;
+                $dataReturn['message'] = 'Maaf, waktu pembayaran sudah habis. Silahkan daftar ulang';
+
+                return view('pages.pendaftaran.upPay', $dataReturn);
             }
         }else{
-            abort(404, 'Confirmation Code Not Found!');
+            $route_form = route('form.link.view', ['link' => $link]);
+            $not_found = true;
+            $dataReturn['route_form'] = $route_form;
+            $dataReturn['not_found'] = $not_found;
+
+            return view ('pages.pendaftaran.upPay', $dataReturn);
         }
     }
 
