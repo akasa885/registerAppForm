@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 //mail
 use App\Mail\ConfirmedPay;
@@ -13,10 +15,14 @@ use App\Models\Member;
 use App\Models\Invoice;
 use App\Models\Email;
 
+use App\Http\Traits\MailPaymentTrait;
+
+
 use Carbon\Carbon;
 
 class MemberController extends Controller
 {
+    use MailPaymentTrait;
     /**
      * Display a listing of the resource.
      *
@@ -60,29 +66,6 @@ class MemberController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Member  $member
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Member $member)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Member  $member
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Member $member)
-    {
-        //
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Member  $member
@@ -104,48 +87,98 @@ class MemberController extends Controller
 
     public function updateBukti(Request $request, Member $member)
     {
+        $request->validate([
+            'id' => 'required|exists:members,id',
+            'received' => 'required|in:true,false',
+        ]);
+        $status = null;
+        $message = '';
+        if ($request->received == 'true') {
+            $status = true;
+        } else {
+            $status = false;
+        }
         try {
-            $data = $member->findorfail($request->id);
-            $invoice = Invoice::where('member_id', $data->id)->first();
-            $invoice->status = 2;
+            if ($status){
+                DB::beginTransaction();
+                $data = $member->findorfail($request->id);
+                $invoice = Invoice::where('member_id', $data->id)->first();
+                $invoice->status = 2;
 
-            $this->sendMailPaymentReceived($data->link, $data);
-            $invoice->save();
+                $this->sendMailPaymentReceived($data->link, $data);
+                $invoice->save();
 
-            return response()->json(['success' => true, 'message' => 'Pembayaran Diterima']);
+                DB::commit();
+                $message = 'Pembayaran Diterima';
+            } else {
+                DB::beginTransaction();
+                $data = $member->findorfail($request->id);
+                $invoice = Invoice::where('member_id', $data->id)->first();
+                $currentDateTime = Carbon::now();
+                $newDateTime = Carbon::now()->addHours(24);
+                $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
+                $invoice->valid_until = $newDateTime;
+                $invoice->status = 0;
+                $invoice->save();
+                
+                $message_html = "<p> Bukti pembayaran anda ditolak, silahkan upload bukti anda kembali </p>";
+
+                $this->sendMailPayment($data->link, $data, $invoice, true, $message_html);
+
+                DB::commit();
+                $message = 'Pembayaran Ditolak';
+            }
+
+            return response()->json(['success' => true, 'message' => $message]);
         } catch (\Throwable $th) {
-            // throw $th;
+            DB::rollBack();
+            if (config('app.debug')) throw $th;
+            Log::error('Error update bukti bayar');
+            Log::error($th->getMessage());
             // return $data->id;
             // return $member->link;
             return response()->json(['success' => false, 'message' => 'Request Error'], 500);
         }
     }
 
-    public function sendMailPaymentReceived($link, $member){
-        foreach($link->mails as $item){
-            if($item->type == 'confirmed'){
-                $information = $item->information;
+    private function getToken($lenght_token = 10)
+    {
+        $fix_token = '';
+        $lock = 0;
+        $data_token = Invoice::select('token')->get();
+        if(count($data_token) > 0){
+            $loop = count($data_token);
+            for ($i=0; $i < $loop;) {
+                foreach ($data_token as $tok) {
+                    $temp = $this->generate_token($lenght_token);
+                    if ($tok->token != $temp) {
+                    $lock ++;
+                    }else{
+                    $lock = 0;
+                    }
+                }
+                if ($loop == $lock) {
+                    $fix_token = $temp;
+                    $i = $loop;
+                }else {
+                    $i++;
+                }
             }
+            return $fix_token;
+        }else{
+            return $this->generate_token($lenght_token);
         }
-        $data = array(
-            'name'      =>  $member->full_name,
-            'acara'     => $link->title,
-            'message'   =>   $information,
-        );
-        $from_mail = Email::EMAIL_FROM;
+    }
 
-        try {
-            Mail::to($member->email)->send(new ConfirmedPay($data, $from_mail));
-            $mail_db = new Email;
-            $mail_db->send_from = $from_mail;
-            $mail_db->send_to = $member->email;
-            $mail_db->message = $information;
-            $mail_db->user_id = $member->id;
-            $mail_db->type_email = Email::TYPE_EMAIL[2];
-            $mail_db->sent_count = 1;
-            $mail_db->save();
-        } catch (\Throwable $th) {
-            abort(500);
-        }
+    public function generate_token($length = 10)
+    {
+      $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+      $charactersLength = strlen($characters);
+      $randomString = '';
+      for ($i = 0; $i < $length; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+      }
+
+      return $randomString;
     }
 }
