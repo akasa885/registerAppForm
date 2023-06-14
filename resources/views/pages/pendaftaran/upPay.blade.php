@@ -21,7 +21,7 @@
                     @csrf
                     <p class="sm:mt-4">Kepada Bpk/Ibu, <strong> {{$member->full_name}} </strong> </p>
                     <p>
-                        Terima kasih telah melakukan pendaftaran {{$link->title}}. Silahkan upload bukti bayar anda pada form dibawah ini.
+                        Terima kasih telah melakukan pendaftaran {{$link->title}}.<br> <strong> Informasi terkait pembayaran telah kami kirimkan ke email anda </strong>, <br>Silahkan upload bukti bayar anda pada form dibawah ini.
                     </p>
                     <div class="flex">
                         <div class="mb-3">
