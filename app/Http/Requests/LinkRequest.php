@@ -33,7 +33,7 @@ class LinkRequest extends FormRequest
             'event_type' => ['required'],
             'title' => ['required'],
             'desc' => ['required'],
-            'registration_info' => ['required', 'max:500'],
+            'registration_info' => ['required', 'max:1500'],
             'member_limit' => ['required', 'numeric', 'min:0'],
             'open_date' => ['required'],
             'close_date' => ['required']
@@ -44,8 +44,8 @@ class LinkRequest extends FormRequest
             case "pay" :
                 // append rules
                 $rules += [
-                    'email_confirmation' => ['required', 'max:500'],
-                    'email_confirmed' => ['required', 'max:500'],
+                    'email_confirmation' => ['required', 'max:1500'],
+                    'email_confirmed' => ['required', 'max:1500'],
                 ];
                 break;
             case "free" :
