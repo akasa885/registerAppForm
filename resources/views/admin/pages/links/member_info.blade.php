@@ -120,29 +120,43 @@
             // $('#ModalViewPict :input[type="button"]').prop('disabled', true);
             offBuktiButton();
             let memberId = document.getElementById("bukti_id_member").value;
-            $.ajax({
-                type: "post",
-                url: "{{route('admin.member.up.bukti')}}",
-                data: {id:memberId},
-                cache: false,
-                success: function(data){
-                    if (data.success) {
-                        alert(data.message);
-                        onBuktiButton();
-                        location.reload();
-                    }else{
-                        alert(data.message);
-                        console.log(data.error);
-                        onBuktiButton();
-                    }
-                },
-                error: function(data){
-                    alert("Response server error");
-                    onBuktiButton();
-                }
-            })
+            ajaxUpdateBukti(true, memberId);
+        });
+        $('#bukti-ditolak').on('click', function(){
+            // $('#ModalViewPict :input[type="button"]').prop('disabled', true);
+            offBuktiButton();
+            let memberId = document.getElementById("bukti_id_member").value;
+            ajaxUpdateBukti(false, memberId);
         });
     });
+    function ajaxUpdateBukti(received = true, memberId)
+    {
+        $.ajax({
+            type: "post",
+            url: "{{route('admin.member.up.bukti')}}",
+            data: {id:memberId, received:received},
+            cache: false,
+            success: function(data){
+                if (data.success) {
+                    alert(data.message);
+                    onBuktiButton();
+                    location.reload();
+                }else{
+                    alert(data.message);
+                    console.log(data.error);
+                    onBuktiButton();
+                }
+            },
+            error: function(xhr, status, error){
+                if (xhr.status == 422) {
+                    alert(xhr.responseJSON.message);
+                }else{
+                    alert("Response server error");
+                }
+                onBuktiButton();
+            }
+        })
+    }
     function viewPayment(member_id) {
         buktiReset();
         let url = "{{route('admin.member.lihat.bukti', ['id' => ":id"])}}";
