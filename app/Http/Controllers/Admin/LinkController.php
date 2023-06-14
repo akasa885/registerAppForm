@@ -188,6 +188,8 @@ class LinkController extends Controller
                 $data->viewed_count += 1;
                 $data->save();
             }
+        } else {
+            return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
         return view('pages.pendaftaran.view', ['link' => $data, 'show'=> $expired]);
     }
