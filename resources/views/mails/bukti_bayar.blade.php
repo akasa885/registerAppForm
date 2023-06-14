@@ -1,26 +1,81 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-</head>
-<body>
-    <p>Kepada : <strong>{{ucwords($data['name'])}}</strong></p>
-    <p>Yang mendaftar pada acara <strong>{{$data['acara']}}</strong></p>
-    {!!$data['message']!!}
-    <h4><strong>Link konfirmasi pembayaran : </strong></h4>
-    <h5> <strong>Batas Waktu : {{ date('d-m-Y H:i', strtotime($data['valid_until'])) }}</strong> </h5>
-    <a href="{{$data['link_pay']}}" 
-    style="font-size: 14px; padding: 10px 15px; background-color:darkcyan; text-align: center;
-    text-decoration: none; color: #FFF; width: 100%; border-radius: 10px; ">
-        Link Upload Bayar
-    </a>
-    <br/>
-    <p>Atau anda bisa copy link dibawah ini..</p>
-    <a href="{{$data['link_pay']}}">{{$data['link_pay']}}</a>
-    <br/>
-    <p>Terima Kasih..</p>
-
-</body>
-</html>
+@extends('layouts.mail')
+@section('mail_content')
+    <table class="wrapper" width="100%" cellpadding="0" cellspacing="0" style="border:none;">
+        <tr>
+            <td width="100%" style="background-color: #f25454; color: #FFFFFF;">
+                <p class="heading"
+                    style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; line-height: 1.5em; text-align: center;">
+                    Konfirmasi Bukti Bayar
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td class="body" width="100%" cellpadding="0" cellspacing="0"
+                style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; margin: 0; width: 100%; ">
+                <table class="wrapper" cellpadding="0" cellspacing="0" width="100%"
+                    style="border: none; background-color: #ffffff; border-bottom: 1px solid #e8e5ef; border-top: 1px solid #e8e5ef; padding: 1.5em;">
+                    <tr>
+                        <td style="border:none;">
+                            <p>Kepada : <strong>{{ __(ucwords($data['name'])) }}</strong> </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <p>Yang mendaftar pada acara <strong>{{ $data['acara'] }}</strong></p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <p>{!! $data['message'] !!}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <h4><strong>Link konfirmasi pembayaran : </strong></h4>
+                            <h5> <strong>Batas Waktu : {{ date('d-m-Y H:i', strtotime($data['valid_until'])) }}</strong> </h5>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;text-align:center;">
+                            <a href="{{ $data['link_pay'] }}" target="_blank"
+                                style="font-size: 14px; padding: 10px 15px; background-color:darkcyan; text-align: center;
+                                text-decoration: none; color: #FFF; width: 100%; border-radius: 10px; ">
+                                Link Upload Bayar
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <p>Atau anda bisa copy link dibawah ini..</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <a href="{{ $data['link_pay'] }}">{{ $data['link_pay'] }}</a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:none;">
+                            <table class="wrapper" width="100%" style="border:none;">
+                                <tr>
+                                    <td>
+                                        <p><strong>Terima Kasih Telah Menggunakan Layanan Kami !</strong></p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <table width="100%">
+                <tr>
+                    <td>
+                        <p>@include('includes.mail_footer')</p>
+                    </td>
+                </tr>
+            </table>
+        </tr>
+    </table>
+@endsection
