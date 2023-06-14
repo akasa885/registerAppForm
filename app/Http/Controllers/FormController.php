@@ -63,7 +63,7 @@ class FormController extends Controller
 
                 DB::commit();
 
-                return back()->with('success', 'Pendaftaran berhasil dilakukan. Terima kasih telah mendaftar');
+                return back()->with('success', 'Pendaftaran berhasil dilakukan. Silahkan Cek Email Anda untuk informasi event, terima kasih !');
             }
             if($link_coll->link_type == 'pay'){
                 // $dt_carbon = Carbon::now()->addDays(3);
