@@ -14,8 +14,8 @@ use App\Http\Traits\GenerateTokenUniqueColumnTrait;
 use App\Http\Requests\AttendanceRequest;
 use App\Http\Requests\AttendingRequest;
 
-use DataTables;
-use Carbon;
+use Yajra\DataTables\Facades\DataTables;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
@@ -78,9 +78,11 @@ class AttendanceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Attendance $attendance)
     {
-        //
+        $event = $attendance->link;
+
+        return view('admin.pages.attendance.detail', compact('attendance', 'event'));
     }
 
     /**
@@ -203,5 +205,56 @@ class AttendanceController extends Controller
         })
         ->rawColumns(['status', 'options'])
         ->make(true);
+    }
+
+    public function dtb_member(Request $request)
+    {
+        $request->validate([
+            'attendings' => 'required|in:true,false',
+            'attend_id' => 'required|exists:attendances,id'
+        ]);
+
+        $data = Attendance::find($request->attend_id);
+        $member_attend = $data->member_attend;
+        $member_attend->load('member');
+        $member = $member_attend->pluck('member')->flatten();
+        // add member attend to member
+        foreach ($member_attend as $key => $value) {
+            $member[$key]->attend = $value->created_at;
+        }
+
+        if ($request->attendings == 'false') {
+            $member = $data->link->members->diff($member);
+        }
+
+        return DataTables::of($member)
+            ->addIndexColumn()
+            ->addColumn('full_name', function ($row) {
+                return $row->full_name;
+            })
+            ->addColumn('email', function ($row) {
+                return $row->email;
+            })
+            ->addColumn('phone_number', function ($row) {
+                return $row->contact_number;
+            })
+            ->addColumn('instansi', function ($row) {
+                return $row->corporation;
+            })
+            ->addColumn('attend', function ($row) {
+                return '';
+            })
+            ->only(['full_name', 'email', 'phone_number', 'instansi', 'attend'])
+            ->make(true);
+
+
+        if ($request->ajax())
+        {
+            
+        } else {
+            return response()->json([
+                'message' => 'Method not allowed'
+            ], 405);
+        }
     }
 }
