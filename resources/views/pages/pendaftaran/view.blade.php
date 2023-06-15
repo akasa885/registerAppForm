@@ -16,10 +16,10 @@
             @elseif(isset($notFound))
                 @include('pages.pendaftaran.not_found_link')
             @elseif($show)
-                <h3 class="font-semibold p-10 sm:mx-auto">Link Pendaftaran Tidak Tersedia</h3>
+                <h3 class="font-semibold p-10 sm:mx-auto">Link Register Not Available</h3>
             @else
                 <header class="font-semibold flex justify-center text-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
-                    Form Pendaftaran <br> {{$link->title}}
+                    Form Register <br> {{$link->title}}
                 </header>
 
                 <div class="">
@@ -36,13 +36,13 @@
                     @enderror
                     <div class="flex flex-wrap">
                         <label for="input-1" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                            {{ __('Nama Lengkap') }}:
+                            {{ __('Full Name') }}:
                         </label>
 
                         <input id="input-1" type="text"
                             class="form-input w-full @error('fullname') border-red-500 @enderror" name="fullname"
                             value="{{ old('fullname') }}" required autofocus>
-                        <span class="text-gray-600 text-xs italic mt-2 w-full">Silahkan isikan bersama gelar anda ! (Apabila ada !)</span><br/>
+                        <span class="text-gray-600 text-xs italic mt-2 w-full">Please fill in with your degree! (If any!)</span><br/>
 
                         @error('fullname')
                         <p class="text-red-500 text-xs italic mt-2">
@@ -53,13 +53,13 @@
 
                     <div class="flex flex-wrap">
                         <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                            {{ __('Alamat Email') }}:
+                            {{ __('Email Address') }}:
                         </label>
 
                         <input id="input-2" type="email"
                             class="form-input w-full @error('email') border-red-500 @enderror" name="email"
                             value="{{ old('email') }}" required autofocus>
-                            <span class="text-gray-600 text-xs italic mt-2 w-full">Silahkan isikan alamat email aktif anda !</span><br/>
+                            <span class="text-gray-600 text-xs italic mt-2 w-full">Fill in with your active email !</span><br/>
 
                         @error('email')
                         <p class="text-red-500 text-xs italic mt-2">
@@ -70,7 +70,7 @@
 
                     <div class="flex flex-wrap">
                         <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                            {{ __('Nomor Telpon (WA)') }}:
+                            {{ __('Phone Number (WhatsApp)') }}:
                         </label>
 
                         <input id="input-3" type="text"
@@ -86,7 +86,7 @@
 
                     <div class="flex flex-wrap">
                         <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                            {{ __('Instansi') }}:
+                            {{ __('Instance / Company') }}:
                         </label>
 
                         <input id="input-4" type="text"
@@ -103,7 +103,7 @@
                     <div class="flex flex-wrap">
                         <button type="submit"
                         class="w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">
-                            {{ __('Kirim') }}
+                            {{ __('Submit') }}
                         </button>
                     </div>
                 </form>
