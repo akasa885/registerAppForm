@@ -112,6 +112,21 @@
                     className: 'text-center'
                 },
                 {
+                    targets: 1,
+                    render: function (data, type, row) {
+                        let html = "";
+                        html += `<span class="fw-bolder">${data}</span><br/>`;
+                        html += `<span class="text-muted">Quota: <span class="text-danger">`;
+                        if (row.member_limit) {
+                            html += `${row.member_limit} orang`;
+                        } else {
+                            html += `Unlimited`;
+                        }
+                        html += `</span></span><br/>`;
+                        return html;
+                    },
+                },
+                {
                     targets: 2,
                     render: function (data, type, row) {
                         let html = "";
