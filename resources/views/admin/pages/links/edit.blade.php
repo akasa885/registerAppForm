@@ -2,6 +2,15 @@
 @section('title', 'Mengedit Link')
 @section('content')
 <div class="container">
+    @if (count($errors) > 0)
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
     <form action="{{ route('admin.link.update', ['id' => $link_detail->id]) }}" method="POST">
         @csrf
         @method('PUT')
@@ -18,10 +27,11 @@
 @endsection
 
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+<script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
+        $('#lfm').filemanager('image');
         $('#datepicker-1').datepicker({
             format: 'dd-mm-yyyy'
         });
@@ -40,8 +50,10 @@
         CKEDITOR.replace('my-editor-1', options);
         CKEDITOR.replace('my-editor-2', options);
         CKEDITOR.replace('my-editor-3', options);
+        CKEDITOR.replace('my-editor-4', options);
     @else
         CKEDITOR.replace('my-editor-1', options);
+        CKEDITOR.replace('my-editor-4', options);
     @endif
 </script>
 @endpush
