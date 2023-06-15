@@ -132,7 +132,6 @@ class LinkController extends Controller
      */
     public function update(LinkRequest $request, $id)
     {
-
         try {
             $validated = $request->validated();
             $link = Link::findorfail($id); // will return 404 if not found
@@ -145,6 +144,15 @@ class LinkController extends Controller
                 }
             }
             $link->description = $validated['desc'];
+            $link->registration_info = $validated['registration_info'];
+            if($validated['member_limit'] > 0)
+            {
+                $link->has_member_limit = true;
+                $link->member_limit = $validated['member_limit'];
+            } else {
+                $link->has_member_limit = false;
+                $link->member_limit = null;
+            }
             $link->active_from = date("Y-m-d", strtotime($validated['open_date']));
             $link->active_until = date("Y-m-d", strtotime($validated['close_date']));
             $link->save();
