@@ -12,16 +12,29 @@ class RejectedPay extends Mailable
     use Queueable, SerializesModels;
     public $data;
     public $from_mail;
+    public $subject;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($data, $from)
+    public function __construct($data, $from, $subject = null)
     {
         $this->data = $data;
         $this->from_mail = $from;
+        $subject ? $this->subject = $subject : $this->setSubject();
+    }
+
+    public function setSubject()
+    {
+        if (config('app.locale') == 'id') {
+            $this->subject = 'Bukti Pembayaran Anda Ditolak';
+        }
+
+        if (config('app.locale') == 'en') {
+            $this->subject = 'Your Payment Proof is Rejected';
+        }
     }
 
     /**

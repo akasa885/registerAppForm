@@ -19,11 +19,22 @@ class EventInfo extends Mailable
      *
      * @return void
      */
-    public function __construct($data, $from, $subject = 'Informasi acara')
+    public function __construct($data, $from, $subject = null)
     {
         $this->data = $data;
         $this->from_mail = $from;
-        $this->subject = $subject;
+        $subject ? $this->subject = $subject : $this->setSubject();
+    }
+
+    public function setSubject()
+    {
+        if (config('app.locale') == 'id') {
+            $this->subject = 'Informasi acara';
+        }
+
+        if (config('app.locale') == 'en') {
+            $this->subject = 'Event Information';
+        }
     }
 
     /**
