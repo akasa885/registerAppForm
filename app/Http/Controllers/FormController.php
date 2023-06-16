@@ -63,7 +63,10 @@ class FormController extends Controller
 
                 DB::commit();
 
-                return back()->with('success', 'Pendaftaran berhasil dilakukan. Silahkan Cek Email Anda untuk informasi event, terima kasih !');
+                if (config('app.locale') == 'id')
+                    return back()->with('success', 'Pendaftaran berhasil dilakukan. Silahkan Cek Email Anda untuk informasi event, terima kasih !');
+                else
+                    return back()->with('success', 'Registration has been successfully done. Please check your email for event information, thank you!');
             }
             if($link_coll->link_type == 'pay'){
                 // $dt_carbon = Carbon::now()->addDays(3);
@@ -88,7 +91,10 @@ class FormController extends Controller
             DB::rollback();
             Log::error('Failed, run form storeIdentity');
             Log::error("error : ". $th->getMessage());
-            return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
+            if (config('app.locale') == 'id')
+                return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
+            else
+                return back()->withErrors(['message' => 'An error occurred, please try again later']);
         }
     }
 
@@ -177,7 +183,10 @@ class FormController extends Controller
 
                     DB::commit();
 
-                    return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
+                    if (config('app.locale') == 'id')
+                        return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
+                    else
+                        return back()->with('success', 'Proof of payment has been uploaded, please wait for verification. Thank you..!!!');
                 }
             }else{
                 abort(404);
@@ -187,7 +196,10 @@ class FormController extends Controller
             DB::rollback();
             Log::error('Failed, run payStore');
             Log::error("error : ". $th->getMessage());
-            return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
+            if (config('app.locale') == 'id')
+                return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
+            else
+                return back()->withErrors(['message' => 'An error occurred, please try again later']);
         }
     }
 
