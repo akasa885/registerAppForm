@@ -10,7 +10,11 @@
             @elseif($message = Session::get('success'))
                 <x-front-message-success-alert :message="$message" />
             @elseif($used)
-                <h3 class="font-semibold p-10 sm:mx-auto">Link Pembayaran Telah Digunakan</h3>
+                @if (config('app.locale') == 'id')
+                    <h3 class="font-semibold p-10 sm:mx-auto">Link Pembayaran Telah Digunakan</h3>
+                @else
+                    <h3 class="font-semibold p-10 sm:mx-auto">Payment Link Has Been Used</h3>
+                @endif
             @elseif($not_found)
                 @include('pages.pendaftaran.pay_confirmation.not_found_token')
             @else
@@ -19,13 +23,24 @@
                 </header>
                 <form class="w-full px-6 mb-5 space-y-6 sm:px-10 sm:space-y-8" method="POST" action="{{ route('form.pay.store', ['payment' => $pay_code]) }}" enctype="multipart/form-data">
                     @csrf
+                    @if (config('app.locale') == 'id')
                     <p class="sm:mt-4">Kepada Bpk/Ibu, <strong> {{$member->full_name}} </strong> </p>
                     <p>
                         Terima kasih telah melakukan pendaftaran {{$link->title}}.<br> <strong> Informasi terkait pembayaran telah kami kirimkan ke email anda </strong>, <br>Silahkan upload bukti bayar anda pada form dibawah ini.
                     </p>
+                    @else
+                    <p class="sm:mt-4">To Mr/Mrs, <strong> {{$member->full_name}} </strong> </p>
+                    <p>
+                        Thank you for registering {{$link->title}}.<br> <strong> Payment information has been sent to your email </strong>, <br>Please upload your proof of payment in the form below.
+                    </p>
+                    @endif
                     <div class="flex">
                         <div class="mb-3">
-                          <label for="formFile" class="form-label inline-block mb-2 text-gray-700">Silakan upload file bukti bayar anda :</label>
+                          @if (config('app.locale') == 'id')
+                            <label for="formFile" class="form-label inline-block mb-2 text-gray-700">Silakan upload file yang diminta :</label>
+                          @else
+                            <label for="formFile" class="form-label inline-block mb-2 text-gray-700">Please upload the requested file :</label>
+                          @endif
                           <input class="form-control
                           block
                           w-full
