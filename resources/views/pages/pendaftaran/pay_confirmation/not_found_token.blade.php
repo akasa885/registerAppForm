@@ -1,5 +1,9 @@
 <div class="h-auto py-5">
-    <h3 class="text-center font-semibold p-10 sm:mx-auto">Link Konfirmasi Pembayaran Tak Ditemukan !!!</h3>
+    @if (config('app.locale') == 'id')
+        <h3 class="text-center font-semibold p-10 sm:mx-auto">Link Konfirmasi Pembayaran Tak Ditemukan !!!</h3>
+    @else
+        <h3 class="text-center font-semibold p-10 sm:mx-auto">Payment Confirmation Link Not Found !!!</h3>
+    @endif
     <!--begin:: back button otuline info-->
     <div class="text-center">
         <a href="{{ $route_form }}"
