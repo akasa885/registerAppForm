@@ -38,16 +38,27 @@ class FormController extends Controller
             $link_coll = Link::where('link_path', $validated['link'])->first();
             $current_member = $link_coll->members;
             if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])){
-                return back()
-                ->withInput($request->all())
-                ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
+                if (config('app.locale') == 'id') {
+                    return back()
+                    ->withInput($request->all())
+                    ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
+                } else {
+                    return back()
+                    ->withInput($request->all())
+                    ->withErrors(['email' => 'The email you entered is already registered for this event!']);
+                }
             }
             if($link_coll->has_member_limit){
                 if($link_coll->link_type == 'free'){
                     if(!$check_quota = $this->isRegistrationMemberQuota($current_member, $link_coll->member_limit)){
                         quotaFullMessage:
-                        return back()
-                        ->withErrors(['message' => 'Maaf, Quota pendaftaran sudah penuh!']);
+                        if (config('app.locale') == 'id') {
+                            return back()
+                            ->withErrors(['message' => 'Maaf, Quota pendaftaran sudah penuh!']);
+                        } else {
+                            return back()
+                            ->withErrors(['message' => 'Sorry, the registration quota is full!']);
+                        }
                     }
                 } else {
                     if(!$check_quota = $this->isRegistrationPaidMemberQuota($current_member, $link_coll->member_limit)){
@@ -87,8 +98,8 @@ class FormController extends Controller
             }
 
         } catch (\Throwable $th) {
-            if (config('app.debug')) throw $th;
             DB::rollback();
+            if (config('app.debug')) throw $th;
             Log::error('Failed, run form storeIdentity');
             Log::error("error : ". $th->getMessage());
             if (config('app.locale') == 'id')
