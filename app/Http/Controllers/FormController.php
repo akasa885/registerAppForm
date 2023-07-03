@@ -143,8 +143,14 @@ class FormController extends Controller
                 $dataReturn['member'] = $member;
                 $dataReturn['pay_code'] = $payment;
                 $dataReturn['used'] = $used;
+                $route_form = route('form.link.view', ['link' => $link]);
+                $dataReturn['route_form'] = $route_form;
                 $dataReturn['expired'] = $expired;
-                $dataReturn['message'] = 'Maaf, waktu pembayaran sudah habis. Silahkan daftar ulang';
+                if (config('app.locale') == 'id') {
+                    $dataReturn['message'] = 'Maaf, waktu upload pembayaran sudah habis. Silahkan daftar ulang. (Pastikan Informasi Yang Anda Masukkan Benar)';
+                } else {
+                    $dataReturn['message'] = 'Sorry, the payment upload time has expired. Please register again. (Make sure the information you entered is correct)';
+                }
 
                 return view('pages.pendaftaran.upPay', $dataReturn);
             }
