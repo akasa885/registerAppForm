@@ -37,6 +37,7 @@ class AttendanceRequest extends FormRequest
         $roles = [
             'attendance_type' => ['required', 'string', 'in:day,hourly'],
             'selected_event' => ['required', 'string', 'exists:links,link_path'],
+            'cert_confirm' => ['sometimes']
         ];
 
         switch ($type){
@@ -98,6 +99,11 @@ class AttendanceRequest extends FormRequest
         }
         $validated['link_id'] = Link::where('link_path', $validated['selected_event'])->first()->id;
         $validated['created_by'] = auth()->user()->id;
+
+        if (isset($validated['cert_confirm'])) {
+            $validated['with_verification_certificate'] = true;
+        }
+        
         unset($validated['selected_event']);
 
         return $validated;
