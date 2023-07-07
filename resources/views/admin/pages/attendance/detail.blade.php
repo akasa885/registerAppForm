@@ -51,7 +51,7 @@
                                 <th style="min-width:125px">Nama Lengkap</th>
                                 <th style="min-width:150px">Informasi</th>
                                 <th style="min-width:150px">Instansi</th>
-                                <th style="min-width:100px">Waktu Absen</th>
+                                <th style="min-width:100px">Options</th>
                             </tr>
                         </thead>
                     </table>
