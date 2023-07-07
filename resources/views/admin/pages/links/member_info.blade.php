@@ -65,7 +65,7 @@
             </div>
             <div class="modal-body">
                 <div id="pict-payment">
-                    <input type="hidden" id="bukti_id_member" value="" name="id_member">
+                    <input type="hidden" id="bukti_id_member" value="NaN" name="id_member">
                     <img src="{{ asset('/images/default/no-image.png') }}" id="bukti-img" class="img-fluid" alt="bukti">
                 </div>
             </div>
@@ -120,12 +120,22 @@
             // $('#ModalViewPict :input[type="button"]').prop('disabled', true);
             offBuktiButton();
             let memberId = document.getElementById("bukti_id_member").value;
+            if (memberId == "NaN" || memberId == "") {
+                alert("Aksi ditolak, silahkan refresh halaman ini.");
+                onBuktiButton();
+                return;
+            }
             ajaxUpdateBukti(true, memberId);
         });
         $('#bukti-ditolak').on('click', function(){
             // $('#ModalViewPict :input[type="button"]').prop('disabled', true);
             offBuktiButton();
             let memberId = document.getElementById("bukti_id_member").value;
+            if (memberId == "NaN" || memberId == "") {
+                alert("Aksi ditolak, silahkan refresh halaman ini.");
+                onBuktiButton();
+                return;
+            }
             ajaxUpdateBukti(false, memberId);
         });
     });
@@ -156,6 +166,16 @@
                 onBuktiButton();
             }
         })
+    }
+    function viewProof(buktiAsset, name = null) {
+        buktiReset();
+        if (name) {
+            document.getElementById("nameMember").innerHTML = name;
+        }
+        // hide button
+        document.getElementById("bukti-diterima").style.display = "none";
+        document.getElementById("bukti-ditolak").style.display = "none";
+        document.getElementById("bukti-img").src = buktiAsset;
     }
     function viewPayment(member_id) {
         buktiReset();
