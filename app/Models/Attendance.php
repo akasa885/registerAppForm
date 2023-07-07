@@ -14,7 +14,14 @@ class Attendance extends Model
         'link_id',
         'active_from',
         'active_until',
+        'with_verification_certificate',
         'created_by',
+    ];
+
+    protected $casts = [
+        'active_from' => 'datetime',
+        'active_until' => 'datetime',
+        'with_verification_certificate' => 'boolean',
     ];
 
     public function scopeOwnAttendance($query)
