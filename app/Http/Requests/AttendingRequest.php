@@ -26,22 +26,33 @@ class AttendingRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'email', 'max:255', 'exists:members,email', new AttendRegisteredEvent($this->attendance)],
-            'no_telpon' => ['required', 'numeric', 'digits_between:8,13', 'exists:members,contact_number'],
+            'email' => ['bail', 'required', 'email', 'max:255', 'exists:members,email', new AttendRegisteredEvent($this->attendance)],
+            'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', 'exists:members,contact_number'],
+            'is_certificate' => ['required', 'in:yes,no'],
+            'bukti' => ['required_if:is_certificate,yes', 'image', 'max:10240']
         ];
     }
 
     public function attributes()
     {
         return [
-            'email' => 'email',
-            'no_telpon' => 'nomor telepon',
+            'email' => __('attend.form.email'),
+            'no_telpon' => __('attend.form.phone_number'),
+            'is_certificate' => __('attend.form.is_certificate'),
+            'bukti' => __('attend.form.upload_pay')
         ];
+    }
+
+    public function validationData()
+    {
+        return array_merge($this->all(), $this->route()->parameters());
     }
 
     public function validated()
     {
         $validated = parent::validated();
+        $validated['is_certificate'] = $validated['is_certificate'] == 'yes' ? true : false;
+        $validated['certificate'] = $validated['is_certificate'];
         $validated['attend_id'] = $this->attendance->id;
         $validated['member_id'] = $this->attendance->link->members()->where('email', $validated['email'])->first()->id;
         unset($validated['email']);
