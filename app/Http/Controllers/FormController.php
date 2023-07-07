@@ -41,11 +41,11 @@ class FormController extends Controller
                 if (config('app.locale') == 'id') {
                     return back()
                         ->withInput($request->all())
-                        ->withErrors(['email' => 'Email yang anda masukkan sudah terdaftar dalam event ini!']);
+                        ->withErrors(['email' => 'Email yang anda masukkan sudah memberikan pertanyaan dalam event ini!']);
                 } else {
                     return back()
                         ->withInput($request->all())
-                        ->withErrors(['email' => 'The email you entered is already registered for this event!']);
+                        ->withErrors(['email' => 'The email you entered is already given question for this event!']);
                 }
             }
             if ($link_coll->has_member_limit) {
@@ -54,10 +54,10 @@ class FormController extends Controller
                         quotaFullMessage:
                         if (config('app.locale') == 'id') {
                             return back()
-                                ->withErrors(['message' => 'Maaf, Quota pendaftaran sudah penuh!']);
+                                ->withErrors(['message' => 'Maaf, Quota Pertanyaan sudah penuh!']);
                         } else {
                             return back()
-                                ->withErrors(['message' => 'Sorry, the registration quota is full!']);
+                                ->withErrors(['message' => 'Sorry, the question quota is full!']);
                         }
                     }
                 } else {
@@ -70,14 +70,14 @@ class FormController extends Controller
             $member = Member::create($validated);
 
             if ($link_coll->link_type == 'free') {
-                $this->sendMailEventDeskripsi($link_coll, $member);
+                // $this->sendMailEventDeskripsi($link_coll, $member);
 
                 DB::commit();
 
                 if (config('app.locale') == 'id')
-                    return back()->with('success', 'Pertanyaan berhasil dikirimkan. Silahkan Cek Email Anda untuk informasi event, terima kasih !');
+                    return back()->with('success', 'Pertanyaan berhasil dikirimkan. Terima kasih !');
                 else
-                    return back()->with('success', 'Registration has been successfully done. Please check your email for event information, thank you!');
+                    return back()->with('success', 'Question has been successfully submited. Thank you!');
             }
             if ($link_coll->link_type == 'pay') {
                 // $dt_carbon = Carbon::now()->addDays(3);
