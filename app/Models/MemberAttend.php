@@ -9,9 +9,17 @@ class MemberAttend extends Model
 {
     use HasFactory;
 
+    const CERT_PAYMENT_PROOF = 'certificate/';
+
     protected $fillable = [
         'attend_id',
         'member_id',
+        'certificate',
+        'payment_proof'
+    ];
+
+    protected $casts = [
+        'certificate' => 'boolean'
     ];
 
     public function attendance()
