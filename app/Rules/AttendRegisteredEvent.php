@@ -44,6 +44,10 @@ class AttendRegisteredEvent implements Rule
      */
     public function message()
     {
+        if (config('app.locale') == 'en') {
+            return 'You are not registered in this event';
+        }
+        
         return 'Anda tidak terdaftar dalam event ini';
     }
 }
