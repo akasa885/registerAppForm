@@ -24,6 +24,11 @@ class Attendance extends Model
         'with_verification_certificate' => 'boolean',
     ];
 
+    public function isCertNeedVerification()
+    {
+        return $this->with_verification_certificate;
+    }
+
     public function scopeOwnAttendance($query)
     {
         return $query->where('created_by', auth()->user()->id);
