@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Absensi '.$link?->title ?? 'Link Absensi Tidak Tersedia')
+@section('title', 'Absensi ' . $link?->title ?? 'Link Absensi Tidak Tersedia')
 
 @section('content')
     <main class="flex justify-center py-10 sm:container sm:mx-auto">
@@ -28,24 +28,41 @@
                         Absen {{ $link->title }}
                     </header>
 
-                    <div class="">
-
-                    </div>
+                    @if (Session::has('errors') || Session::has('info'))
+                        <div class="px-10 pt-5">
+                            <div class="@if (Session::has('errors')) bg-red-100 text-red-700 border-red-400
+                        @elseif(Session::has('info'))
+                            bg-blue-100 text-blue-700 border-blue-400 @endif border border-red-400 px-4 py-3 rounded relative"
+                                role="alert">
+                                @if (Session::has('errors'))
+                                    <strong class="font-bold">Error:</strong>
+                                @else
+                                    <strong class="font-bold">Info:</strong>
+                                @endif
+                                <ul class="list-disc list-inside">
+                                    @foreach ($errors->all() as $message)
+                                        <li>{{ $message }}</li>
+                                    @endforeach
+                                    <li>{{ Session::get('info') }}</li>
+                                </ul>
+                            </div>
+                        </div>
+                    @endif
                     <form class="w-full px-6 mb-5 space-y-6 sm:px-10 sm:space-y-8" method="POST"
-                        action="{{ route('attend.link', $attendance) }}">
+                        enctype="multipart/form-data" action="{{ route('attend.link', $attendance) }}">
                         @csrf
                         <input type="hidden" name="link" value="{{ $attendance->attendance_path }}">
 
                         <div class="flex flex-wrap">
                             <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('Alamat Email') }}:
+                                {{ __('attend.form.email') }}
                             </label>
 
                             <input id="input-2" type="email"
                                 class="form-input w-full @error('email') border-red-500 @enderror" name="email"
                                 value="{{ old('email') }}" required autofocus>
-                            <span class="text-gray-600 text-xs mt-2 w-full">Email yang didaftarkan pada
-                                acara!</span><br />
+                            <span
+                                class="text-gray-600 text-xs mt-2 w-full">{{ __('attend.form.email_helper') }}</span><br />
 
                             @error('email')
                                 <p class="text-red-500 text-xs italic mt-2">
@@ -56,15 +73,58 @@
 
                         <div class="flex flex-wrap">
                             <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('Nomor Telpon') }}:
+                                {{ __('attend.form.phone_number') }}
                             </label>
 
                             <input id="input-3" type="text"
                                 class="form-input w-full @error('no_telpon') border-red-500 @enderror" name="no_telpon"
                                 value="{{ old('no_telpon') }}" required autofocus>
-                            <span class="text-gray-600 text-xs mt-2 w-full">Nomor terdaftar pada acara!</span><br />
+                            <span
+                                class="text-gray-600 text-xs mt-2 w-full">{{ __('attend.form.phone_helper') }}</span><br />
 
                             @error('no_telpon')
+                                <p class="text-red-500 text-xs italic mt-2">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div class="flex flex-wrap">
+                            <label for="input-4" class="block w-full text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                                {{ __('attend.form.is_certificate') }} ?
+                            </label>
+
+                            <div class="row flex-fill">
+                                <label class="block mb-2 font-bold">
+                                    <input type="radio" name="is_certificate" value="no" checked
+                                        class="mr-2 leading-tight" onchange="toggleUploadForm(this)">
+                                    No
+                                </label>
+                                <label class="block mb-2 font-bold">
+                                    <input type="radio" name="is_certificate" value="yes" class="mr-2 leading-tight"
+                                        onchange="toggleUploadForm(this)">
+                                    Yes
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap hidden" id="uploadPay">
+                            <label for="input-4" class="block w-full text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                                {{ __('attend.form.upload_pay') }}
+                            </label>
+
+                            <input
+                                class="form-control block w-full
+                            px-3 py-1.5 text-base font-normal text-gray-700
+                            bg-white bg-clip-padding border border-solid border-gray-300 rounded
+                            transition ease-in-out m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                type="file" name="bukti" accept=".jpeg, .jpg, .png" id="formFile">
+
+                            <span
+                                class="text-gray-600 text-xs mt-2 w-full">{{ __('attend.form.upload_pay_helper') }}</span><br />
+
+                            @error('bukti')
                                 <p class="text-red-500 text-xs italic mt-2">
                                     {{ $message }}
                                 </p>
@@ -83,3 +143,17 @@
         </div>
     </main>
 @endsection
+
+
+@push('scripts')
+    <script>
+        function toggleUploadForm(radioButton) {
+            const uploadForm = document.getElementById("uploadPay");
+            if (radioButton.value === "yes") {
+                uploadForm.classList.remove("hidden");
+            } else {
+                uploadForm.classList.add("hidden");
+            }
+        }
+    </script>
+@endpush
