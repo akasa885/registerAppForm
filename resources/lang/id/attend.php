@@ -9,5 +9,7 @@ return [
         'is_certificate' => 'Dengan Sertifikat',
         'upload_pay' => 'Unggah Bukti Pembayaran',
         'upload_pay_helper' => 'Unggah bukti pembayaran untuk diverifikasi',
-    ]
+    ],
+    'already_attend' => 'Anda sudah melakukan absensi !',
+    'success' => 'Absensi berhasil dilakukan !',
 ];
