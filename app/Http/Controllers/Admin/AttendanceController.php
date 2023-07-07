@@ -10,16 +10,20 @@ use App\Models\Attendance;
 use App\Models\Link;
 
 use App\Http\Traits\GenerateTokenUniqueColumnTrait;
+use App\Http\Traits\FileUploadTrait;
 
 use App\Http\Requests\AttendanceRequest;
 use App\Http\Requests\AttendingRequest;
 
-use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class AttendanceController extends Controller
 {
-    use GenerateTokenUniqueColumnTrait;
+    use GenerateTokenUniqueColumnTrait, FileUploadTrait;
     /**
      * Display a listing of the resource.
      *
@@ -142,17 +146,31 @@ class AttendanceController extends Controller
 
     public function attending(AttendingRequest $request, Attendance $attendance)
     {
-        $validated = $request->validated();
-        // check if member already attend
-        $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
-        if ($member_attend) {
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors(['email' => 'Anda sudah melakukan absensi !']);
-        }
-        $MemberAttend = MemberAttend::create($validated);
+        try {
+            $validated = $request->validated();
+            $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
+            if ($member_attend) {
+                return back()
+                    ->withInput($request->only('email'))
+                    ->with('info', __('attend.already_attend'));
+            }
+            DB::beginTransaction();
+            $MemberAttend = MemberAttend::create($validated);
+            if ($validated['is_certificate'] && $MemberAttend) {
+                $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
+                $MemberAttend->save();
+            }
+            DB::commit();
+            return back()->with('success', __('attend.success'));
+        } catch (\Throwable $th) {
+            DB::rollback();
+            if (config('app.debug')) throw $th;
 
-        return back()->with('success', 'Anda berhasil melakukan absensi !');
+            Log::error('Error: AttendanceController - attending() | ');
+            Log::error($th->getMessage());
+
+            return back()->with('error', 'Something went wrong, failed attend');
+        }
     }
 
     public function dtb_attendance()
