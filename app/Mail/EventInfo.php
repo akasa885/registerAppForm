@@ -28,13 +28,7 @@ class EventInfo extends Mailable
 
     public function setSubject()
     {
-        if (config('app.locale') == 'id') {
-            $this->subject = 'Informasi acara';
-        }
-
-        if (config('app.locale') == 'en') {
-            $this->subject = 'Event Information';
-        }
+        $this->subject = __('mail.subject.event_info');
     }
 
     /**

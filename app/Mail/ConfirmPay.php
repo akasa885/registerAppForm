@@ -27,13 +27,7 @@ class ConfirmPay extends Mailable
     }
 
     public function setSubject() {
-        if (config('app.locale') == 'id') {
-            $this->subject = 'Upload Bukti Bayar';
-        }
-
-        if (config('app.locale') == 'en') {
-            $this->subject = 'Upload Payment Proof';
-        }
+        $this->subject = __('mail.subject.confirm_pay');
     }
 
     /**

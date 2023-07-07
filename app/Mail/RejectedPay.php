@@ -28,13 +28,7 @@ class RejectedPay extends Mailable
 
     public function setSubject()
     {
-        if (config('app.locale') == 'id') {
-            $this->subject = 'Bukti Pembayaran Anda Ditolak';
-        }
-
-        if (config('app.locale') == 'en') {
-            $this->subject = 'Your Payment Proof is Rejected';
-        }
+        $this->subject = __('mail.subject.reject_pay');
     }
 
     /**

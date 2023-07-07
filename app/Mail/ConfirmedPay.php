@@ -28,13 +28,7 @@ class ConfirmedPay extends Mailable
 
     public function setSubject()
     {
-        if (config('app.locale') == 'id') {
-            $this->subject = 'Terima Kasih Atas Pembayaran Anda';
-        }
-
-        if (config('app.locale') == 'en') {
-            $this->subject = 'Thank You For Your Payment';
-        }
+        $this->subject = __('mail.subject.confirmed_pay');
     }
 
     /**
