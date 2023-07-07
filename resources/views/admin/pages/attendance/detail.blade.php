@@ -87,6 +87,33 @@
 </div>
 @endsection
 
+@push('modal')
+{{-- ============================= Modal  Section================================ --}}
+<div class="modal fade" id="ModalViewPict" tabindex="-1" role="dialog" aria-labelledby="ModalViewPictLabel" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalViewPictLabel">Bukti Terupload: 
+                    <br> <span id="nameMember" style="font-size: .75em; font-weight: 700;"></span>
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="pict-payment">
+                    <input type="hidden" id="bukti_id_member" value="" name="id_member">
+                    <img src="{{ asset('/images/default/no-image.png') }}" id="bukti-img" class="img-fluid" height="50px" alt="bukti">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+@endpush
+
 @push('scripts')
 <script>
     $.ajaxSetup({
@@ -94,6 +121,14 @@
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
       }
     });
+    function viewProof(buktiAsset, name) {
+        buktiReset();
+        document.getElementById("nameMember").innerHTML = name;
+        document.getElementById("bukti-img").src = buktiAsset;
+    }
+    function buktiReset(){
+        document.getElementById("bukti-img").src = '{{ asset('/images/default/no-image.png') }}';
+    }
     $(function() {
         $('#data_attendances').DataTable({
             processing: true,
@@ -124,11 +159,29 @@
                     name: 'instansi'
                 },
                 {
-                    data: 'attend',
-                    name: 'attend'
+                    data: null,
+                    name: 'options'
                 },
             ],
             columnDefs: [
+                {
+                    targets: 1,
+                    render : function(data, type, row) {
+                        let html = '';
+                        html += '<div class="widget-content-left flex2">';
+                        html += '<div class="widget-heading">' + data + '</div>';
+                        html += '<div class="widget-subheading opacity-7">Sertifikat:';
+                            if (row.certificate) {
+                                html += '<span class="badge badge-success ml-2">Yes</span>';
+                            } else {
+                                html += '<span class="badge badge-danger ml-2">No</span>';
+                            }
+                        html += '</div>';
+                        html += '<div class="widget-subheading opacity-7">' + row.attend + '</div>';
+                        html += '</div>';
+                        return html;
+                    }
+                },
                 {
                     targets: 2,
                     render : function(data, type, row) {
@@ -138,6 +191,24 @@
                         html += '<div class="widget-heading"> Email: ' + row.email + '</div>';
                         html += '<div class="widget-subheading opacity-7">Nomor: ' + row.phone_number + '</div>';
                         html += '</div>';
+                        return html;
+                    }
+                },
+                {
+                    targets: -1,
+                    data: null,
+                    orderable: false,
+                    className: "text-end",
+                    render: function (data, type, row) {
+                        let html = '';
+                        if (row.options) {
+                            html += `<a href="javascript:void(0)"; onClick="${row.options}" aria-expanded="false" data-toggle="modal" data-target="#ModalViewPict" class="mb-2 mr-2 badge badge-pill badge-info" style="margin-right:0.2rem;">
+                                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                                        <i class="pe-7s-rocket fa-w-20"></i>
+                                    </span>
+                                    Bukti Bayar</a>`;
+                        }
+
                         return html;
                     }
                 }
