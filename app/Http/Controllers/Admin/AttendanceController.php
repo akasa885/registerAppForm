@@ -235,6 +235,12 @@ class AttendanceController extends Controller
         $data = Attendance::find($request->attend_id);
         $member_attend = $data->member_attend;
         $member_attend->load('member');
+        $member_attend->map(function ($item, $key){
+            $item->member->certificate = $item->certificate;
+            $item->member->payment_proof = $item->payment_proof;
+            $item->member->attend = $item->created_at;
+        });
+        // pluck member from member attend
         $member = $member_attend->pluck('member')->flatten();
         // add member attend to member
         foreach ($member_attend as $key => $value) {
@@ -244,6 +250,8 @@ class AttendanceController extends Controller
         if ($request->attendings == 'false') {
             $member = $data->link->members->diff($member);
         }
+
+        $member = $member->sortByDesc('attend');
 
         return DataTables::of($member)
             ->addIndexColumn()
@@ -260,9 +268,21 @@ class AttendanceController extends Controller
                 return $row->corporation;
             })
             ->addColumn('attend', function ($row) {
-                return '';
+                //diffForHumans
+                return $row->attend ? $row->attend->diffForHumans() : null;
             })
-            ->only(['full_name', 'email', 'phone_number', 'instansi', 'attend'])
+            ->editColumn('payment_proof', function ($row) {
+                return $row->payment_proof ? asset('storage/bukti_image/'.MemberAttend::CERT_PAYMENT_PROOF.$row->payment_proof) : null;
+            })
+            ->addColumn('options', function ($row) {
+                if ($row->payment_proof){
+                    return "viewProof('".asset('storage/bukti_image/'.MemberAttend::CERT_PAYMENT_PROOF.$row->payment_proof)."', '".$row->full_name."')";
+                };
+
+                return false;
+            })
+            ->only(['full_name', 'email', 'phone_number', 'instansi', 'attend', 'certificate', 'payment_proof', 'options'])
+            ->rawColumns(['payment_proof'])
             ->make(true);
 
 
