@@ -350,9 +350,16 @@ class LinkController extends Controller
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                       <i class=\"pe-7s-rocket fa-w-20\"></i>
                   </span>
-                  Bukti Bayar
+                  Cek Bukti Bayar
                 </a>";
-            }else{
+            } else if ($data->invoices->status == 2) {
+                $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('".asset('storage/bukti_image/'.$data->bukti_bayar)."');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                      <i class=\"pe-7s-rocket fa-w-20\"></i>
+                  </span>
+                  Lihat Bukti Bayar
+                </a>";
+            } else{
                 $edit = '';
             }
             return $edit;
