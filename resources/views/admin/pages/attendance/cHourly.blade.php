@@ -10,7 +10,7 @@
                     <div class="nav">
                         <button type="submit" name="status" value="create"
                             class="border-0 btn-transition btn btn-outline-success">Buat</button>
-                        <a href="{{ route('admin.users.view') }}"
+                        <a href="{{ route('admin.attendance.view') }}"
                             class="border-0 btn-transition  btn btn-outline-danger">Cancel</a>
 
                     </div>
