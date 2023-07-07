@@ -89,6 +89,7 @@
                             @enderror
                         </div>
 
+                        @if ($attendance->isCertNeedVerification())
                         <div class="flex flex-wrap">
                             <label for="input-4" class="block w-full text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                                 {{ __('attend.form.is_certificate') }} ?
@@ -130,6 +131,9 @@
                                 </p>
                             @enderror
                         </div>
+                        @else
+                            <input type="hidden" name="is_certificate" value="no">
+                        @endif
 
                         <div class="flex flex-wrap">
                             <button type="submit"
