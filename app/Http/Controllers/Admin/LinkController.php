@@ -332,6 +332,8 @@ class LinkController extends Controller
     public function payMemberList($data)
     {
         return DataTables::of($data)
+        ->addIndexColumn()
+        ->removeColumn('created_at', 'updated_at')
         ->addColumn("status", function($data) {
             $date = date("Y-m-d");
             if($data->invoices->status == 0 ){
@@ -343,6 +345,9 @@ class LinkController extends Controller
             if($data->invoices->status == 2){
                 return '<div class="mb-2 mr-2 badge badge-success">'.Invoice::INVO_STATUS[2].'</div>';
             }
+        })
+        ->addColumn('registered', function($data) {
+            return date("d/M/Y, H:i", strtotime($data->created_at)).' WIB';
         })
         ->addColumn("options", function($data) {
             if ($data->invoices->status == 1) {
@@ -371,6 +376,11 @@ class LinkController extends Controller
     public function freeMemberList($data)
     {
         return DataTables::of($data)
+        ->addIndexColumn()
+        ->removeColumn('created_at', 'updated_at')
+        ->addColumn('registered', function($data) {
+            return date("d/M/Y, H:i", strtotime($data->created_at)).' WIB';
+        })
         ->addColumn("status", function($data) {
             $date = date("Y-m-d");
             return '<div class="mb-2 mr-2 badge badge-success">Terdaftar</div>';

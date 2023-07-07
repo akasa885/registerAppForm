@@ -94,7 +94,7 @@
             ajax: "{{route('admin.link.dtable.member', ['id' => $id])}}",
             columns: [{
                     data: 'full_name',
-                    name: 'nama lengkap'
+                    name: 'full_name'
                 },
                 {
                     data: 'email',
@@ -112,6 +112,19 @@
                     data: 'options',
                     name: 'Options'
                 }
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    render : function(data, type, row) {
+                        let html = '';
+                        html += '<div class="widget-content-left flex2">';
+                        html += '<div class="widget-heading">' + data + '</div>';
+                        html += '<div class="widget-subheading opacity-7" style="font-size:.85em;">Reg: ' + row.registered + '</div>';
+                        html += '</div>';
+                        return html;
+                    }
+                },
             ]
         });
     });
