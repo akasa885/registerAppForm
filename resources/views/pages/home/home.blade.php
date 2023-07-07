@@ -19,7 +19,7 @@
                             $close = true;
                         }
                     @endphp
-                    
+
                     <div class="flex-1 p-4">
                         <a href="{{ route('form.link.view', ['link' => $item->link_path]) }}">
                             <div class="flex flex-col h-full bg-white rounded-lg shadow-lg">
@@ -39,15 +39,15 @@
                                         @if (!$open && !$close)
                                             <span
                                                 class="row-span-1 w-50 inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">Open
-                                                Registration : {{ date('d/m/y', strtotime($item->active_from)) }}</span>
+                                                Pertanyaan : {{ date('d/m/y', strtotime($item->active_from)) }}</span>
                                         @elseif($open && !$close)
                                             <span
                                                 class="row-span-1 w-50 inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">Close
-                                                Registration : {{ date('d/m/y', strtotime($item->active_until)) }}</span>
+                                                Pertanyaan : {{ date('d/m/y', strtotime($item->active_until)) }}</span>
                                         @else
                                             <span
                                                 class="row-span-1 w-50 inline-block bg-gray-200 rounded-full px-3 py-1 text-xs font-semibold text-gray-700 mr-2 mb-2">Close
-                                                Registration : {{ date('d/m/y', strtotime($item->active_until)) }}</span>
+                                                Pertanyaan : {{ date('d/m/y', strtotime($item->active_until)) }}</span>
                                         @endif
                                     </div>
                                 </div>
