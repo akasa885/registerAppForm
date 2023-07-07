@@ -37,6 +37,7 @@
                 <table id="data_users_side" class="mb-0 table display" style="width:100%">
                     <thead>
                         <tr>
+                            <th style="min-width:50px">#</th>
                             <th style="width: 30%">Nama Lengkap</th>
                             <th style="width: 20%">Email</th>
                             <th style="width: 20%">Instansi</th>
@@ -90,9 +91,13 @@
         $('#data_users_side').DataTable({
             processing: true,
             serverSide: true,
-            order: [[ 3, 'desc' ]],
             ajax: "{{route('admin.link.dtable.member', ['id' => $id])}}",
-            columns: [{
+            columns: [
+                {
+                    data: 'DT_RowIndex',
+                    name: 'DT_RowIndex'
+                },
+                {
                     data: 'full_name',
                     name: 'full_name'
                 },
@@ -115,7 +120,7 @@
             ],
             columnDefs: [
                 {
-                    targets: 0,
+                    targets: 1,
                     render : function(data, type, row) {
                         let html = '';
                         html += '<div class="widget-content-left flex2">';

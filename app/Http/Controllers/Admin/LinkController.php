@@ -331,6 +331,8 @@ class LinkController extends Controller
 
     public function payMemberList($data)
     {
+        // sort desc id
+        $data = $data->sortByDesc('id');
         return DataTables::of($data)
         ->addIndexColumn()
         ->removeColumn('created_at', 'updated_at')
@@ -375,6 +377,7 @@ class LinkController extends Controller
 
     public function freeMemberList($data)
     {
+        $data = $data->sortByDesc('id');
         return DataTables::of($data)
         ->addIndexColumn()
         ->removeColumn('created_at', 'updated_at')
