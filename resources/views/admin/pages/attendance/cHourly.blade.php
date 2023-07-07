@@ -59,6 +59,19 @@
                         <input type="datetime-local" name="datetime_end" id="input-date-2" format class="form-control-sm form-control">
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="input-date-2" class="form-label fw-bolder mb-0">Konfirmasi Sertifikat ?</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-check">
+                            <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
+                            <label class="form-check-label" for="confirm-cert">
+                              Ya
+                            </label>
+                          </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
