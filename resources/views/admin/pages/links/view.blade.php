@@ -38,8 +38,8 @@
                                 <button type="button" aria-haspopup="true" aria-expanded="false" data-toggle="dropdown"
                                     class="dropdown-toggle btn btn-outline-success">Add Link Pertanyaan</button>
                                 <div tabindex="-1" role="menu" aria-hidden="true" class="dropdown-menu">
-                                    <a href="{{ route('admin.link.create') }}" tabindex="0"
-                                        class="dropdown-item">Pertanyaan berbayar</a>
+                                    {{-- <a href="{{ route('admin.link.create') }}" tabindex="0"
+                                        class="dropdown-item">Pertanyaan berbayar</a> --}}
                                     <a href="{{ route('admin.link.create.free') }}" tabindex="0"
                                         class="dropdown-item">Pertanyaan gratis</a>
                                 </div>

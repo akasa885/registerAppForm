@@ -134,7 +134,7 @@
 
                         <div class="flex flex-wrap">
                             <label for="input-5" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('Pertanyaan 2') }}:
+                                {{ __('Pertanyaan 2 (Opsional)') }}:
                             </label>
 
                             <textarea name="pertanyaan2" id="input-5" cols="30"
@@ -152,7 +152,7 @@
 
                         <div class="flex flex-wrap">
                             <label for="input-6" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('Pertanyaan 3') }}:
+                                {{ __('Pertanyaan 3 (Opsional)') }}:
                             </label>
 
                             <textarea name="pertanyaan3" id="input-6" cols="30"
