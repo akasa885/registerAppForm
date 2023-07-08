@@ -37,17 +37,17 @@ class FormController extends Controller
             DB::beginTransaction();
             $link_coll = Link::where('link_path', $validated['link'])->first();
             $current_member = $link_coll->members;
-            if (!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])) {
-                if (config('app.locale') == 'id') {
-                    return back()
-                        ->withInput($request->all())
-                        ->withErrors(['email' => 'Email yang anda masukkan sudah memberikan pertanyaan dalam event ini!']);
-                } else {
-                    return back()
-                        ->withInput($request->all())
-                        ->withErrors(['email' => 'The email you entered is already given question for this event!']);
-                }
-            }
+            // if (!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])) {
+            //     if (config('app.locale') == 'id') {
+            //         return back()
+            //             ->withInput($request->all())
+            //             ->withErrors(['email' => 'Email yang anda masukkan sudah memberikan pertanyaan dalam event ini!']);
+            //     } else {
+            //         return back()
+            //             ->withInput($request->all())
+            //             ->withErrors(['email' => 'The email you entered is already given question for this event!']);
+            //     }
+            // }
             if ($link_coll->has_member_limit) {
                 if ($link_coll->link_type == 'free') {
                     if (!$check_quota = $this->isRegistrationMemberQuota($current_member, $link_coll->member_limit)) {
