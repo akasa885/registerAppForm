@@ -22,7 +22,7 @@ class ExportController extends Controller
             return Excel::download($member_export, $filename);
         } catch (\Throwable $th) {
             if(config('app.debug')) throw $th;
-
+            \Log::error($th);
             return abort(404, 'Exportable model not found');
         }
     }
@@ -37,7 +37,7 @@ class ExportController extends Controller
             return Excel::download($attendance_export, $filename);
         } catch (\Throwable $th) {
             if (config('app.debug')) throw $th;
-
+            \Log::error($th);
             return abort(404, 'Exportable model not found');
         }
     }
