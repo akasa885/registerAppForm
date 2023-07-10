@@ -27,7 +27,7 @@
                 </div>
                 <div class="btn-actions-pane-right">
                     <div class="nav">
-                        <a href="{{ route('admin.export.member-export', ['link' => $event]) }}" class="border-0 btn-transition btn btn-outline-primary">Download Data Absensi</a>
+                        <a href="{{ route('admin.export.attendance-export', ['attendance' => $attendance]) }}" class="border-0 btn-transition btn btn-outline-primary">Download Data Absensi</a>
                         <a href="{{ route('admin.link.view') }}" class="border-0 btn-transition  btn btn-outline-danger">Kembali</a>
                     </div>
                 </div>
