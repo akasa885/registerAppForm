@@ -45,7 +45,7 @@ class attendanceOfEvent implements FromCollection, WithMapping, WithProperties, 
         $members->map(function ($item, $key){
             // $item->attending = false;
             // if not in member, add attending false
-            if ($this->member->contains('id', $item->id)) {
+            if (!$this->member->contains('member_id', $item->id)) {
                 $item->attending = false;
                 $item->certificate = false;
                 $item->payment_proof = null;
