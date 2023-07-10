@@ -7,6 +7,8 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Link;
 
 use App\Exports\memberOfEvent;
+use App\Exports\attendanceOfEvent;
+use App\Models\Attendance;
 
 class ExportController extends Controller
 {
@@ -20,6 +22,22 @@ class ExportController extends Controller
             return Excel::download($member_export, $filename);
         } catch (\Throwable $th) {
             if(config('app.debug')) throw $th;
+
+            return abort(404, 'Exportable model not found');
+        }
+    }
+
+    public function attendanceExport(Attendance $attendance)
+    {
+        try {
+            $attendance_export = new attendanceOfEvent($attendance);
+            $attendance_export->exportProcess();
+
+            $filename = $attendance_export->getFilename();
+            return Excel::download($attendance_export, $filename);
+        } catch (\Throwable $th) {
+            if (config('app.debug')) throw $th;
+
             return abort(404, 'Exportable model not found');
         }
     }
