@@ -82,7 +82,7 @@
                     </div>
                     <div class="col-md-9">
                         <div class="form-check">
-                            <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
+                            <input class="form-check-input" name="mail_confirm" type="checkbox" id="confirm-cert">
                             <label class="form-check-label" for="confirm-email">
                                 Ya
                             </label>
