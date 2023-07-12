@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
+use App\Mail\ConfirmationAttendances;
+
 use App\Models\MemberAttend;
 use App\Models\Attendance;
+use App\Models\Email;
 use App\Models\Link;
 
 use App\Http\Traits\GenerateTokenUniqueColumnTrait;
@@ -14,9 +17,10 @@ use App\Http\Traits\FileUploadTrait;
 
 use App\Http\Requests\AttendanceRequest;
 use App\Http\Requests\AttendingRequest;
-
+use App\Models\Member;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -160,6 +164,11 @@ class AttendanceController extends Controller
                 $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
                 $MemberAttend->save();
             }
+
+            if ($attendance->confirmation_mail) {
+                $this->sendConfirmationAttendanceMail($attendance, $validated['member_id']);
+            }
+
             DB::commit();
             return back()->with('success', __('attend.success'));
         } catch (\Throwable $th) {
@@ -170,6 +179,33 @@ class AttendanceController extends Controller
             Log::error($th->getMessage());
 
             return back()->with('error', 'Something went wrong, failed attend');
+        }
+    }
+
+    private function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id)
+    {
+        try {
+            $data = [];
+            $member = Member::find($member_id);
+            $data['name'] = $member->full_name;
+            $data['email'] = $member->email;
+            $data['phone'] = $member->contact_number;
+            $data['event'] = $attendance->link->title;
+            $data['message'] = $attendance->confirmation_mail;
+
+            $from_mail = Email::EMAIL_FROM;
+
+            Mail::to($data['email'])->send(new ConfirmationAttendances($data, $from_mail));
+            $mail_db = new Email;
+            $mail_db->send_from = $from_mail;
+            $mail_db->send_to = $data['email'];
+            $mail_db->message = $attendance->confirmation_mail;
+            $mail_db->user_id = $member->id;
+            $mail_db->type_email = Email::TYPE_EMAIL[4];
+            $mail_db->sent_count = 1;
+            $mail_db->save();
+        } catch (\Throwable $th) {
+            throw $th;
         }
     }
 
