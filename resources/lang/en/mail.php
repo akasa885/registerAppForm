@@ -9,4 +9,12 @@ return [
         'reminder' => 'Event Reminder',
         'attendance_confirmation' => 'Thank you for filling out the attendance form',
     ],
+    'title' => [
+        'event_info' => 'Your Event Information',
+        'confirmed_pay' => 'Your Payment Has Been Confirmed',
+        'confirm_pay' => 'Confirm Payment Proof',
+        'reject_pay' => 'Your Payment Is Rejected',
+        'reminder' => 'Your Event Reminder',
+        'attendance_confirmation' => 'Your Attendance Information',
+    ],
 ];

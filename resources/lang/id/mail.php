@@ -9,4 +9,12 @@ return [
         'reminder' => 'Reminder Acara',
         'attendance_confirmation' => 'Terima kasih telah mengisi form kehadiran',
     ],
+    'title' => [
+        'event_info' => 'Informasi Acara Anda',
+        'confirmed_pay' => 'Pembayaran Anda Telah Dikonfirmasi',
+        'confirm_pay' => 'Konfirmasi Bukti Bayar',
+        'reject_pay' => 'Pembayaran Anda Ditolak',
+        'reminder' => 'Reminder Acara Anda',
+        'attendance_confirmation' => 'Informasi Kehadiran Anda',
+    ],
 ];
