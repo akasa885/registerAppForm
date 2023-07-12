@@ -14,6 +14,7 @@ class Attendance extends Model
         'link_id',
         'active_from',
         'active_until',
+        'confirmation_mail',
         'with_verification_certificate',
         'created_by',
     ];
