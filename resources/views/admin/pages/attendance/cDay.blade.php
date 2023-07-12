@@ -72,8 +72,8 @@
                             Terkonfirmasi</label>
                     </div>
                     <div class="col-md-9">
-                        <textarea required name="confirmatiomn_mail" placeholder="informasi acara" class="my-editor form-control"
-                            id="my-editor-1" cols="30" rows="10">{!! old('confirmatiomn_mail') !!}</textarea>
+                        <textarea required name="confirmation_mail" placeholder="informasi acara" class="my-editor form-control"
+                            id="my-editor-1" cols="30" rows="10">{!! old('confirmation_mail') !!}</textarea>
                     </div>
                 </div>
                 <div class="row mb-3">
