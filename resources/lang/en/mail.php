@@ -7,5 +7,6 @@ return [
         'confirm_pay' => 'Upload Payment Proof',
         'reject_pay' => 'Your Payment Proof Is Rejected',
         'reminder' => 'Event Reminder',
+        'attendance_confirmation' => 'Thank you for filling out the attendance form',
     ],
 ];

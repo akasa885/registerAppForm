@@ -7,5 +7,6 @@ return [
         'confirm_pay' => 'Upload Bukti Bayar',
         'reject_pay' => 'Bukti Pembayaran Anda Ditolak',
         'reminder' => 'Reminder Acara',
+        'attendance_confirmation' => 'Terima kasih telah mengisi form kehadiran',
     ],
 ];
