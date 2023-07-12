@@ -37,7 +37,9 @@ class AttendanceRequest extends FormRequest
         $roles = [
             'attendance_type' => ['required', 'string', 'in:day,hourly'],
             'selected_event' => ['required', 'string', 'exists:links,link_path'],
-            'cert_confirm' => ['sometimes']
+            'cert_confirm' => ['sometimes'],
+            'mail_confirm' => ['sometimes'],
+            'confirmation_mail' => ['required', 'string', 'max:2000']
         ];
 
         switch ($type){
@@ -102,6 +104,10 @@ class AttendanceRequest extends FormRequest
 
         if (isset($validated['cert_confirm'])) {
             $validated['with_verification_certificate'] = true;
+        }
+
+        if (!isset($validated['mail_confirm'])) {
+            unset($validated['confirmation_mail']);
         }
         
         unset($validated['selected_event']);
