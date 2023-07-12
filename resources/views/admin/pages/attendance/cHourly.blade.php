@@ -106,13 +106,14 @@
 </div>
 
 @push('scripts')
-    <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+    <script src="{{ asset('vendor/ckeditor/ckeditor.js') }}"></script>
     <script type="text/javascript">
         var options = {
             filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
             filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
             filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=',
+            extraPlugins: 'simplebutton'
         };
         CKEDITOR.replace('my-editor-1', options);
     </script>
