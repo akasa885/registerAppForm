@@ -22,10 +22,11 @@
         <div class="card mb-3">
             <div class="card-body">
                 @if ($message = Session::get('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>{{ $message }}</strong>
-                    <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ $message }}</strong>
+                        <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
                 @endif
                 @if (count($errors) > 0)
                     <div class="alert alert-danger">
@@ -61,7 +62,32 @@
                         <label for="input-date" class="form-label fw-bolder mb-0">Pilih Tanggal : </label>
                     </div>
                     <div class="col-md-9">
-                        <input type="date" name="date" id="input-date-1" format class="form-control-sm form-control">
+                        <input type="date" name="date" id="input-date-1" format
+                            class="form-control-sm form-control">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="input-date-2" class="form-label fw-bolder mb-0">Pesan Email Absensi
+                            Terkonfirmasi</label>
+                    </div>
+                    <div class="col-md-9">
+                        <textarea required name="confirmatiomn_mail" placeholder="informasi acara" class="my-editor form-control"
+                            id="my-editor-1" cols="30" rows="10">{!! old('confirmatiomn_mail') !!}</textarea>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="input-date-2" class="form-label fw-bolder mb-0">Terkonfirmasi Email ?</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-check">
+                            <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
+                            <label class="form-check-label" for="confirm-email">
+                                Ya
+                            </label>
+                        </div>
+                        <div id="email-helper" class="form-text">Jika di centang maka email akan terkirim ke peserta</div>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -72,12 +98,25 @@
                         <div class="form-check">
                             <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
                             <label class="form-check-label" for="confirm-cert">
-                              Ya
+                                Ya
                             </label>
-                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+    <script type="text/javascript">
+        var options = {
+            filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+            filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+            filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+        };
+        CKEDITOR.replace('my-editor-1', options);
+    </script>
+@endpush
