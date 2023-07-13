@@ -14,4 +14,5 @@ return [
     ],
     'already_attend' => 'You have already attended !',
     'success' => 'Attendance successful !',
+    'success_with_email' => ' , and attendance information email has been sent to :email'
 ];

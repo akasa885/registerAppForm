@@ -14,4 +14,5 @@ return [
     ],
     'already_attend' => 'Anda sudah melakukan absensi !',
     'success' => 'Absensi berhasil dilakukan !',
+    'success_with_email' => ' , dan email informasi absensi telah dikirim ke :email'
 ];
