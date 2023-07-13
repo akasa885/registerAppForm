@@ -54,6 +54,24 @@
                         <input type="hidden" name="link" value="{{ $attendance->attendance_path }}">
 
                         <div class="flex flex-wrap">
+                            <label for="input-1" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                                {{ __('attend.form.full_name') }}
+                            </label>
+
+                            <input id="input-1" type="text"
+                                class="form-input w-full @error('full_name') border-red-500 @enderror" name="full_name"
+                                value="{{ old('full_name') }}" autofocus>
+                            <span
+                                class="text-gray-600 text-xs mt-2 w-full">{{ __('attend.form.full_name_helper') }}</span><br />
+
+                            @error('full_name')
+                                <p class="text-red-500 text-xs italic mt-2">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <div class="flex flex-wrap">
                             <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                                 {{ __('attend.form.email') }}
                             </label>
