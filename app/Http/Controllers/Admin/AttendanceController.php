@@ -159,6 +159,13 @@ class AttendanceController extends Controller
                     ->with('info', __('attend.already_attend'));
             }
             DB::beginTransaction();
+
+            if (isset($validated['full_name'])) {
+                $member = Member::find($validated['member_id']);
+                $member->full_name = $validated['full_name'];
+                $member->save();
+            }
+            
             $MemberAttend = MemberAttend::create($validated);
             if ($validated['is_certificate'] && $MemberAttend) {
                 $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
