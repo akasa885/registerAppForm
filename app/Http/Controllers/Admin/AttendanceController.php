@@ -152,6 +152,7 @@ class AttendanceController extends Controller
     {
         try {
             $validated = $request->validated();
+            $member = Member::find($validated['member_id']);
             $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
             if ($member_attend) {
                 return back()
@@ -161,23 +162,25 @@ class AttendanceController extends Controller
             DB::beginTransaction();
 
             if (isset($validated['full_name'])) {
-                $member = Member::find($validated['member_id']);
                 $member->full_name = $validated['full_name'];
                 $member->save();
             }
-            
+
             $MemberAttend = MemberAttend::create($validated);
             if ($validated['is_certificate'] && $MemberAttend) {
                 $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
                 $MemberAttend->save();
             }
 
+            $email = false;
             if ($attendance->confirmation_mail) {
                 $this->sendConfirmationAttendanceMail($attendance, $validated['member_id']);
+                $email = true;
             }
+            $emailText = $email ? __('attend.success_with_email', ['email' => $member->email]) : '';
 
             DB::commit();
-            return back()->with('success', __('attend.success'));
+            return back()->with('success', __('attend.success').$emailText);
         } catch (\Throwable $th) {
             DB::rollback();
             if (config('app.debug')) throw $th;
