@@ -26,6 +26,7 @@ class AttendingRequest extends FormRequest
     public function rules()
     {
         return [
+            'full_name' => ['bail', 'nullable', 'string', 'max:255'],
             'email' => ['bail', 'required', 'email', 'max:255', 'exists:members,email', new AttendRegisteredEvent($this->attendance)],
             'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', 'exists:members,contact_number'],
             'is_certificate' => ['required', 'in:yes,no'],
@@ -36,6 +37,7 @@ class AttendingRequest extends FormRequest
     public function attributes()
     {
         return [
+            'full_name' => __('attend.form.full_name'),
             'email' => __('attend.form.email'),
             'no_telpon' => __('attend.form.phone_number'),
             'is_certificate' => __('attend.form.is_certificate'),
@@ -51,6 +53,10 @@ class AttendingRequest extends FormRequest
     public function validated()
     {
         $validated = parent::validated();
+        if (!$validated['full_name']) {
+            unset($validated['full_name']);
+        }
+        
         $validated['is_certificate'] = $validated['is_certificate'] == 'yes' ? true : false;
         $validated['certificate'] = $validated['is_certificate'];
         $validated['attend_id'] = $this->attendance->id;
