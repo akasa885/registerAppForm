@@ -119,7 +119,7 @@
             filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
             filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='+ '{{ csrf_token() }}',
             removePlugins: 'easyimage',
-            extraPlugins: 'simplebutton, image',
+            extraPlugins: 'simplebutton, image, justify',
 
         };
         CKEDITOR.replace('my-editor-1', options);
