@@ -57,6 +57,10 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         Route::prefix('export')->name('export.')->group(__DIR__.'/v1/export.php');
         // < -------------------------------Export ----------------------------------------- >
 
+        // < ------------------------------- Ajax Admin ----------------------------------------- >
+        Route::prefix('ajax')->name('ajax.')->group(__DIR__.'/v1/admin/ajax.php');
+        // < ------------------------------- Ajax Admin ----------------------------------------- >
+
         // < ------------------------------- Members Admin ----------------------------------------- >
         Route::prefix('member')->name('member.')->group(function(){
             Route::get('/pay-sheet/{id}', [MemberController::class, 'viewSheet'])->name('lihat.bukti');
