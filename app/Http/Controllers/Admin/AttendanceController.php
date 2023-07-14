@@ -74,6 +74,7 @@ class AttendanceController extends Controller
         } catch (\Throwable $th) {
             if (config('app.debug'))
                 throw $th;
+            \Log::error($th);
             
             return back()->with('error', 'Something went wrong, failed create attendance');
         }
