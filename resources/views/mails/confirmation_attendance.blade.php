@@ -50,6 +50,22 @@
                             <p>{!! $data['message'] !!}</p>
                         </td>
                     </tr>
+                    @if ($data['link_path'] == "2OWya")
+                    <tr>
+                        <td>
+                            <table class="wrapper" width="100%" style="border:none;">
+                                <tr>
+                                    <td style="text-align:center;">
+                                        <a href="{{ $urlComfirmation }}" target="_blank"
+                                                    style="border:none; border-radius: 3px; box-sizing: border-box; color: #ffffff; cursor: pointer; display: inline-block; font-size: 13px; font-weight: bold; margin: 0; padding: 12px 25px; text-decoration: none; text-transform: capitalize; background-color: #f25454; border-color: #f25454; ">
+                                                {{__('mail.button.attendance_confirmation')}}
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <td style="border:none;">
                             <table class="wrapper" width="100%" style="border:none;">
