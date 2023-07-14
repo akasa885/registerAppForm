@@ -17,4 +17,7 @@ return [
         'reminder' => 'Reminder Acara Anda',
         'attendance_confirmation' => 'Informasi Kehadiran Anda',
     ],
+    'button' => [
+        'attendance_confirmation' => 'Konfirmasi Data Sertifikat',
+    ]
 ];

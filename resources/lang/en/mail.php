@@ -17,4 +17,7 @@ return [
         'reminder' => 'Your Event Reminder',
         'attendance_confirmation' => 'Your Attendance Information',
     ],
+    'button' => [
+        'attendance_confirmation' => 'Confirm Certificate Data',
+    ]
 ];
