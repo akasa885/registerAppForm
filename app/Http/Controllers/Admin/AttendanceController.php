@@ -202,6 +202,7 @@ class AttendanceController extends Controller
             $data['phone'] = $member->contact_number;
             $data['event'] = $attendance->link->title;
             $data['message'] = $attendance->confirmation_mail;
+            $data['link_path'] = $attendance->link->link_path;
 
             $from_mail = Email::EMAIL_FROM;
 
