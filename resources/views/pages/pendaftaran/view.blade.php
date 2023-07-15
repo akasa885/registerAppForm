@@ -13,6 +13,9 @@
                 {{ $message }}
                 <button type="button" class="btn-close box-content w-4 h-4 p-1 ml-auto text-yellow-900 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-yellow-900 hover:opacity-75 hover:no-underline" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
+            @elseif(isset($notYet))
+             <!-- link register belum dibuka : H3-->
+             <h3 class="font-semibold p-10 sm:mx-auto"> Link Register Not Open Yet </h3>
             @elseif(isset($notFound))
                 @include('pages.pendaftaran.not_found_link')
             @elseif($show)

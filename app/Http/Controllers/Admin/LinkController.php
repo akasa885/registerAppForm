@@ -189,6 +189,7 @@ class LinkController extends Controller
     {
         $data = Link::where('link_path', $link)->first();
         $expired = true;
+        $notYet = false;
         $date = date("Y-m-d");
         if($data != null){
             if($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ){
@@ -196,6 +197,9 @@ class LinkController extends Controller
                 $data->viewed_count += 1;
                 $data->save();
             }
+        } else if ($date < date("Y-m-d", strtotime($data->active_from))) {
+            $notYet = true;
+            return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true , 'notYet' => $notYet]);
         } else {
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
