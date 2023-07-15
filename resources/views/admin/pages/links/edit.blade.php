@@ -39,6 +39,7 @@
             format: 'dd-mm-yyyy'
         });
     });
+    var type_image = 'type=Images&_token=' + '{{ csrf_token() }}';
     var options = {
         cloudServices_tokenUrl: '',
         filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
