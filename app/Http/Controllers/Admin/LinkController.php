@@ -223,7 +223,11 @@ class LinkController extends Controller
     public function dtb_link(User $user)
     {
         $id = auth()->id();
-        $data = $this->IncludeLink($user, $id);
+        if ($user->role == 'super admi') {
+            $data = Link::all();
+        } else {
+            $data = $this->IncludeLink($user, $id);
+        }
         // sort data by id desc
         $data = $data->sortByDesc('id');
         // $data = Link::withCount('members')->get();
