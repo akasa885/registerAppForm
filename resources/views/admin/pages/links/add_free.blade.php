@@ -129,7 +129,7 @@
 
 @push('scripts')
     <script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
-    <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
+    <script src="{{ asset('vendor/ckeditor/ckeditor.js') }}"></script>
     <script type="text/javascript">
         $('#lfm').filemanager('image');
         $(document).ready(function() {
@@ -141,10 +141,14 @@
             });
         });
         var options = {
+            cloudServices_tokenUrl: '',
             filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-            filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+            filebrowserImageUploadUrl: '{{ route("admin.ajax.ck-upload-image")."?"}}' + type_image,
             filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='+ '{{ csrf_token() }}',
+            removePlugins: 'easyimage',
+            extraPlugins: 'simplebutton, image, justify',
+
         };
 
         CKEDITOR.replace('my-editor-1', options);
