@@ -223,6 +223,7 @@ class LinkController extends Controller
     public function dtb_link(User $user)
     {
         $id = auth()->id();
+        $user = auth()->user();
         if ($user->role == 'super admin') {
             $data = Link::all();
         } else {
