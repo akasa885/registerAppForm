@@ -225,7 +225,7 @@ class LinkController extends Controller
         $id = auth()->id();
         $user = auth()->user();
         if ($user->role == 'super admin') {
-            $data = Link::all();
+            $data = Link::latestFirst()->withCount('members')->get();
         } else {
             $data = $this->IncludeLink($user, $id);
         }
