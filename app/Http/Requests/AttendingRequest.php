@@ -27,10 +27,11 @@ class AttendingRequest extends FormRequest
     {
         return [
             'full_name' => ['bail', 'nullable', 'string', 'max:255'],
-            'email' => ['bail', 'required', 'email', 'max:255', 'exists:members,email', new AttendRegisteredEvent($this->attendance)],
+            'email' => ['bail', 'required', 'email', 'max:255', new AttendRegisteredEvent($this->attendance)],
             'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', 'exists:members,contact_number'],
             'is_certificate' => ['required', 'in:yes,no'],
-            'bukti' => ['required_if:is_certificate,yes', 'image', 'max:10240']
+            'bukti' => ['required_if:is_certificate,yes', 'image', 'max:10240'],
+            'corporation' => ['nullable', 'string', 'max:255'],
         ];
     }
 
@@ -41,7 +42,8 @@ class AttendingRequest extends FormRequest
             'email' => __('attend.form.email'),
             'no_telpon' => __('attend.form.phone_number'),
             'is_certificate' => __('attend.form.is_certificate'),
-            'bukti' => __('attend.form.upload_pay')
+            'bukti' => __('attend.form.upload_pay'),
+            'corporation' => __('attend.form.corporation'),
         ];
     }
 
@@ -53,6 +55,7 @@ class AttendingRequest extends FormRequest
     public function validated()
     {
         $validated = parent::validated();
+        $memberS = null;
         if (!$validated['full_name']) {
             unset($validated['full_name']);
         }
@@ -60,7 +63,22 @@ class AttendingRequest extends FormRequest
         $validated['is_certificate'] = $validated['is_certificate'] == 'yes' ? true : false;
         $validated['certificate'] = $validated['is_certificate'];
         $validated['attend_id'] = $this->attendance->id;
-        $validated['member_id'] = $this->attendance->link->members()->where('email', $validated['email'])->first()->id;
+        if ($this->attendance->allow_non_register) {
+            $link = $this->attendance->link;
+            $memberS = $link->members()->where('email', $validated['email'])->first();
+            if (!$memberS) {
+                $memberS = $link->members()->create([
+                    'full_name' => $validated['full_name'],
+                    'email' => $validated['email'],
+                    'contact_number' => $validated['no_telpon'],
+                    'corporation' => $validated['corporation'],
+                ]);
+            }
+            
+        } else {
+            $memberS = $this->attendance->link->members()->where('email', $validated['email'])->first();
+        }
+        $validated['member_id'] = $memberS->id;
         unset($validated['email']);
         unset($validated['no_telpon']);
 

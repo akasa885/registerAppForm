@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Link;
+use PhpOffice\PhpSpreadsheet\Style\ConditionalFormatting\Wizard\Errors;
 
 class AttendanceRequest extends FormRequest
 {
@@ -100,7 +101,7 @@ class AttendanceRequest extends FormRequest
             unset($validated['datetime_start']);
             unset($validated['datetime_end']);
         }
-        $validated['link_id'] = Link::where('link_path', $validated['selected_event'])->first()->id;
+        $validated['link_id'] = Link::where('link_path', $validated['selected_event'])->first();
         $validated['created_by'] = auth()->user()->id;
 
         if (isset($validated['cert_confirm'])) {
