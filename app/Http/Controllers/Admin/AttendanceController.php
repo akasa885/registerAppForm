@@ -64,6 +64,10 @@ class AttendanceController extends Controller
             if (isset($validated['mail_confirm']) && (!$validated['confirmation_mail'])) {
                 return back()->with('error', 'Kolom email konfirmasi tidak boleh kosong, (Jika email konfirmasi: Ya)');
             }
+            if ($validated['link_id']->link_type != 'free' && isset($validated['allow_non_register'])) {
+                return back()->with('error', 'Kolom izinkan non register tidak boleh di centang, (Jika tipe link: Berbayar)');
+            }
+            $validated['link_id'] = $validated['link_id']->id;
             $attend = Attendance::select('attendance_path')->get();
             $token = $this->getToken($attend->toArray(), 'attendance_path', 6);
             $validated['attendance_path'] = $token;
@@ -155,6 +159,7 @@ class AttendanceController extends Controller
     public function attending(AttendingRequest $request, Attendance $attendance)
     {
         try {
+            DB::beginTransaction();
             $validated = $request->validated();
             $member = Member::find($validated['member_id']);
             $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
@@ -163,7 +168,6 @@ class AttendanceController extends Controller
                     ->withInput($request->only('email'))
                     ->with('info', __('attend.already_attend'));
             }
-            DB::beginTransaction();
 
             if (isset($validated['full_name'])) {
                 $member->full_name = $validated['full_name'];
