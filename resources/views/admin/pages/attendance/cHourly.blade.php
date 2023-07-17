@@ -84,7 +84,8 @@
                                 Ya
                             </label>
                         </div>
-                        <div id="email-helper" class="form-text">Jika di centang maka email akan terkirim ke peserta</div>
+                        <div id="email-helper" class="form-text">Jika di centang maka email akan terkirim ke peserta
+                        </div>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -95,6 +96,21 @@
                         <div class="form-check">
                             <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
                             <label class="form-check-label" for="confirm-cert">
+                                Ya
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="input-date-2" class="form-label fw-bolder mb-0">Bolehkan Yang Belum Registrasi
+                            ?</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-check">
+                            <input class="form-check-input" name="allow_non_register" type="checkbox"
+                                id="allow-non-register">
+                            <label class="form-check-label" for="allow-non-register">
                                 Ya
                             </label>
                         </div>
@@ -112,9 +128,9 @@
         var options = {
             cloudServices_tokenUrl: '',
             filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-            filebrowserImageUploadUrl: '{{ route("admin.ajax.ck-upload-image")."?"}}' + type_image,
+            filebrowserImageUploadUrl: '{{ route('admin.ajax.ck-upload-image') . '?' }}' + type_image,
             filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='+ '{{ csrf_token() }}',
+            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + '{{ csrf_token() }}',
             removePlugins: 'easyimage',
             extraPlugins: 'simplebutton, image, justify',
 

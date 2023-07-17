@@ -103,6 +103,21 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mb-3">
+                    <div class="col-md-3 d-flex align-items-center">
+                        <label for="input-date-2" class="form-label fw-bolder mb-0">Bolehkan Yang Belum Registrasi
+                            ?</label>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="form-check">
+                            <input class="form-check-input" name="allow_non_register" type="checkbox"
+                                id="allow-non-register">
+                            <label class="form-check-label" for="allow-non-register">
+                                Ya
+                            </label>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
