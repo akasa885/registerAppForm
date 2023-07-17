@@ -39,7 +39,8 @@ class AttendanceRequest extends FormRequest
             'selected_event' => ['required', 'string', 'exists:links,link_path'],
             'cert_confirm' => ['sometimes'],
             'mail_confirm' => ['sometimes'],
-            'confirmation_mail' => ['required', 'string', 'max:2000']
+            'confirmation_mail' => ['nullable', 'max:2000'],
+            'allow_non_register' => ['sometimes'],
         ];
 
         switch ($type){
@@ -104,6 +105,10 @@ class AttendanceRequest extends FormRequest
 
         if (isset($validated['cert_confirm'])) {
             $validated['with_verification_certificate'] = true;
+        }
+
+        if (isset($validated['allow_non_register'])) {
+            $validated['allow_non_register'] = true;
         }
 
         if (!isset($validated['mail_confirm'])) {

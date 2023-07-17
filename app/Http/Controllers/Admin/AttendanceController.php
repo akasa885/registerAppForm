@@ -61,6 +61,9 @@ class AttendanceController extends Controller
     {
         try {
             $validated = $request->validated();
+            if (isset($validated['mail_confirm']) && (!$validated['confirmation_mail'])) {
+                return back()->with('error', 'Kolom email konfirmasi tidak boleh kosong, (Jika email konfirmasi: Ya)');
+            }
             $attend = Attendance::select('attendance_path')->get();
             $token = $this->getToken($attend->toArray(), 'attendance_path', 6);
             $validated['attendance_path'] = $token;
