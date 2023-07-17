@@ -11,6 +11,8 @@ return [
         'is_certificate' => 'Dengan Sertifikat',
         'upload_pay' => 'Unggah Bukti Pembayaran',
         'upload_pay_helper' => 'Unggah bukti pembayaran untuk diverifikasi',
+        'corporation' => 'Nama Instansi / Perusahaan',
+        'instansi_helper' => '(wajib diisi apabila anda belum melakukan registrasi acara.)',
     ],
     'already_attend' => 'Anda sudah melakukan absensi !',
     'success' => 'Absensi berhasil dilakukan !',

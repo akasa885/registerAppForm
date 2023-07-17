@@ -11,6 +11,8 @@ return [
         'is_certificate' => 'With Certificate',
         'upload_pay' => 'Upload Payment Proof',
         'upload_pay_helper' => 'Upload payment proof for verification',
+        'corporation' => 'Instance / Company Name',
+        'instansi_helper' => '(required if you have not registered for the event.)',
     ],
     'already_attend' => 'You have already attended !',
     'success' => 'Attendance successful !',
