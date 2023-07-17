@@ -16,6 +16,7 @@ class Attendance extends Model
         'active_until',
         'confirmation_mail',
         'with_verification_certificate',
+        'allow_non_register',
         'created_by',
     ];
 
