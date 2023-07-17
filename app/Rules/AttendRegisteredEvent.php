@@ -28,9 +28,9 @@ class AttendRegisteredEvent implements Rule
     public function passes($attribute, $value)
     {
         $link = $this->attendance->link;
-        
+        $nonRegAllowed = $this->attendance->allow_non_register;
         $attend = $link->members()->where('email', $value)->first();
-        if ($attend) {
+        if ($nonRegAllowed || $attend) {
             return true;
         } else {
             return false;
