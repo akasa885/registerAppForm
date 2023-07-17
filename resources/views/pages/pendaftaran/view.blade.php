@@ -45,7 +45,7 @@
                         <input id="input-1" type="text"
                             class="form-input w-full @error('fullname') border-red-500 @enderror" name="fullname"
                             value="{{ old('fullname') }}" required autofocus>
-                        <span class="text-gray-600 text-xs italic mt-2 w-full">Please fill in with your degree! (If any!)</span><br/>
+                        <span class="text-gray-600 text-xs italic mt-2 w-full">{{ __('form_regist.full_name.help') }}</span><br/>
 
                         @error('fullname')
                         <p class="text-red-500 text-xs italic mt-2">
@@ -62,7 +62,7 @@
                         <input id="input-2" type="email"
                             class="form-input w-full @error('email') border-red-500 @enderror" name="email"
                             value="{{ old('email') }}" required autofocus>
-                            <span class="text-gray-600 text-xs italic mt-2 w-full">Fill in with your active email !</span><br/>
+                            <span class="text-gray-600 text-xs italic mt-2 w-full">{{ __('form_regist.email.help') }}</span><br/>
 
                         @error('email')
                         <p class="text-red-500 text-xs italic mt-2">
@@ -89,7 +89,7 @@
 
                     <div class="flex flex-wrap">
                         <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                            {{ __('Instance / Company') }}:
+                            {{ __('Instance / Company Name') }}:
                         </label>
 
                         <input id="input-4" type="text"
