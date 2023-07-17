@@ -196,10 +196,10 @@ class LinkController extends Controller
                 $expired = false;
                 $data->viewed_count += 1;
                 $data->save();
+            } else if ($date < date("Y-m-d", strtotime($data->active_from))) {
+                $notYet = true;
+                return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true , 'notYet' => $notYet]);
             }
-        } else if ($date < date("Y-m-d", strtotime($data->active_from))) {
-            $notYet = true;
-            return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true , 'notYet' => $notYet]);
         } else {
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
