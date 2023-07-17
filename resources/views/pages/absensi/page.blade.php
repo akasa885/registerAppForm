@@ -106,6 +106,23 @@
                                 </p>
                             @enderror
                         </div>
+                        @if ($attendance->allow_non_register)
+                        <div class="flex flex-wrap">
+                            <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                                {{ __('Instance / Company Name') }}:
+                            </label>
+    
+                            <input id="input-4" type="text"
+                                class="form-input w-full @error('corporation') border-red-500 @enderror" name="corporation"
+                                value="{{ old('corporation') }}" required autofocus>
+    
+                            @error('corporation')
+                            <p class="text-red-500 text-xs italic mt-4">
+                                {{ $message }}
+                            </p>
+                            @enderror
+                        </div>
+                        @endif
 
                         @if ($attendance->isCertNeedVerification())
                         <div class="flex flex-wrap">
@@ -156,7 +173,7 @@
                         <div class="flex flex-wrap">
                             <button type="submit"
                                 class="w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">
-                                {{ __('Kirim') }}
+                                {{ __('Send') }}
                             </button>
                         </div>
                     </form>
