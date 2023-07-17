@@ -1,0 +1,16 @@
+{
+    "Email Address" : "Alamat Email",
+    "Password" : "Kata Sandi",
+    "Confirm Password" : "Konfirmasi Kata Sandi",
+    "First Name" : "Nama Depan",
+    "Last Name" : "Nama Belakang",
+    "Full Name" : "Nama Lengkap",
+    "Phone Number" : "Nomor Telepon",
+    "Phone Number (WhatsApp)" : "Nomor Telepon (Whatsapp)",
+    "Instance / Company Name" : "Nama Instansi / Perusahaan",
+    "Register" : "Daftar",
+    "Already have an account?" : "Sudah punya akun?",
+    "Login" : "Masuk",
+    "Send" : "Kirim",
+    "Submit" : "Kirim"
+}
