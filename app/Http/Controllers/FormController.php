@@ -178,7 +178,7 @@ class FormController extends Controller
     public function payStore(Request $request, $payment)
     {
         $this->validate($request, [
-            'bukti' => ['required', 'image', 'max:2048']
+            'bukti' => ['required', 'image', 'max:10240']
         ]);
         try {
             $invo = Invoice::where('token', $payment)->first();
