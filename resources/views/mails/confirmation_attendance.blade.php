@@ -50,7 +50,7 @@
                             <p>{!! $data['message'] !!}</p>
                         </td>
                     </tr>
-                    @if ($data['link_path'] == "2OWya")
+                    @if ($data['link_path'] == "4CyTZ")
                     <tr>
                         <td>
                             <table class="wrapper" width="100%" style="border:none;">
