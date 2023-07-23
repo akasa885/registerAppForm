@@ -50,6 +50,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'Nama Lengkap',
             'Email',
             'No. HP',
+            'Domisili',
             'Instansi',
             'Mendaftar Pada',
         ];
@@ -64,6 +65,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             $member->full_name,
             $member->email,
             $member->contact_number,
+            $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
             $member->corporation,
             date('d-m-Y H:i:s', strtotime($member->created_at)),
         ];
@@ -76,8 +78,9 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'B' => 55,
             'C' => 30, // email
             'D' => 30, // no hp
-            'E' => 30, // instansi
-            'F' => 30, // mendaftar pada
+            'E' => 30, // domisili
+            'F' => 30, // instansi
+            'G' => 30, // mendaftar pada
         ];
     }
 
@@ -116,6 +119,9 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
     {
         $this->getMemberOfEvent()
             ->filterMemberBasedOnLinkType();
+
+        // sort lastest
+        $this->member = $this->member->sortByDesc('id');
 
         $this->result = $this->member;
 
