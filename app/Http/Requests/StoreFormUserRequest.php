@@ -37,6 +37,7 @@ class StoreFormUserRequest extends FormRequest
                 'fullname' => ['required', new FullnameRule()],
                 'email' => ['required', 'email'],
                 'no_telpon' => ['numeric', 'digits_between:8,13'],
+                'domisili' => ['required', 'string', 'max:100'],
                 'instansi' => ['required']
             ],
             'v1' => [
@@ -45,6 +46,7 @@ class StoreFormUserRequest extends FormRequest
                 'last_name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email'],
                 'no_telpon' => ['numeric', 'digits_between:8,13'],
+                'domisili' => ['required', 'string', 'max:100'],
                 'instansi' => ['required'],
             ]
         ];

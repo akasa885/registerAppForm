@@ -88,6 +88,22 @@
                     </div>
 
                     <div class="flex flex-wrap">
+                        <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                            {{ __('Domicile (City)') }}:
+                        </label>
+
+                        <input id="input-3" type="text"
+                            class="form-input w-full @error('domisili') border-red-500 @enderror" name="domisili"
+                            value="{{ old('domisili') }}" required autofocus>
+
+                        @error('domisili')
+                        <p class="text-red-500 text-xs italic mt-4">
+                            {{ $message }}
+                        </p>
+                        @enderror
+                    </div>
+
+                    <div class="flex flex-wrap">
                         <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                             {{ __('Instance / Company Name') }}:
                         </label>
