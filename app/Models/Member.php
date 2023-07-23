@@ -12,7 +12,7 @@ class Member extends Model
 
     protected $fillable = [
         'link_id','prefix', 'full_name', 'first_name', 'last_name',
-        'suffix', 'email', 'contact_number', 'corporation', 'bukti_bayar', 'lunas'
+        'suffix', 'email', 'contact_number', 'domisili', 'corporation', 'bukti_bayar', 'lunas'
     ];
 
     /**
