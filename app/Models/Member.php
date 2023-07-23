@@ -15,6 +15,26 @@ class Member extends Model
         'suffix', 'email', 'contact_number', 'domisili', 'corporation', 'bukti_bayar', 'lunas'
     ];
 
+    public function setDomisiliAttribute($value)
+    {
+        $this->attributes['domisili'] = strtolower($value);
+    }
+
+    public function setCorporationAttribute($value)
+    {
+        $this->attributes['corporation'] = strtolower($value);
+    }
+
+    public function getDomisiliAttribute($value)
+    {
+        return ucwords(strtolower($value));
+    }
+
+    public function getCorporationAttribute($value)
+    {
+        return ucwords(strtolower($value));
+    }
+
     /**
      * Get the link that owns the Member
      *
