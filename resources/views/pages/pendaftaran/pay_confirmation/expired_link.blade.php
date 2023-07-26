@@ -7,7 +7,7 @@
     <div class="flex justify-center py-5 align-center">
         <a href="{{ $route_form }}"
             class="bg-transparent flex-fill hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
-            @if (config('app.console') == 'id')
+            @if (config('app.locale') == 'id')
                 Kembali mengisi form
             @else
                 Back to fill out the form
