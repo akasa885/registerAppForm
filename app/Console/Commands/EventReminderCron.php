@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 
 class EventReminderCron extends Command
 {
+    protected $sendedCount = [];
     /**
      * The name and signature of the console command.
      *
@@ -50,9 +51,10 @@ class EventReminderCron extends Command
             foreach ($links as $link) {
                 if ($link->link_type == 'pay') {
                     $this->getMemberOfPaidEvent($link);
-
+                    Log::info('Sended Event Pay Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['pay']);
                 } else {
                     $this->getMemberOfFreeEvent($link);
+                    Log::info('Sended Event Free Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['free']);
                 } 
             }
             Log::info('Event reminder has been sent successfully');
@@ -75,6 +77,7 @@ class EventReminderCron extends Command
 
     private function getMemberOfPaidEvent(Link $link)
     {
+        $this->sendedCount["link_id_".$link->id]['pay'] = 0;
         $members = $link->members()->get();
         $members->load(['invoices' => function ($query) {
             $query->lunas();
@@ -93,6 +96,7 @@ class EventReminderCron extends Command
 
     private function getMemberOfFreeEvent(Link $link)
     {
+        $this->sendedCount["link_id_".$link->id]['free'] = 0;
         $members = $link->members()->get();
 
         foreach ($members as $member) {
@@ -113,12 +117,16 @@ class EventReminderCron extends Command
         try {
             if ($type == 'pay') {
                 // get updated_at from invoices
-                $date_reg = $member->invoices->updated_at;
+                if ($member->invoices) {
+                    $date_reg = $member->invoices->updated_at;
+                }
             } else {
                 // get created_at from members
                 $date_reg = $member->created_at;
             }
-    
+
+            if (!$date_reg) return true;
+
             if ($date_reg->toDateString() == $today->toDateString()) {
                 return true;
             }
@@ -171,5 +179,7 @@ class EventReminderCron extends Command
         $mail_db->type_email = Email::TYPE_EMAIL[1];
         $mail_db->sent_count = 1;
         $mail_db->save();
+
+        $this->sendedCount["link_id_".$link->id][$type] += 1;
     }
 }
