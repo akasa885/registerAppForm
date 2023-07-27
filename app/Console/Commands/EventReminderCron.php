@@ -110,19 +110,25 @@ class EventReminderCron extends Command
     {
         $date_reg = null;
         $today = Carbon::now(); // today date
-        if ($type == 'pay') {
-            // get updated_at from invoices
-            $date_reg = $member->invoices->updated_at;
-        } else {
-            // get created_at from members
-            $date_reg = $member->created_at;
+        try {
+            if ($type == 'pay') {
+                // get updated_at from invoices
+                $date_reg = $member->invoices->updated_at;
+            } else {
+                // get created_at from members
+                $date_reg = $member->created_at;
+            }
+    
+            if ($date_reg->toDateString() == $today->toDateString()) {
+                return true;
+            }
+    
+            return false;
+        } catch (\Throwable $th) {
+            Log::error('Error: doesMemberRegisteredSameDay');
+            Log::error('Member id : error' . $member->id);
+            throw $th;
         }
-
-        if ($date_reg->toDateString() == $today->toDateString()) {
-            return true;
-        }
-
-        return false;
     }
 
     private function checkDoesMemberAlreadySentReminder(Member $member, Link $link)
