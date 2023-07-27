@@ -36,7 +36,8 @@ class LinkRequest extends FormRequest
             'registration_info' => ['required', 'max:2000'],
             'member_limit' => ['required', 'numeric', 'min:0'],
             'open_date' => ['required'],
-            'close_date' => ['required']
+            'close_date' => ['required', 'after:open_date'],
+            'event_date' => ['required'],
         ];
         $this->event_type = $type;
 
@@ -65,8 +66,9 @@ class LinkRequest extends FormRequest
             'desc' => 'Deskripsi Event',
             'registration_info' => 'Informasi Pendaftaran',
             'member_limit' => 'Batas Peserta',
-            'open_date' => 'Tanggal Buka Event',
-            'close_date' => 'Tanggal Tutup Event'
+            'open_date' => 'Tanggal Buka Form Event',
+            'close_date' => 'Tanggal Tutup Form Event',
+            'event_date' => 'Tanggal Event',
         ];
 
         switch ($this->event_type) {
