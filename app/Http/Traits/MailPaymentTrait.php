@@ -39,6 +39,7 @@ trait MailPaymentTrait {
             'name'      =>  $member->full_name,
             'acara'     => $link->title,
             'message'   =>   $information,
+            'token'     => $member->invoices->token ?? null,
         );
         $from_mail = Email::EMAIL_FROM;
 

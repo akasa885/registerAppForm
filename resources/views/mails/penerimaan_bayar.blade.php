@@ -24,6 +24,13 @@
                             <p>Yang mendaftar pada acara <strong>{{ $data['acara'] }}</strong></p>
                         </td>
                     </tr>
+                    @if (isset($data['token']))
+                    <tr>
+                        <td style="border:none;">
+                            <p>Kode Invoice: <strong>{{ $data['token'] }}</strong></p>
+                        </td>
+                    </tr>
+                    @endif
                     <tr>
                         <td style="border:none;">
                             <p>{!! $data['message'] !!}</p>
