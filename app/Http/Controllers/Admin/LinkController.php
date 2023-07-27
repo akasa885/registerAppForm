@@ -70,6 +70,9 @@ class LinkController extends Controller
             }
             $link->active_from = date("Y-m-d", strtotime($request->open_date));
             $link->active_until = date("Y-m-d", strtotime($request->close_date));
+            if (isset($validated['event_date'])) {
+                $link->event_date = date("Y-m-d", strtotime($validated['event_date']));
+            }
             $link->created_by = auth()->id();
             if($request->event_type == 'pay'){
                 $link->link_type = Link::LINK_TYPE[0];
@@ -155,6 +158,9 @@ class LinkController extends Controller
             }
             $link->active_from = date("Y-m-d", strtotime($validated['open_date']));
             $link->active_until = date("Y-m-d", strtotime($validated['close_date']));
+            if (isset($validated['event_date'])) {
+                $link->event_date = date("Y-m-d", strtotime($validated['event_date']));
+            }
             $link->save();
             
             if($request->event_type == 'pay'){
