@@ -21,6 +21,6 @@ return [
         'attendance_confirmation' => 'Confirm Certificate Data',
     ],
     'reminder' => [
-        'info_event' => 'Your event is scheduled on :event_date . Don\'t forget to attend the event!',
+        'info_event' => 'Your event is scheduled on :event_date . Don\'t forget to attend the event!. Details are below.',
     ]
 ];
