@@ -1,5 +1,6 @@
 <?php
 namespace App\Http\Traits;
+use Carbon\Carbon;
 
 trait FormRegistrationTrait {
 
@@ -31,8 +32,10 @@ trait FormRegistrationTrait {
     public function isRegistrationPaidMemberQuota($member, $quota)
     {
         $paid = 0;
+        $now = Carbon::now();
         foreach ($member as $item) {
-            if($item->invoices->status == 2){
+            // check if invoice is paid (2) or not expired
+            if($item->invoices->status == 2 || $item->invoices->status == 1 || $item->invoices->valid_until > $now ){
                 $paid += 1;
             }
         }
