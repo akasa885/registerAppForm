@@ -19,5 +19,8 @@ return [
     ],
     'button' => [
         'attendance_confirmation' => 'Confirm Certificate Data',
+    ],
+    'reminder' => [
+        'info_event' => 'Your event is scheduled on :event_date . Don\'t forget to attend the event!',
     ]
 ];

@@ -19,5 +19,8 @@ return [
     ],
     'button' => [
         'attendance_confirmation' => 'Konfirmasi Data Sertifikat',
-    ]
+    ],
+    'reminder' => [
+        'info_event' => 'Acara anda dijadwalkan pada tanggal :event_date . Jangan lupa untuk menghadiri acara tersebut ya!',
+    ],
 ];
