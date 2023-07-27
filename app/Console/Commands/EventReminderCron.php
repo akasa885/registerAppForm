@@ -145,8 +145,7 @@ class EventReminderCron extends Command
 
         foreach ($mails as $mail) {
             if ($mail->type_email == 'reminder_event') {
-                // return true;
-                return false;
+                return true;
             }
         }
 
