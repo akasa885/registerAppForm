@@ -16,7 +16,7 @@ use App\Models\User;
 use App\Http\Requests\LinkRequest;
 
 use DataTables;
-use Carbon;
+use Carbon\Carbon;
 
 class LinkController extends Controller
 {
