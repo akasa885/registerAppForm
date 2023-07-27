@@ -38,6 +38,9 @@
         $('#datepicker-2').datepicker({
             format: 'dd-mm-yyyy'
         });
+        $('#datepicker-3').datepicker({
+            format: 'dd-mm-yyyy'
+        });
     });
     var type_image = 'type=Images&_token=' + '{{ csrf_token() }}';
     var options = {

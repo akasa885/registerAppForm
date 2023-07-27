@@ -120,6 +120,19 @@
                     </div>
                 </div>
             </div>
+            <div class="card mb-3 d-flex flex-column">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Tanggal Mulai Acara
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="form-group">
+                        <input type='text' name="event_date" value="{{ old('event_date') }}" required
+                            class="form-control" id='datepicker-3' placeholder="dd-mm-yy">
+                    </div>
+                </div>
+            </div>
         </div>        
     </div>
     </form>
@@ -136,6 +149,9 @@
             format: 'dd-mm-yyyy'
         });
         $('#datepicker-2').datepicker({
+            format: 'dd-mm-yyyy'
+        });
+        $('#datepicker-3').datepicker({
             format: 'dd-mm-yyyy'
         });
     });
