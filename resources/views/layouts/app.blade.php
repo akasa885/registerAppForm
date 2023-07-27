@@ -28,7 +28,7 @@
                 </div>
                 <nav class="space-x-4 text-gray-300 text-sm sm:text-base">
                     @guest
-                        <a class="no-underline hover:underline" href="{{ route('admin.login') }}">{{ __('Login') }}</a>
+                        {{-- <a class="no-underline hover:underline" href="{{ route('admin.login') }}">{{ __('Login') }}</a> --}}
                         @if (Route::has('register'))
                             <a class="no-underline hover:underline" href="{{ route('admin.register') }}">{{ __('Register') }}</a>
                         @endif
