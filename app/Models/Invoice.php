@@ -21,6 +21,11 @@ class Invoice extends Model
 
     protected $fillable = ['member_id', 'token', 'valid_until', 'status'];
 
+    public function scopeLunas($query)
+    {
+        return $query->where('status', 2);
+    }
+
     /**
      * Get the member that owns the Invoice
      *
