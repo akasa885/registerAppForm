@@ -51,10 +51,10 @@ class EventReminderCron extends Command
             foreach ($links as $link) {
                 if ($link->link_type == 'pay') {
                     $this->getMemberOfPaidEvent($link);
-                    Log::info('Sended Event Pay Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['pay']);
+                    Log::info('Sended Event Pay ID: '.$link->id.' Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['pay']);
                 } else {
                     $this->getMemberOfFreeEvent($link);
-                    Log::info('Sended Event Free Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['free']);
+                    Log::info('Sended Event Pay ID: '.$link->id.' Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['free']);
                 } 
             }
             Log::info('Event reminder has been sent successfully');
