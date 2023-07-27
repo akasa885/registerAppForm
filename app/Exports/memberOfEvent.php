@@ -52,6 +52,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'No. HP',
             'Domisili',
             'Instansi',
+            'Invoice Code',
             'Mendaftar Pada',
         ];
     }
@@ -67,6 +68,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             $member->contact_number,
             $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
             $member->corporation,
+            $member->invoices == null ? 'NaN' : $member->invoices->token,
             date('d-m-Y H:i:s', strtotime($member->created_at)),
         ];
     }
