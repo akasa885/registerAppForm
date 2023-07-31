@@ -133,6 +133,34 @@
                     </div>
                 </div>
             </div>
+            <div class="card mb-3 d-flex flex-column">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Multi Pendaftar (Opsional)
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="row mb-3">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <label for="allow-multi-member" class="form-label fw-bolder mb-0">Multi Pendaftar
+                                ?</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" name="is_multiple_registrant_allowed" type="checkbox"
+                                    id="allow-multi-member">
+                                <label class="form-check-label" for="allow-multi-member">
+                                    Ya
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <input disabled="true" type='number' min="2" name="sub_member_limit" value="{{ old('sub_member_limit') }}"
+                            required class="form-control" id='sub-member-limit' placeholder="masukan jumlah pendaftar">
+                    </div>
+                </div>
+            </div>
         </div>        
     </div>
     </form>
@@ -171,5 +199,15 @@
     CKEDITOR.replace('my-editor-2', options);
     CKEDITOR.replace('my-editor-3', options);
     CKEDITOR.replace('my-editor-4', options);
+
+    // make script for check box (allow multi member). that will enable or disable sub member limit
+    $('#allow-multi-member').change(function(){
+        if($(this).is(':checked')){
+            $('#sub-member-limit').prop('disabled', false);
+        }else{
+            $('#sub-member-limit').prop('disabled', true);
+            $('#sub-member-limit').val('');
+        }
+    });
 </script>
 @endpush
