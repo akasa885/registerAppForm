@@ -55,6 +55,7 @@ class LinkController extends Controller
     public function store(LinkRequest $request)
     {
         try {
+            $validated = $request->validated();
             $link = new Link;
             $link->link_path = $this->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
@@ -76,6 +77,10 @@ class LinkController extends Controller
             $link->created_by = auth()->id();
             if($request->event_type == 'pay'){
                 $link->link_type = Link::LINK_TYPE[0];
+                $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
+                if ($validated['is_multiple_registrant_allowed']) {
+                    $link->sub_member_limit = $validated['sub_member_limit'];
+                }
             }
             if ($request->event_type == 'free') {
                 $link->link_type = Link::LINK_TYPE[1];
