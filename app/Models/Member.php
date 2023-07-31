@@ -55,4 +55,14 @@ class Member extends Model
     {
         return $this->hasOne(Invoice::class, 'member_id', 'id');
     }
+
+    /**
+     * Get the subMembers associated with the Member
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function subMembers()
+    {
+        return $this->hasMany(SubMember::class, 'member_id', 'id');
+    }
 }
