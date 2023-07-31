@@ -71,14 +71,14 @@ class LinkRequest extends FormRequest
             'open_date' => 'Tanggal Buka Form Event',
             'close_date' => 'Tanggal Tutup Form Event',
             'event_date' => 'Tanggal Event',
-            'is_multiple_registrant_allowed' => 'Pendaftaran Boleh Lebih dari 1 Orang',
-            'sub_member_limit' => 'Batas Multi Peserta',
         ];
 
         switch ($this->event_type) {
             case "pay":
                 $attributes['email_confirmation'] = 'Email Konfirmasi Pembayaran';
                 $attributes['email_confirmed'] = 'Email Konfirmasi Pembayaran';
+                $attributes['is_multiple_registrant_allowed'] = 'Pendaftaran Banyak Peserta';
+                $attributes['sub_member_limit'] = 'Batas Multi Peserta';
                 break;
         }
 
