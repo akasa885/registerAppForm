@@ -45,6 +45,8 @@ class LinkRequest extends FormRequest
             case "pay" :
                 // append rules
                 $rules += [
+                    'is_multiple_registrant_allowed' => ['sometimes'],
+                    'sub_member_limit' => ['required_if:is_multiple_registrant_allowed,1', 'numeric', 'min:2'],
                     'email_confirmation' => ['required', 'max:2000'],
                     'email_confirmed' => ['required', 'max:2000'],
                 ];
@@ -69,6 +71,8 @@ class LinkRequest extends FormRequest
             'open_date' => 'Tanggal Buka Form Event',
             'close_date' => 'Tanggal Tutup Form Event',
             'event_date' => 'Tanggal Event',
+            'is_multiple_registrant_allowed' => 'Pendaftaran Boleh Lebih dari 1 Orang',
+            'sub_member_limit' => 'Batas Multi Peserta',
         ];
 
         switch ($this->event_type) {
