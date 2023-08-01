@@ -24,4 +24,20 @@ class AjaxController extends Controller
 
         return new JsonResponse($orContent);
     }
+
+    public function getSubMemberParticapant(Request $request)
+    {
+        $request->validate([
+            'parent_member' => 'required|exists:members,id',
+        ]);
+        $member = $request->parent_member;
+        $member = \App\Models\Member::find($member);
+        $particapants = $member->subMembers()->get();
+        $view = view('admin.ajax.member.sub-member-list', compact('particapants'))->render();
+
+        return new JsonResponse([
+            'status' => 'success',
+            'view' => $view,
+        ]);
+    }
 }
