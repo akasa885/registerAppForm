@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class memberOfEvent implements FromCollection, WithMapping, WithProperties, WithHeadings, ShouldAutoSize, WithColumnWidths, WithStyles
 {
@@ -22,6 +23,8 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
     public $rows = 0;
     public $result;
     public $breakLine;
+    public $linkMultiRegist = false;
+    public $multiRegistCount = 0;
 
     /**
      * @var Link
@@ -30,6 +33,8 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
     {
         $this->link = $link;
         $this->breakLine = chr(10);
+        $this->linkMultiRegist = $link->is_multiple_registrant_allowed;
+        $this->multiRegistCount = $link->sub_member_limit;
     }
 
     public function properties(): array
@@ -45,7 +50,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
 
     public function headings(): array
     {
-        return [
+        $head = [
             '#',
             'Nama Lengkap',
             'Email',
@@ -55,35 +60,75 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'Invoice Code',
             'Mendaftar Pada',
         ];
+
+        if ($this->linkMultiRegist) {
+            for ($i=0; $i < $this->multiRegistCount ; $i++) { 
+                $head[] = 'Nama Peserta '.($i + 1);
+                $head[] = 'Nomor Telepon Peserta '.($i + 1);
+            }
+        } 
+
+        return $head;
     }
 
     public function map($member): array
     {
         $this->rows++;
+        $data = [];
+        if ($this->linkMultiRegist) {
+            $data = [
+                $this->rows,
+                $member->full_name,
+                $member->email,
+                $member->contact_number,
+                $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
+                $member->corporation,
+                $member->invoices == null ? 'NaN' : $member->invoices->token,
+                date('d-m-Y H:i:s', strtotime($member->created_at)),
+            ];
+            foreach ($member->subMembers as $key => $sub_member) {
+                $data[] = $sub_member->full_name;
+                $data[] = $sub_member->contact_number;
+            }
+        } else {
+            $data = [
+                $this->rows,
+                $member->full_name,
+                $member->email,
+                $member->contact_number,
+                $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
+                $member->corporation,
+                $member->invoices == null ? 'NaN' : $member->invoices->token,
+                date('d-m-Y H:i:s', strtotime($member->created_at)),
+            ];
+        }
 
-        return [
-            $this->rows,
-            $member->full_name,
-            $member->email,
-            $member->contact_number,
-            $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
-            $member->corporation,
-            $member->invoices == null ? 'NaN' : $member->invoices->token,
-            date('d-m-Y H:i:s', strtotime($member->created_at)),
-        ];
+        return $data;
     }
 
     public function columnWidths(): array
     {
-        // all columns width = 55
-        return [
-            'B' => 55,
+        $default_col = [
+            'A' => 5, // #
+            'B' => 55, // Nama Lengkap
             'C' => 30, // email
             'D' => 30, // no hp
             'E' => 30, // domisili
             'F' => 30, // instansi
-            'G' => 30, // mendaftar pada
+            'G' => 30, // invoice code
+            'H' => 30, // mendaftar pada
         ];
+        $countDefault = count($default_col);
+
+        if ($this->linkMultiRegist) {
+            for ($i=0; $i < $this->multiRegistCount ; $i++) { 
+                $startIndex = ($i * 2) + 1;
+                $default_col[Coordinate::stringFromColumnIndex($countDefault + ($startIndex))] = 55; // Nama Peserta
+                $default_col[Coordinate::stringFromColumnIndex($countDefault + ($startIndex + 1))] = 30; // Nomor Telepon Peserta
+            }
+        }
+
+        return $default_col;
     }
 
     public function styles(Worksheet $sheet)
