@@ -372,6 +372,7 @@ class LinkController extends Controller
             return date("d/M/Y, H:i", strtotime($data->created_at)).' WIB';
         })
         ->addColumn("options", function($data) {
+            $link = $data->link;
             if ($data->invoices->status == 1) {
                 $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(".$data->id.");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
@@ -389,6 +390,15 @@ class LinkController extends Controller
             } else{
                 $edit = '';
             }
+
+            if ($link->is_multiple_registrant_allowed) {
+                $edit .= "<a href=\"javascript:void(0);\" onClick=\"detailPeserta(".$data->id.");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalDetailPeserta\" class=\"mb-2 mr-2 badge badge-pill badge-secondary\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Detail Peserta
+                </a>";
+            }             
             return $edit;
         })
         ->rawColumns(['status', 'options'])
