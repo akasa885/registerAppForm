@@ -78,6 +78,29 @@
         </div>
     </div>
 </div>
+
+{{-- ============================= Modal  Section================================ --}}
+<div class="modal fade" id="ModalDetailPeserta" tabindex="-1" role="dialog" aria-labelledby="ModalDetailPeserta" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalDetailPeserta">Daftar Peserta</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="list-of-members">
+                    <input type="hidden" id="bukti_id_member" value="NaN" name="id_member">
+                    <h4>Loading...</h4>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endpush
 
 @push('scripts')
@@ -196,6 +219,29 @@
             }
         })
     }
+    function detailPeserta(member_id) {
+        var listWrapper = document.getElementById("list-of-members");
+        listWrapper.innerHTML = "<h4>Loading...</h4>";
+        $.ajax({
+            type: "get",
+            url: "{{ route('admin.ajax.sub-member.particapant') }}",
+            data: {parent_member:member_id},
+            cache: false,
+            success: function (res) {
+                if (res.status == 'success') {
+                    listWrapper.innerHTML = res.view;
+                }
+            },
+            error: function (xhr, status, error) {
+                listMemberResponse('failed to load data');
+                if (xhr.status == 422) {
+                    alert(xhr.responseJSON.message);
+                }else{
+                    alert("Response server error");
+                }
+            }
+        })
+    }
     function viewProof(buktiAsset, name = null) {
         buktiReset();
         if (name) {
@@ -229,6 +275,10 @@
     }
     function buktiReset(){
         document.getElementById("bukti-img").src = '{{ asset('/images/default/no-image.png') }}';
+    }
+    function listMemberResponse(text) {
+        var listWrapper = document.getElementById("list-of-members");
+        listWrapper.innerHTML = `<h4>${text}</h4>`;
     }
     function offBuktiButton(){
         $('#bukti-diterima').prop('disabled', true);
