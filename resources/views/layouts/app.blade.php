@@ -16,6 +16,13 @@
     
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+
+    <style>
+        .required::after {
+            content: "*";
+            color: red;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 h-screen antialiased leading-none font-sans">
     <div id="app">
