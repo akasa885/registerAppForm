@@ -5,6 +5,7 @@ use App\Http\Controllers\FormController;
 
 Route::get('/{link}', [LinkController::class, 'page'])->name('link.view');
 Route::post('/{link}', [FormController::class, 'storeIdentity'])->name('link.store');
+Route::post('/link/{link}/multi-registrant', [FormController::class, 'storeMultiRegistrant'])->name('link.multi-registrant.store');
 Route::get('/{link}/{payment}', [FormController::class, 'paymentUp'])->name('link.pay');
 Route::post('/bukti/{payment}', [FormController::class, 'payStore'])->name('pay.store');
 Route::post('/renew/payment/link', [FormController::class, 'requestNewPayment'])->name('pay.renew');
