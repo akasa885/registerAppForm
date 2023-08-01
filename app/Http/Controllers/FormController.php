@@ -7,9 +7,11 @@ use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 
 // request
 use App\Http\Requests\StoreFormUserRequest;
+use App\Http\Requests\MultiRegistrantRequest;
 
 //mail
 use App\Mail\ConfirmPay;
@@ -80,6 +82,10 @@ class FormController extends Controller
                     return back()->with('success', 'Registration has been successfully done. Please check your email for event information, thank you!');
             }
             if($link_coll->link_type == 'pay'){
+                if ($link_coll->is_multiple_registrant_allowed) {
+                    Session::put('member_parent', $member);
+                    return $this->pageMultiRegistrant($member, $link_coll);
+                }
                 // $dt_carbon = Carbon::now()->addDays(3);
                 $invoice = new Invoice;
                 $invoice->member_id = $member->id;
@@ -106,6 +112,55 @@ class FormController extends Controller
                 return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
             else
                 return back()->withErrors(['message' => 'An error occurred, please try again later']);
+        }
+    }
+
+    public function pageMultiRegistrant(Member $member, Link $link) 
+    {
+        $data = [
+            'member' => $member,
+            'link' => $link
+        ];
+
+        return view('pages.pendaftaran.view-multi-regist', $data);
+    }
+
+    public function storeMultiRegistrant(MultiRegistrantRequest $request)
+    {
+        try {
+            $validated = $request->validated();
+            DB::beginTransaction();
+            $parent_member = Session::get('member_parent');
+            $link_coll = Link::where('link_path', $validated['link_path'])->first();
+            // because parent_member is not stored in database yet, so we need to store it first
+            $parent_member = Member::create($parent_member->toArray());
+            $parent_member->subMembers()->createMany($validated['sub_members']);
+
+            $invoice = new Invoice;
+            $invoice->member_id = $parent_member->id;
+            $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
+            $currentDateTime = Carbon::now();
+            $newDateTime = Carbon::now()->addHours(24);
+            $invoice->valid_until = $newDateTime;
+            $invoice->status = 0;
+            $invoice->save();
+
+            $this->sendMailPayment($link_coll, $parent_member, $invoice);
+
+            Session::forget('member_parent');
+            DB::commit();
+
+            return redirect()->route('form.link.pay', ['link' => $link_coll->link_path, 'payment' => $invoice->token]);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            if (config('app.debug')) throw $th;
+            Log::error('Failed, run form storeMultiRegistrant');
+            Log::error("error : ". $th->getMessage());
+            if (config('app.locale') == 'id')
+                return redirect()->route('form.link.view', ['link' => $validated['link_path']])->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
+            else
+                return redirect()->route('form.link.view', ['link' => $validated['link_path']])->withErrors(['message' => 'An error occurred, please try again later']);
+
         }
     }
 
