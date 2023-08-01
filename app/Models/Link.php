@@ -25,7 +25,9 @@ class Link extends Model
         'created_by',
         'link_type',
         'has_member_limit',
-        'member_limit'
+        'member_limit',
+        'is_multiple_registrant_allowed',
+        'sub_member_limit'
     ];
 
     protected $dates = [
@@ -35,7 +37,8 @@ class Link extends Model
     ];
 
     protected $casts = [
-        'has_member_limit' => 'boolean'
+        'has_member_limit' => 'boolean',
+        'is_multiple_registrant_allowed' => 'boolean',
     ];
 
     /**
