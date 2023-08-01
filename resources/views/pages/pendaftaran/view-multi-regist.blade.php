@@ -48,7 +48,7 @@
                             </div>
                         @enderror
                         <p class="sm:mt-4">Kepada Bpk/Ibu, <strong> {{ $member->full_name }} </strong> pendaftar, silahkan
-                            masukkan informasi peserta </p>
+                            masukkan informasi peserta dibawah. <br>(<strong>Jika</strong> Anda salah satu peserta, cukup <strong> centang </strong> kotak dibawah!) </p>
                         @for ($i = 0; $link->sub_member_limit > $i; $i++)
                             <fieldset class="border border-solid border-gray-300 px-3 pb-3 space-y-4 sm:space-y-5 md:space-y-8">
                                 <legend>Peserta {{ $i+1 }}</legend>
