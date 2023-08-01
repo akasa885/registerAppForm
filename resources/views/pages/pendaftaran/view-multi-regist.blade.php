@@ -50,7 +50,7 @@
                         <p class="sm:mt-4">Kepada Bpk/Ibu, <strong> {{ $member->full_name }} </strong> pendaftar, silahkan
                             masukkan informasi peserta </p>
                         @for ($i = 0; $link->sub_member_limit > $i; $i++)
-                            <fieldset class="border border-solid border-gray-300 px-3 pb-3 sm:space-y-8">
+                            <fieldset class="border border-solid border-gray-300 px-3 pb-3 space-y-4 sm:space-y-5 md:space-y-8">
                                 <legend>Peserta {{ $i+1 }}</legend>
                                 @if ($i+1 == 1)
                                     <div class="flex items-center">
