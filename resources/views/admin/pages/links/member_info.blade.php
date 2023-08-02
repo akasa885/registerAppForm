@@ -21,7 +21,7 @@
     <div class="col-md-11 col-lg-11">
         <div class="mb-3 card">
             <div class="card-header-tab card-header-tab-animation card-header">
-                <div class="card-header-title">
+                <div class="card-header-title" style="white-space:normal">
                     <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
                     Member List : {{$title}}
                 </div>
