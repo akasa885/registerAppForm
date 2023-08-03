@@ -5,7 +5,12 @@ namespace App\Http\Traits;
 trait GenerateTokenUniqueColumnTrait
 {
 
-    public function getToken(array $model, $column_unique, $length_token = 5, $prefix = null, $type = 'all')
+    public function getToken(
+        array $model, 
+        $column_unique, 
+        $length_token = 5, 
+        $prefix = null, 
+        $type = 'all')
     {
         $fix_token = '';
         $lock = 0;
