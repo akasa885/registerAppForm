@@ -1,30 +1,39 @@
 <?php
+
 namespace App\Http\Traits;
+
+use App\Models\Link;
+use App\Models\Member;
+use App\Models\Invoice;
 use Carbon\Carbon;
 
-trait FormRegistrationTrait {
+use App\Http\Traits\GenerateTokenUniqueColumnTrait;
+
+trait FormRegistrationTrait
+{
+    use GenerateTokenUniqueColumnTrait;
 
     public function AvailableMemberOnEvent($member, $email)
     {
         $matched = 0;
         foreach ($member as $item) {
-            if($item->email == $email){
+            if ($item->email == $email) {
                 $matched += 1;
             }
         }
 
-        if($matched == 0){
+        if ($matched == 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
 
     public function isRegistrationMemberQuota($member, $quota)
     {
-        if(count($member) < $quota){
+        if (count($member) < $quota) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -35,14 +44,14 @@ trait FormRegistrationTrait {
         $now = Carbon::now();
         foreach ($member as $item) {
             // check if invoice is paid (2) or not expired
-            if($item->invoices->status == 2 || $item->invoices->status == 1 || $item->invoices->valid_until > $now ){
+            if ($item->invoices->status == 2 || $item->invoices->status == 1 || $item->invoices->valid_until > $now) {
                 $paid += 1;
             }
         }
 
-        if($paid < $quota){
+        if ($paid < $quota) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
@@ -52,4 +61,17 @@ trait FormRegistrationTrait {
         return count($member);
     }
 
+    public function createInvoice(Member $member, Link $link)
+    {
+        $invoice = new Invoice;
+        $invoice->member_id = $member->id;
+        $invoice->token = $this->getToken(Invoice::all()->toArray(), 'token', Member::PAYMENT_TOKEN_LENGTH);
+        $currentDateTime = Carbon::now();
+        $newDateTime = Carbon::now()->addHours(24);
+        $invoice->valid_until = $newDateTime;
+        $invoice->status = 0;
+        $invoice->save();
+
+        return $invoice;
+    }
 }
