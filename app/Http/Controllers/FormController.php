@@ -87,14 +87,7 @@ class FormController extends Controller
                     return $this->pageMultiRegistrant($member, $link_coll);
                 }
                 // $dt_carbon = Carbon::now()->addDays(3);
-                $invoice = new Invoice;
-                $invoice->member_id = $member->id;
-                $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
-                $currentDateTime = Carbon::now();
-                $newDateTime = Carbon::now()->addHours(24);
-                $invoice->valid_until = $newDateTime;
-                $invoice->status = 0;
-                $invoice->save();
+                $invoice = $this->createInvoice($member, $link_coll);
 
                 $this->sendMailPayment($link_coll, $member, $invoice);
 
@@ -136,14 +129,7 @@ class FormController extends Controller
             $parent_member = Member::create($parent_member->toArray());
             $parent_member->subMembers()->createMany($validated['sub_members']);
 
-            $invoice = new Invoice;
-            $invoice->member_id = $parent_member->id;
-            $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
-            $currentDateTime = Carbon::now();
-            $newDateTime = Carbon::now()->addHours(24);
-            $invoice->valid_until = $newDateTime;
-            $invoice->status = 0;
-            $invoice->save();
+            $invoice = $this->createInvoice($parent_member, $link_coll);
 
             $this->sendMailPayment($link_coll, $parent_member, $invoice);
 
@@ -273,47 +259,6 @@ class FormController extends Controller
             else
                 return back()->withErrors(['message' => 'An error occurred, please try again later']);
         }
-    }
-
-    private function getToken($lenght_token = 10)
-    {
-        $fix_token = '';
-        $lock = 0;
-        $data_token = Invoice::select('token')->get();
-        if(count($data_token) > 0){
-            $loop = count($data_token);
-            for ($i=0; $i < $loop;) {
-                foreach ($data_token as $tok) {
-                    $temp = $this->generate_token($lenght_token);
-                    if ($tok->token != $temp) {
-                    $lock ++;
-                    }else{
-                    $lock = 0;
-                    }
-                }
-                if ($loop == $lock) {
-                    $fix_token = $temp;
-                    $i = $loop;
-                }else {
-                    $i++;
-                }
-            }
-            return $fix_token;
-        }else{
-            return $this->generate_token($lenght_token);
-        }
-    }
-
-    public function generate_token($length = 10)
-    {
-      $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-      $charactersLength = strlen($characters);
-      $randomString = '';
-      for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-      }
-
-      return $randomString;
     }
 
     public function sendMailEventDeskripsi($link, $member){
