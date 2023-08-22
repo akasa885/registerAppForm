@@ -98,8 +98,9 @@ class LinkController extends Controller
         } catch (\Throwable $th) {
             if (config('app.debug')) throw $th;
             \Log::error('Error in ' . __FILE__ . ' Line: ' . __LINE__ . ' Message ' . $th->getMessage());
+            \Log::error($th);
             
-            return back()->with('error', 'Server Error on Creating Link');
+            return back()->withInput($request->all())->with('error', 'Server Error on Creating Link');
         }
     }
 
