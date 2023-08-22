@@ -78,7 +78,7 @@ class LinkController extends Controller
             if($request->event_type == 'pay'){
                 $link->link_type = Link::LINK_TYPE[0];
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
-                if ($validated['is_multiple_registrant_allowed']) {
+                if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
                 }
             }
