@@ -96,8 +96,10 @@ class LinkController extends Controller
             return redirect()->route('admin.link.view')->with('success', 'Berhasil ditambah');
 
         } catch (\Throwable $th) {
-            // return $th;
-            abort(500);
+            if (config('app.debug')) throw $th;
+            \Log::error('Error in ' . __FILE__ . ' Line: ' . __LINE__ . ' Message ' . $th->getMessage());
+            
+            return back()->with('error', 'Server Error on Creating Link');
         }
     }
 
