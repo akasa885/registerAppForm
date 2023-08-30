@@ -9,6 +9,7 @@ use App\Mail\ConfirmationAttendances;
 
 use App\Models\MemberAttend;
 use App\Models\Attendance;
+use App\Models\Invoice;
 use App\Models\Email;
 use App\Models\Link;
 
@@ -161,12 +162,32 @@ class AttendanceController extends Controller
         try {
             DB::beginTransaction();
             $validated = $request->validated();
+            if (!$validated['member_id']) {
+                DB::rollback();
+                return back()
+                    ->withInput($request->only('email'))
+                    ->with('error', __('attend.failed_member_not_found'));
+            }
             $member = Member::find($validated['member_id']);
             $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
             if ($member_attend) {
+                DB::rollback();
                 return back()
                     ->withInput($request->only('email'))
                     ->with('info', __('attend.already_attend'));
+            }
+
+            // check does link is pay
+            $link = $member->link;
+            if ($link->link_type == 'pay') {
+                $member_invoice = $member->invoices;
+
+                if (!$member_invoice->isInvoiceLunas()) {
+                    DB::rollback();
+                    return back()
+                        ->withInput($request->only('email'))
+                        ->with('error', __('attend.failed_payment_status'));
+                }
             }
 
             if (isset($validated['full_name'])) {
