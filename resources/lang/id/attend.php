@@ -16,5 +16,7 @@ return [
     ],
     'already_attend' => 'Anda sudah melakukan absensi !',
     'success' => 'Absensi berhasil dilakukan !',
-    'success_with_email' => ' , dan email informasi absensi telah dikirim ke :email'
+    'success_with_email' => ' , dan email informasi absensi telah dikirim ke :email',
+    'failed_payment_status' => 'Status pembayaran anda belum lunas pada sistem, silahkan hubungi panitia untuk informasi lebih lanjut',
+    'failed_member_not_found' => 'Data peserta tidak ditemukan, pastikan email & nomor telepon yang anda masukkan sudah benar',
 ];
