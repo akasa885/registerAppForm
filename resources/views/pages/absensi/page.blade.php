@@ -28,22 +28,27 @@
                         Absen {{ $link->title }}
                     </header>
 
-                    @if (Session::has('errors') || Session::has('info'))
+                    @if (Session::has('errors') || Session::has('info') || Session::has('error'))
                         <div class="px-10 pt-5">
                             <div class="@if (Session::has('errors')) bg-red-100 text-red-700 border-red-400
                         @elseif(Session::has('info'))
                             bg-blue-100 text-blue-700 border-blue-400 @endif border border-red-400 px-4 py-3 rounded relative"
                                 role="alert">
-                                @if (Session::has('errors'))
-                                    <strong class="font-bold">Error:</strong>
+                                @if (Session::has('errors') || Session::has('error'))
+                                    <strong class="font-bold">Alert:</strong>
                                 @else
                                     <strong class="font-bold">Info:</strong>
                                 @endif
                                 <ul class="list-disc list-inside">
-                                    @foreach ($errors->all() as $message)
-                                        <li>{{ $message }}</li>
-                                    @endforeach
-                                    <li>{{ Session::get('info') }}</li>
+                                    @if (Session::has('errors'))
+                                        @foreach ($errors->all() as $message)
+                                            <li>{{ $message }}</li>
+                                        @endforeach
+                                    @elseif (Session::has('error'))
+                                        <li>{{ Session::get('error') }}</li>
+                                    @elseif (Session::has('info'))
+                                        <li>{{ Session::get('info') }}</li>
+                                    @endif
                                 </ul>
                             </div>
                         </div>
