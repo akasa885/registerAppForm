@@ -77,8 +77,16 @@ class AttendingRequest extends FormRequest
             
         } else {
             $memberS = $this->attendance->link->members()->where('email', $validated['email'])->first();
+            // email check
+            if (!$memberS) {
+                $this->validator->errors()->add('email', __('attend.failed_member_not_found'));
+            }
+            // contact number check
+            if ($memberS->contact_number != $validated['no_telpon']) {
+                $this->validator->errors()->add('no_telpon', __('attend.failed_member_not_found'));
+            }
         }
-        $validated['member_id'] = $memberS->id;
+        $validated['member_id'] = $memberS ? $memberS->id : null;
         unset($validated['email']);
         unset($validated['no_telpon']);
 
