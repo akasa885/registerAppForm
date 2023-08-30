@@ -26,6 +26,11 @@ class Invoice extends Model
         return $query->where('status', 2);
     }
 
+    public function isInvoiceLunas()
+    {
+        return $this->status == 2;
+    }
+
     /**
      * Get the member that owns the Invoice
      *
