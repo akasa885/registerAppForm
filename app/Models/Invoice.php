@@ -4,22 +4,32 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\UuidIdenty;
 
 class Invoice extends Model
 {
-    use HasFactory;
+    use HasFactory, UuidIdenty;
 
     const INVO_STATUS = [
-        'BELUM UPLOAD',
+        'BELUM UPLOAD/BAYAR',
         'VERIFIKASI',
         'LUNAS'
     ];
 
-    protected $casts = [
-        'valid_until' => 'datetime',
+    protected $fillable = [
+        'uuid',
+        'member_id', 
+        'token', 
+        'valid_until', 
+        'status',
+        'is_automatic',
+        'payment_method',
     ];
 
-    protected $fillable = ['member_id', 'token', 'valid_until', 'status'];
+    protected $casts = [
+        'valid_until' => 'datetime',
+        'is_automatic' => 'boolean',
+    ];
 
     public function scopeLunas($query)
     {
