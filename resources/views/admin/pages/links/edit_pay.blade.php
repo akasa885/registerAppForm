@@ -110,6 +110,21 @@
             </div>
         </div>
         <!--end:: kuota-->
+        <!--begin:: price-->
+        <div class="card mb-3 d-flex flex-column">
+            <div class="card-header-tab card-header-tab-animation card-header">
+                <div class="card-header-title">
+                    Harga Tiket
+                </div>
+            </div>
+            <div class="col-auto align-self-center my-2">
+                <div class="form-group">
+                    <input type='number' min="100" name="price" value="{{ old('price', $link_detail->price) }}"
+                        required class="form-control" id='ticket-price'>
+                </div>
+            </div>
+        </div>
+        <!--end::price-->
         <div class="card mb-3 d-flex flex-column">
             <div class="card-header-tab card-header-tab-animation card-header">
                 <div class="card-header-title">
