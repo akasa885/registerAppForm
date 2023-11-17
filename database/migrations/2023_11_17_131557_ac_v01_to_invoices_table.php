@@ -20,7 +20,7 @@ class AcV01ToInvoicesTable extends Migration
 
             $table->after('status', function ($table) {
                 $table->boolean('is_automatic')->default(false);
-                $table->string('payment_method', 50)->default('bank_transfer');
+                $table->string('payment_method', 50)->nullable()->comment('midtrans, bank_transfer, etc ...');
             });
         });
     }
