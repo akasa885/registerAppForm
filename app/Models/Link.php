@@ -24,6 +24,7 @@ class Link extends Model
         'event_date',
         'created_by',
         'link_type',
+        'price',
         'has_member_limit',
         'member_limit',
         'is_multiple_registrant_allowed',
