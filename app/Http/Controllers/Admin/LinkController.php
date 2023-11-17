@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Helpers\GenerateStringUnique;
 
 use App\Http\Traits\MailPaymentTrait;
 
@@ -57,7 +58,7 @@ class LinkController extends Controller
         try {
             $validated = $request->validated();
             $link = new Link;
-            $link->link_path = $this->getToken(Link::TOKEN_LENGTH);
+            $link->link_path = GenerateStringUnique::make(Link::select('link_path')->get()->toArray(), 'link_path')->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
             if($request->filepath != null){
                 $link->banner = $request->filepath;
