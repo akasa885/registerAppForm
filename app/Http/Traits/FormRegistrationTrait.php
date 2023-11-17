@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Helpers\GenerateStringUnique;;
 use App\Models\Link;
 use App\Models\Member;
 use App\Models\Invoice;
@@ -65,7 +66,7 @@ trait FormRegistrationTrait
     {
         $invoice = new Invoice;
         $invoice->member_id = $member->id;
-        $invoice->token = $this->getToken(Invoice::all()->toArray(), 'token', Member::PAYMENT_TOKEN_LENGTH);
+        $invoice->token = GenerateStringUnique::make(Invoice::all()->toArray(), 'token')->getToken(Member::PAYMENT_TOKEN_LENGTH);
         $currentDateTime = Carbon::now();
         $newDateTime = Carbon::now()->addHours(24);
         $invoice->valid_until = $newDateTime;
