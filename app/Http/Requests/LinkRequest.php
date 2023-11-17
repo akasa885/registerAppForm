@@ -45,6 +45,7 @@ class LinkRequest extends FormRequest
             case "pay" :
                 // append rules
                 $rules += [
+                    'price' => ['required', 'numeric', 'min:0'],
                     'is_multiple_registrant_allowed' => ['sometimes'],
                     'sub_member_limit' => ['required_if:is_multiple_registrant_allowed,1', 'numeric', 'min:2'],
                     'email_confirmation' => ['required', 'max:2000'],

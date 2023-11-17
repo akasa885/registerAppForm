@@ -77,6 +77,7 @@ class LinkController extends Controller
             }
             $link->created_by = auth()->id();
             if($request->event_type == 'pay'){
+                $link->price = $validated['price'];
                 $link->link_type = Link::LINK_TYPE[0];
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
