@@ -73,6 +73,32 @@ trait FormRegistrationTrait
         $invoice->status = 0;
         $invoice->save();
 
+        $this->createOrder($invoice, $link, $member);
+
         return $invoice;
+    }
+
+    private function createOrder($invoice, $link, $member):void
+    {
+        $order = [
+            'member_id' => $member->id,
+            'name' => 'Ticket Registration',
+            'short_description' => 'Ticket '.$link->name,
+            'gross_total' => $link->price,
+            'discount' => 0,
+            'tax' => 0,
+            'net_total' => $link->price,
+            'status' => 1,
+            'invoice_id' => $invoice->id,
+            'snap_token_midtrans' => null,
+            'due_date' => $invoice->valid_until,
+        ];
+
+        $order = $invoice->order()->create($order);
+        
+        $invoice->invoicedOrder()->create([
+            'order_id' => $order->id,
+            'invoice_id' => $invoice->id,
+        ]);
     }
 }
