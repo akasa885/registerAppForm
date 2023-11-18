@@ -50,4 +50,21 @@ class Invoice extends Model
     {
         return $this->belongsTo(Member::class, 'member_id', 'id');
     }
+
+    public function invoicedOrder()
+    {
+        return $this->hasOne(InvoicedOrder::class, 'invoice_id', 'id');
+    }
+
+    public function order()
+    {
+        return $this->hasOneThrough(
+            Order::class,
+            InvoicedOrder::class,
+            'invoice_id',
+            'id',
+            'id',
+            'order_id'
+        );
+    }
 }
