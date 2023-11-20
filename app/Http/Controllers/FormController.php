@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 
+use App\Services\Midtrans\CreateSnapTokenService;
 // request
 use App\Http\Requests\StoreFormUserRequest;
 use App\Http\Requests\MultiRegistrantRequest;
@@ -174,6 +175,7 @@ class FormController extends Controller
                 $dataReturn['used'] = $used;
                 $dataReturn['expired'] = $expired;
 
+                // will show if payment is used
                 return view('pages.pendaftaran.upPay', $dataReturn);
             }
             if($date <= date("Y-m-d H:i:s", strtotime($pay_detail->valid_until)) ){
@@ -184,6 +186,13 @@ class FormController extends Controller
                     $dataReturn['used'] = $used;
                     $dataReturn['expired'] = $expired;
 
+                    if (config('app.version') && config('app.version') == '1.1.0') {
+                        $this->checkSnapToken($pay_detail);
+                        if ($pay_detail->order->snap_token_midtrans) {
+                            $dataReturn['snap_token'] = $pay_detail->order->snap_token_midtrans;
+                        }
+                    }
+                    // will show if payment is not used, and not expired
                     return view('pages.pendaftaran.upPay', $dataReturn);
                 }else{
                     abort(404);
@@ -204,6 +213,7 @@ class FormController extends Controller
                     $dataReturn['message'] = 'Sorry, the payment upload time has expired. Please register again. (Make sure the information you entered is correct)';
                 }
 
+                // will show if payment is not used, and expired
                 return view('pages.pendaftaran.upPay', $dataReturn);
             }
         }else{
@@ -212,6 +222,7 @@ class FormController extends Controller
             $dataReturn['route_form'] = $route_form;
             $dataReturn['not_found'] = $not_found;
 
+            // will show if payment is not found
             return view ('pages.pendaftaran.upPay', $dataReturn);
         }
     }
@@ -284,6 +295,24 @@ class FormController extends Controller
         } catch (\Throwable $th) {
             throw $th;
             // abort(500);
+        }
+    }
+
+    private function checkSnapToken($invoice)
+    {
+        try {
+            $invoicedOrder = $invoice->order;
+            $snapToken = $invoicedOrder->snap_token_midtrans;
+
+            if (is_null($snapToken) && $invoice->status == 0 ) {
+                $midtrans = new CreateSnapTokenService($invoicedOrder);
+                $snapToken = $midtrans->getSnapToken();
+
+                $invoicedOrder->snap_token_midtrans = $snapToken;
+                $invoicedOrder->save();
+            }
+        }catch (\Throwable $th) {
+            //nothing to do
         }
     }
 }
