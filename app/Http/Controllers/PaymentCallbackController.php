@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Account;
+use App\Models\Member;
 use App\Models\Invoice;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -152,23 +152,18 @@ class PaymentCallbackController extends Controller
             }
 
             $customer_id = Crypt::decryptString($request->customer_id);
-            $order = Order::where('order_id', $request->order_id)->firstOrFail();
-            $customer = Account::where('id', $customer_id)->firstOrFail();
-            // $order = Order::first();
-            // $customer = Account::first();
+            $order = Order::where('order_number', $request->order_id)->firstOrFail();
+            $customer = Member::where('id', $customer_id)->firstOrFail();
 
             $data = [
-                'order_id' => $order->order_id,
+                'order_number' => $order->order_number,
                 'order_net_total' => $order->net_total,
                 'customer' => $customer ?? null,
                 'status' => $request->status,
+                'form_link' => route('form.link.view', ['link' => $customer->link->link_path])
             ];
-            return view('page.transaction.callback-info', [
-                'title' => [
-                    'web' => 'Payment Status',
-                    'page' => 'Payment Status',
-                ],
-            ], $data);
+
+            return view('pages.transaction.callback-info', $data);
         } catch (\Throwable $th) {
             if (config('app.debug')) throw $th;
             report($th);
