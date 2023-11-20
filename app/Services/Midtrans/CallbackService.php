@@ -63,9 +63,14 @@ class CallbackService extends Midtrans
         return $this->order;
     }
 
+    public function getPaymentType()
+    {
+        return $this->notification->payment_type;
+    }
+
     protected function _createLocalSignatureKey()
     {
-        $orderId = $this->order->order_id;
+        $orderId = $this->order->order_number;
         $statusCode = $this->notification->status_code;
         $grossAmount = $this->changeIntegerIntoDecimalTwo($this->order->net_total);
         $serverKey = $this->serverKey;
@@ -80,7 +85,7 @@ class CallbackService extends Midtrans
         $notification = new Notification();
 
         $orderNumber = $notification->order_id;
-        $order = Order::where('order_id', $orderNumber)->first();
+        $order = Order::where('order_number', $orderNumber)->first();
 
         $this->notification = $notification;
         $this->order = $order;
