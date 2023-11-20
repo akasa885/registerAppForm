@@ -10,9 +10,11 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Services\Midtrans\CallbackService;
+use App\Http\Traits\MailPaymentTrait;
 
 class PaymentCallbackController extends Controller
 {
+    use MailPaymentTrait;
     private function createDuplicateOrder($order)
     {
         $preDupOrder = $order->prepDupOrder();
@@ -57,6 +59,11 @@ class PaymentCallbackController extends Controller
                         'status' => 2,
                         'payment_method' => $callback->getPaymentType(),
                     ]);
+
+                    $member = $order->member;
+                    $linkMember = $member->link;
+
+                    $this->sendMailPaymentReceived($linkMember, $member);
                 }
 
                 if ($callback->isPending()) {
@@ -78,13 +85,10 @@ class PaymentCallbackController extends Controller
                 }
 
                 if ($callback->isCancelled()) {
-                    Order::where('id', $order->id)->update([
-                        'status' => 5,
-                    ]);
+                    $member = $order->member;
 
-                    Invoice::where('id', $invoice->id)->update([
-                        'status' => 0,
-                    ]);
+                    // force delete member
+                    $member->forceDelete();
                 }
 
                 DB::commit();
