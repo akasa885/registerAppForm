@@ -97,4 +97,9 @@ class Link extends Model
     {
         return $this->members->count('email');
     }
+
+    public function ordered()
+    {
+        return $this->morphMany(OrderDetail::class, 'orderable');
+    }
 }
