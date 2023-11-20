@@ -47,7 +47,7 @@ class CreateSnapTokenService extends Midtrans
         foreach($details as $item) {
             $data[] = [
                 'id' => $item->id,
-                'price' => $this->countPriceDetailIncluceTax($item->price)['total'],
+                'price' => $item->price,
                 'quantity' => $item->qty,
                 'name' => $item->name,
             ];
