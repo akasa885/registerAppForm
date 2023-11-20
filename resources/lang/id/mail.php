@@ -23,4 +23,5 @@ return [
     'reminder' => [
         'info_event' => 'Acara anda dijadwalkan pada tanggal :event_date . Jangan lupa untuk menghadiri acara tersebut ya!. Detail ada dibawah ini.',
     ],
+    'message-check-email-event-info' => 'Silahkan cek email anda untuk informasi acara',
 ];

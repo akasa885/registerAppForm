@@ -22,5 +22,6 @@ return [
     ],
     'reminder' => [
         'info_event' => 'Your event is scheduled on :event_date . Don\'t forget to attend the event!. Details are below.',
-    ]
+    ],
+    'message-check-email-event-info' => 'Please check your email for event information',
 ];
