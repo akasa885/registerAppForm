@@ -9,10 +9,11 @@ use App\Models\Invoice;
 use Carbon\Carbon;
 
 use App\Http\Traits\GenerateTokenUniqueColumnTrait;
+use App\Http\Traits\OrderedDetailTrait;
 
 trait FormRegistrationTrait
 {
-    use GenerateTokenUniqueColumnTrait;
+    use GenerateTokenUniqueColumnTrait, OrderedDetailTrait;
 
     public function AvailableMemberOnEvent($member, $email)
     {
@@ -83,7 +84,7 @@ trait FormRegistrationTrait
         $order = [
             'member_id' => $member->id,
             'name' => 'Ticket Registration',
-            'short_description' => 'Ticket '.$link->name,
+            'short_description' => 'Ticket '.$link->title,
             'gross_total' => $link->price,
             'discount' => 0,
             'tax' => 0,
@@ -99,6 +100,14 @@ trait FormRegistrationTrait
         $invoice->invoicedOrder()->create([
             'order_id' => $order->id,
             'invoice_id' => $invoice->id,
+        ]);
+
+        $this->storeOrderDetail($link, $order->id, [
+            'name' => $link->title,
+            'short_description' => 'Ticket Registration '.$link->title,
+            'price' => $link->price,
+            'qty' => 1,
+            'total' => $link->price,
         ]);
     }
 }
