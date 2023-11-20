@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\AjaxController as AdminAjaxC;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
 
@@ -67,6 +68,10 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
             Route::post('/accepted-receipt', [MemberController::class, 'updateBukti'])->name('up.bukti');
         });
         // < ------------------------------- Members Admin ----------------------------------------- >
+
+        // < ------------------------------- Session Ajax Check ----------------------------------------- >
+        Route::post('/check-session', [AdminAjaxC::class, 'checkSession'])->name('check.session');
+        // < ------------------------------- Session Ajax Check ----------------------------------------- >
 
     });
 
