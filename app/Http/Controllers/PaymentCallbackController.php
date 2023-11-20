@@ -50,29 +50,24 @@ class PaymentCallbackController extends Controller
                 if ($callback->isSuccess()) {
                     Order::where('id', $order->id)->update([
                         'paid_at' => now(),
-                        'status' => 4,
+                        'status' => 3,
                     ]);
 
-                    $orderedSubscription = $order->mySubscriptionOrder()->first();
-                    if ($orderedSubscription) {
-                        $orderedSubscription->orderable->is_paid = true;
-                        $orderedSubscription->orderable->save();
-                    }
-
                     Invoice::where('id', $invoice->id)->update([
-                        'status' => 3,
+                        'status' => 2,
+                        'payment_method' => $callback->getPaymentType(),
                     ]);
                 }
 
                 if ($callback->isPending()) {
                     Order::where('id', $order->id)->update([
-                        'status' => 3,
+                        'status' => 2,
                     ]);
                 }
 
                 if ($callback->isExpire()) {
                     Order::where('id', $order->id)->update([
-                        'status' => 5,
+                        'status' => 6,
                     ]);
 
                     $newOrder = $this->createDuplicateOrder($order);
@@ -88,7 +83,7 @@ class PaymentCallbackController extends Controller
                     ]);
 
                     Invoice::where('id', $invoice->id)->update([
-                        'status' => 5,
+                        'status' => 0,
                     ]);
                 }
 
@@ -134,7 +129,7 @@ class PaymentCallbackController extends Controller
         try {
             // // make validator for request
             $validator = Validator::make($request->all(), [
-                'order_id' => 'required|exists:orders,order_id',
+                'order_id' => 'required|exists:orders,order_number',
                 'customer_id' => 'required',
                 'status' => 'required|in:success,pending,cancelled,expire',
             ]);
