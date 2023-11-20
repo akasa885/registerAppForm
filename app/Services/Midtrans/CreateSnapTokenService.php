@@ -23,13 +23,13 @@ class CreateSnapTokenService extends Midtrans
     {
         $params = [
             'transaction_details' => [
-                'order_id' => $this->order->order_id,
+                'order_id' => $this->order->order_number,
                 'gross_amount' => $this->order->net_total,
             ],
             'item_details' => $this->setDetailsOfOrder(),
             'customer_details' => $this->setCustomerInformation(),
             'callbacks' => [
-                'finish' => route('payments.callback.status.page')."?order_id={$this->order->order_id}&customer_id=".Crypt::encryptString($this->order->account->id)."&status=success",
+                'finish' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id)."&status=success",
             ]
         ];
 
@@ -58,12 +58,12 @@ class CreateSnapTokenService extends Midtrans
 
     private function setCustomerInformation(): array
     {
-        $account = $this->order->account;
+        $registrant = $this->order->member;
         
         return [
-            'first_name' => $account->org_name,
-            'email' => $account->pic_email,
-            'phone' => $account->org_phone,
+            'first_name' => $registrant->full_name,
+            'email' => $registrant->email,
+            'phone' => $registrant->contact_number,
         ];
     }
 }
