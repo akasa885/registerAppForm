@@ -11,6 +11,8 @@ class Order extends Model
 {
     use HasFactory, UuidIdenty, FormatNumberTrait;
 
+    const TAX_RATE = 11;
+
     const STATUS = [
         'pending', 'processing', 'completed', 'decline', 'cancel', 'void'
     ];
