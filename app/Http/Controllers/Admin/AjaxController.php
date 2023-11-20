@@ -40,4 +40,32 @@ class AjaxController extends Controller
             'view' => $view,
         ]);
     }
+
+    public function checkSession(Request $request)
+    {
+        $request->validate([
+            'session' => 'required',
+        ]);
+        
+        $session = $request->session;
+        if ($session == 'auth') {
+            if (auth()->check()) {
+                return new JsonResponse([
+                    'status' => 'success',
+                    'message' => 'Session is valid',
+                ]);
+            } else {
+                return new JsonResponse([
+                    'status' => 'error',
+                    'message' => 'Session is invalid',
+                    'redirect' => route('admin.login'),
+                ]);
+            }
+        } else {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Session is invalid',
+            ]);
+        }
+    }
 }
