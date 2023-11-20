@@ -35,6 +35,16 @@ class OrderDetail extends Model
         'orderable_type',
     ];
 
+    public function prepDupOrderDetail(): OrderDetail
+    {
+        $orderDetail = new OrderDetail;
+        $orderDetail->fill($this->toArray());
+        $orderDetail->order_id = null;
+        $orderDetail->uuid = null;
+
+        return $orderDetail;
+    }
+
     public function order()
     {
         return $this->belongsTo(Order::class);

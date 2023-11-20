@@ -85,6 +85,22 @@ class Order extends Model
         return $this->addZeroPrefix(4, $orderSequence);
     }
 
+    public function prepDupOrder(): Order
+    {
+        //this will prepare to duplicate order. without id, order_id, snap_token_midtrans, paid_at
+        $order = new Order;
+        $order->name = $this->name;
+        $order->short_description = $this->short_description;
+        $order->gross_total = $this->gross_total;
+        $order->discount = $this->discount;
+        $order->tax = $this->tax;
+        $order->net_total = $this->net_total;
+        $order->status = 'pending';
+        $order->member_id = $this->member_id;
+        $order->invoice_id = $this->invoice_id;
+
+        return $order;
+    }
 
 
     public function member()
