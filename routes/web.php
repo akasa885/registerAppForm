@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LinkController;
 use App\Http\Controllers\Admin\MemberController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\AjaxController as AdminAjaxC;
+use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
 
@@ -76,6 +77,11 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
     });
 
     Auth::routes();
+});
+
+Route::prefix('/payments')->name('payments.')->group(function () {
+    Route::post('/midtrans-notification', [PaymentCallbackController::class, 'receive'])->name('callback.catch');
+    Route::get('/response/status', [PaymentCallbackController::class, 'status'])->name('callback.status.page');
 });
 
 Route::get('/home', [\App\Http\Controllers\HomeController::class, 'index'])->name('home');
