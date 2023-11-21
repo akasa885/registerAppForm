@@ -3,6 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Eform for Registration Management">
+    <meta name="keywords" content="eform, registration, management, laravel, php, mysql, bootstrap, tailwindcss, alpinejs, livewire, rizkiakbar, rizki, akbar">
+    <meta name="author" content="Rizki Akbar">
+    <meta name="author_email" content="rixak98@gmail.com">
+    <meta name="application-name" content="Eform for Registration Management">
+    <meta name="googlebot" content="index, follow">
+    <meta name="robots" content="index, unfollow">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -61,6 +68,8 @@
         </header>
 
         @yield('content')
+
+        @include('includes.front_footer')
     </div>
     @stack('scripts')
 </body>
