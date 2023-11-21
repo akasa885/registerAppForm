@@ -45,7 +45,6 @@ class Link extends Model
 
     protected $appends = [
         'price_formatted',
-        'number'
     ];
 
     /**
