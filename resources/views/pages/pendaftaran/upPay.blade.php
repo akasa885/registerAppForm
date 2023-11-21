@@ -11,11 +11,9 @@
                     <x-front-message-success-alert :message="$message" />
                 @elseif($used)
                     @if (config('app.locale') == 'id')
-                        <h3 class="font-semibold p-10 sm:mx-auto">Anda telah upload bukti bayar, silahkan tunggu balasan
-                            konfirmasi di email anda !</h3>
+                        <h3 class="font-semibold p-10 sm:mx-auto">Anda telah melakukan pembayaran, silahkan tunggu balasan pada email anda !</h3>
                     @else
-                        <h3 class="font-semibold p-10 sm:mx-auto">You have uploaded proof of payment, please wait for a
-                            confirmation reply in your email !</h3>
+                        <h3 class="font-semibold p-10 sm:mx-auto">You have made a payment, please wait for a reply to your email !</h3>
                     @endif
                 @elseif($not_found)
                     @include('pages.pendaftaran.pay_confirmation.not_found_token')
