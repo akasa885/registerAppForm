@@ -93,6 +93,11 @@ return [
 
     'locale' => 'en',
 
+    'available_locales' => [
+        'Indonesia' => 'id',
+        'English' => 'en'
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Application Fallback Locale
