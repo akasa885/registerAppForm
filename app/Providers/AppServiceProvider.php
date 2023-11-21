@@ -29,5 +29,10 @@ class AppServiceProvider extends ServiceProvider
         Relation::enforceMorphMap([
             'MorphLinks' => 'App\Models\Link',
         ]);
+
+        view()->composer('partials.language_switcher_front', function ($view) {
+            $view->with('current_locale', app()->getLocale());
+            $view->with('available_locales', config('app.available_locales'));
+        });
     }
 }
