@@ -4,9 +4,8 @@
         $date = date('Y-m-d');
     @endphp
     <div class="container-fluid mx-auto p-6">
-        <div class="flex items-stretch -mx-4">
-            <div
-                class="p-10 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5">
+        <div class="flex items-stretch -mx-4 flex-col">
+            <div class="p-10 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-5" id="list-wrapper">
                 @foreach ($link as $item)
                     @php
                         $open = false;
@@ -82,6 +81,95 @@
                     </div>
                 @endforeach
             </div>
+            <div class="grid cols-1">
+                <div class="col-span-full text-center">
+                    <!--begin::data loader loading-->
+                    <div class="flex justify-center items-center w-full hidden" id="item-loader-animation">
+                        <button
+                            class="flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                                fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z">
+                                </path>
+                            </svg>
+                            Loading
+                        </button>
+                    </div>
+                    <!--end::data loader loading-->
+                    <!--begin::data loader button-->
+                    <button type="button"
+                        class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full"
+                        id="load_more_button">
+                        Load More
+                    </button>
+                    <!--end::data loader button-->
+                    <!--begin::data loader no more-->
+                    <div class="flex justify-center items-center w-full hidden" id="item-loader-no-more">
+                        <span class="text-gray-500"> All Data Loaded </span>
+                    </div>
+                    <!--end::data loader no more-->
+                </div>
+            </div>
         </div>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        let linkListComponent = function () {
+            let page = 1;
+            let ENDPOINT = "{{ route('home') }}";
+
+            let loadMore = function () {
+                $('#load_more_button').on('click', function () {
+                    page++;
+                    loadMoreData(page);
+                });
+            }
+
+            let loadMoreData = function (page) {
+                $.ajax({
+                    url: ENDPOINT+"?page="+page,
+                    type: "GET",
+                    beforeSend: function () {
+                        $('#item-loader-animation').removeClass('hidden');
+                        $('#load_more_button').addClass('hidden');
+                        $('#item-loader-no-more').addClass('hidden');
+                    },
+                    success: function (response) {
+                        setTimeout(function () {
+                            $('#item-loader-animation').addClass('hidden');
+                            $('#load_more_button').removeClass('hidden');
+                            $('#item-loader-no-more').addClass('hidden');
+
+                            if (response.html == "") {
+                                $('#load_more_button').addClass('hidden');
+                                $('#item-loader-no-more').removeClass('hidden');
+                            } else {
+                                $('#load_more_button').removeClass('hidden');
+                                $('#item-loader-no-more').addClass('hidden');
+                            }
+
+                            $('#list-wrapper').append(response.html);
+                        }, 1000);
+                    },
+                    error: function (xhr) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
+
+            return {
+                init: function () {
+                    loadMore();
+                }
+            }
+        }();
+
+        $(document).ready(function () {
+            linkListComponent.init();
+        });
+    </script>
+@endpush
