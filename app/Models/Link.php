@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Http\Traits\FormatNumberTrait;
 
 class Link extends Model
 {
-    use HasFactory;
+    use HasFactory, FormatNumberTrait;
     const TOKEN_LENGTH = 5;
     const LINK_TYPE = ['pay', 'free'];
 
@@ -42,6 +43,11 @@ class Link extends Model
         'is_multiple_registrant_allowed' => 'boolean',
     ];
 
+    protected $appends = [
+        'price_formatted',
+        'number'
+    ];
+
     /**
      * Get all of the members for the Link
      *
@@ -50,6 +56,11 @@ class Link extends Model
     public function members()
     {
         return $this->hasMany(Member::class, 'link_id', 'id');
+    }
+
+    public function getPriceFormattedAttribute()
+    {
+        return $this->priceWithCurrencyAndDecimal($this->price);
     }
 
     public function scopeLatestFirst($query)
