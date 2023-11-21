@@ -6,7 +6,7 @@ trait FormatNumberTrait
 {
     public function priceWithCurrency($price)
     {
-        return 'Rp. ' . number_format($price, 0, ',', '.');
+        return 'IDR. ' . number_format($price, 0, ',', '.');
     }
 
     public function priceWithoutCurrency($price)
@@ -16,7 +16,7 @@ trait FormatNumberTrait
 
     public function priceWithCurrencyAndDecimal($price)
     {
-        return 'Rp. ' . number_format($price, 2, ',', '.');
+        return 'IDR. ' . number_format($price, 2, ',', '.');
     }
 
     public function priceWithoutCurrencyAndDecimal($price)
