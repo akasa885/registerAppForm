@@ -23,6 +23,7 @@
     
     <!-- Styles -->
     <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <script src="{{ asset('/vendor/jquery-3.4.min.js') }}"></script>
 
     <style>
         .required::after {
