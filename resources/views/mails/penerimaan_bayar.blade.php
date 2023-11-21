@@ -28,6 +28,7 @@
                     <tr>
                         <td style="border:none;">
                             <p>Kode Invoice: <strong>{{ $data['token'] }}</strong></p>
+                            <p>Order Number:  <strong>{{ $data['order'] }}</strong></p>
                         </td>
                     </tr>
                     @endif

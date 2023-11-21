@@ -35,11 +35,13 @@ trait MailPaymentTrait {
                 $information = $item->information;
             }
         }
+        $invoiceUser = $member->invoices;
         $data = array(
             'name'      =>  $member->full_name,
             'acara'     => $link->title,
             'message'   =>   $information,
-            'token'     => $member->invoices->token ?? null,
+            'token'     => $invoiceUser->token ?? null,
+            'order'     => $invoiceUser->order->order_number ?? null,
         );
         $from_mail = Email::EMAIL_FROM;
 
