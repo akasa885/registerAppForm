@@ -22,11 +22,14 @@
             content: "*";
             color: red;
         }
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
     </style>
 </head>
 <body class="bg-gray-100 h-screen antialiased leading-none font-sans">
     <div id="app">
-        <header class="bg-blue-900 py-6">
+        <header class="bg-blue-900 py-5">
             <div class="container mx-auto flex justify-between items-center px-6">
                 <div>
                     <a href="{{ url('/') }}" class="text-lg font-semibold text-gray-100 no-underline">
@@ -34,6 +37,7 @@
                     </a>
                 </div>
                 <nav class="space-x-4 text-gray-300 text-sm sm:text-base">
+                    @include('partials.language_switcher_front')
                     @guest
                         {{-- <a class="no-underline hover:underline" href="{{ route('admin.login') }}">{{ __('Login') }}</a> --}}
                         @if (Route::has('register'))
