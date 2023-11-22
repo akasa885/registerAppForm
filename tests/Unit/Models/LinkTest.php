@@ -3,12 +3,15 @@
 namespace Tests\Unit\Models;
 
 use App\Models\Link;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 // use PHPUnit\Framework\TestCase;
 use Illuminate\Support\Carbon;
 use Tests\TestCase;
 
 class LinkTest extends TestCase
 {
+    use RefreshDatabase;
+    
     public function test_create_link()
     {
         $user = \App\Models\User::factory()->create();
