@@ -40,7 +40,7 @@ class RejectedPay extends Mailable
     {
         return $this
         ->from($this->from_mail, "Event Organizer Upquality")
-        ->subject('Bukti Pembayaran Anda Ditolak')
+        ->subject($this->subject)
         ->view('mails.bukti_bayar')
         ->with('data', $this->data);
     }
