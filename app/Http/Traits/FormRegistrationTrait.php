@@ -104,7 +104,7 @@ trait FormRegistrationTrait
         ]);
 
         $this->storeOrderDetail($link, $order->id, [
-            'name' => 'Ticket ' . $link->title,
+            'name' => 'Ticket Registration ',
             'short_description' => 'Ticket Registration ' . $link->title,
             'price' => $link->price,
             'qty' => 1,
