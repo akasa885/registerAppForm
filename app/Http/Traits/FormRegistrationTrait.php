@@ -3,6 +3,7 @@
 namespace App\Http\Traits;
 
 use App\Helpers\GenerateStringUnique;;
+
 use App\Models\Link;
 use App\Models\Member;
 use App\Models\Invoice;
@@ -79,12 +80,12 @@ trait FormRegistrationTrait
         return $invoice;
     }
 
-    private function createOrder($invoice, $link, $member):void
+    private function createOrder($invoice, $link, $member): void
     {
         $order = [
             'member_id' => $member->id,
             'name' => 'Ticket Registration',
-            'short_description' => 'Ticket '.$link->title,
+            'short_description' => 'Ticket ' . $link->title,
             'gross_total' => $link->price,
             'discount' => 0,
             'tax' => 0,
@@ -96,15 +97,15 @@ trait FormRegistrationTrait
         ];
 
         $order = $invoice->order()->create($order);
-        
+
         $invoice->invoicedOrder()->create([
             'order_id' => $order->id,
             'invoice_id' => $invoice->id,
         ]);
 
         $this->storeOrderDetail($link, $order->id, [
-            'name' => $link->title,
-            'short_description' => 'Ticket Registration '.$link->title,
+            'name' => 'Ticket ' . $link->title,
+            'short_description' => 'Ticket Registration ' . $link->title,
             'price' => $link->price,
             'qty' => 1,
             'total' => $link->price,
