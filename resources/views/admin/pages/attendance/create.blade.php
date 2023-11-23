@@ -21,7 +21,10 @@
 <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
-
+        $('#select-event').select2({
+            placeholder: "Select Event",
+            allowClear: true
+        });
     });
 </script>
 @endpush
