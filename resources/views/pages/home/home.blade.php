@@ -32,8 +32,9 @@
                             <a href="{{ route('form.link.view', ['link' => $item->link_path]) }}">
                                 <div class="flex flex-col h-full bg-white rounded-lg shadow-lg">
                                     <div class="border-b border-gray-200">
-                                        <img class="w-full transition bg-cool-gray-200 duration-300 object-contain h-72 ease-in-out md:h-64 sm:h-56 hover:scale-110"
-                                            src="{{ $item->banner == null ? asset('/images/default/no-image.png') : $item->banner }}"
+                                        <img class="w-full transition bg-cool-gray-200 duration-300 object-contain h-72 ease-in-out md:h-64 sm:h-56 hover:scale-110 image-lazy-load"
+                                            data-src="{{ $item->banner == null ? asset('/images/default/no-image.png') : $item->banner }}"
+                                            loading="lazy"
                                             alt="banner">
                                     </div>
                                     <div class="px-4 py-2 flex-grow">
@@ -179,6 +180,27 @@
                 }
             }
         }();
+
+        $(function () {
+            let imageOverlayHtml = '<div class="absolute inset-0 bg-gray-500 opacity-75 transition duration-300 ease-in-out hover:opacity-0"></div>';
+            let imageLoaderHtml = '<div class="absolute inset-0 flex justify-center items-center w-full" id="image-loader-animation"><button class="flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Loading</button></div>';
+            $('img').each(function(){ 
+                $(this).wrap('<div class="relative"></div>');
+                $(this).after(imageOverlayHtml);
+                $(this).after(imageLoaderHtml);
+                // iamge is data-src
+                $(this).attr('src', $(this).attr('data-src'));
+                $(this).on('load', function(){
+                    $(this).next().remove();
+                    $(this).next().remove();
+                });
+
+                $(this).on('error', function(){
+                    $(this).next().remove();
+                    $(this).next().remove();
+                });
+            });
+        });
 
         $(document).ready(function () {
             linkListComponent.init();

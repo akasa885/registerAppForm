@@ -90,7 +90,7 @@
             <div class="flex flex-col p-5 sm:p-8">
                 <div class="block mb-2">
                     <div class="flex justify-center">
-                        <img src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="w-64 h-64">
+                        <img src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="w-64 h-64 image-lazy-load" loading="lazy" >
                     </div>
                 </div>
             </div>
