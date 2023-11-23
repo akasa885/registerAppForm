@@ -41,7 +41,7 @@
                         @endif
                         <div class="flex flex-wrap">
                             <!-- begin::Action-->
-                            <a target="__blank" href="{{ "https://app.sandbox.midtrans.com/snap/v2/vtweb/".$snap_token }}" id="button" class="w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">Continue To Payment</a>
+                            <a target="__blank" href="{{ $snap_redirect }}" id="button" class="w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">Continue To Payment</a>
                             <!-- end::Action-->
                         </div>
                         @else

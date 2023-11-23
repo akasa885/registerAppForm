@@ -190,6 +190,7 @@ class FormController extends Controller
                         $this->checkSnapToken($pay_detail);
                         if ($pay_detail->order->snap_token_midtrans) {
                             $dataReturn['snap_token'] = $pay_detail->order->snap_token_midtrans;
+                            $dataReturn['snap_redirect'] = $pay_detail->order->snap_redirect;
                         }
                     }
                     // will show if payment is not used, and not expired
@@ -307,8 +308,10 @@ class FormController extends Controller
             if (is_null($snapToken) && $invoice->status == 0 ) {
                 $midtrans = new CreateSnapTokenService($invoicedOrder);
                 $snapToken = $midtrans->getSnapTokenWithGopay();
+                $snapUrl = $midtrans->getSnapUrl();
 
                 $invoicedOrder->snap_token_midtrans = $snapToken;
+                $invoicedOrder->snap_redirect = $snapUrl;
                 $invoicedOrder->save();
             }
         }catch (\Throwable $th) {
