@@ -313,6 +313,8 @@ class FormController extends Controller
             }
         }catch (\Throwable $th) {
             //nothing to do
+            \Log::error('Error on request show bill');
+            report($th);
         }
     }
 }
