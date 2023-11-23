@@ -37,6 +37,7 @@ class Order extends Model
         'status',
         'invoice_id',
         'snap_token_midtrans',
+        'snap_redirect',
         'due_date',
         'paid_at',
     ];
