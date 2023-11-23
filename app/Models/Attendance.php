@@ -16,6 +16,8 @@ class Attendance extends Model
         'active_until',
         'confirmation_mail',
         'with_verification_certificate',
+        'price_certificate',
+        'is_using_payment_gateway',
         'allow_non_register',
         'created_by',
     ];
@@ -24,6 +26,7 @@ class Attendance extends Model
         'active_from' => 'datetime',
         'active_until' => 'datetime',
         'with_verification_certificate' => 'boolean',
+        'is_using_payment_gateway' => 'boolean',
     ];
 
     public function isCertNeedVerification()
