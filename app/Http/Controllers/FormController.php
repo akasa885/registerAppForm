@@ -306,7 +306,7 @@ class FormController extends Controller
 
             if (is_null($snapToken) && $invoice->status == 0 ) {
                 $midtrans = new CreateSnapTokenService($invoicedOrder);
-                $snapToken = $midtrans->getSnapToken();
+                $snapToken = $midtrans->getSnapTokenWithGopay();
 
                 $invoicedOrder->snap_token_midtrans = $snapToken;
                 $invoicedOrder->save();

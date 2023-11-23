@@ -5,12 +5,15 @@ namespace App\Services\Midtrans;
 use Midtrans\Snap;
 use Illuminate\Support\Facades\Crypt;
 use App\Http\Traits\OrderedDetailTrait;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Exception;
 
 class CreateSnapTokenService extends Midtrans
 {
     use OrderedDetailTrait;
 
     protected $order;
+    private $gopaySettings = false;
 
     public function __construct($order)
     {
@@ -26,6 +29,9 @@ class CreateSnapTokenService extends Midtrans
                 'order_id' => $this->order->order_number,
                 'gross_amount' => $this->order->net_total,
             ],
+            'credit_card' => [
+                'secure' => true,
+            ],
             'item_details' => $this->setDetailsOfOrder(),
             'customer_details' => $this->setCustomerInformation(),
             'callbacks' => [
@@ -33,9 +39,36 @@ class CreateSnapTokenService extends Midtrans
             ]
         ];
 
+        if($this->gopaySettings) {
+            $params = array_merge($params, $this->withGopayCallbacks());
+        }
+
         $snapToken = Snap::getSnapToken($params);
 
         return $snapToken;
+    }
+
+    private function withGopayCallbacks()
+    {
+        return [
+            'gopay' => [
+                'enable_callback' => true,
+                'callback_url' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id)."&status=success",
+            ]
+        ];
+    }
+
+    /**
+     * Get snap token with gopay callbacks
+     * @return string 
+     * @throws BindingResolutionException 
+     * @throws Exception 
+     */
+    public function getSnapTokenWithGopay()
+    {
+        $this->gopaySettings = true;
+
+        return $this->getSnapToken();
     }
 
     private function setDetailsOfOrder(): array
@@ -50,6 +83,7 @@ class CreateSnapTokenService extends Midtrans
                 'price' => $item->price,
                 'quantity' => $item->qty,
                 'name' => $item->name,
+                'category' => $item->orderable->category,
             ];
         }
 
