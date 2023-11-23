@@ -20,11 +20,13 @@
     <link href="{{ asset('/vendor/bootstrap/css/bootstrap-datepicker.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.20/datatables.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     @stack('up_styles')
 
     <!-- Scripts -->
     <script src="{{ asset('/vendor/jquery-3.4.min.js') }}"></script>
     <script src="{{ asset('/vendor/bootstrap/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     @stack('up_scripts')   
 
