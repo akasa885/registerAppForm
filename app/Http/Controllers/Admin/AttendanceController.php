@@ -46,8 +46,13 @@ class AttendanceController extends Controller
      */
     public function create($type)
     {
-        $links_active = Link::filterActiveMyLinks();
-        $links = auth()->user()->links;
+        $user = auth()->user();
+        if ($user->role == 'super admin') {
+            $links = Link::all();
+        } else {
+            $links = Link::myLinksEventRange();
+            // $links = auth()->user()->links;
+        }
         
         return view('admin.pages.attendance.create', compact('type', 'links'));
     }

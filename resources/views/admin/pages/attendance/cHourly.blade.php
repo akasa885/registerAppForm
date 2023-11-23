@@ -38,7 +38,7 @@
                     <div class="col-md-9">
                         <select name="selected_event" id="select-event" class="form-control-sm form-control">
                             @foreach ($links as $link)
-                                <option value="{{ $link->link_path }}">{{ ucfirst($link->title) }}</option>
+                                <option value="{{ $link->link_path }}">{{ ucfirst($link->title) . ' [created: '.date('d/m/Y', strtotime($link->created_at)).'] ' }}</option>
                             @endforeach
                         </select>
                     </div>
