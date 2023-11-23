@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Http\Traits\FormatNumberTrait;
+use Carbon\Carbon;
 
 class Link extends Model
 {
@@ -76,6 +77,21 @@ class Link extends Model
     
         return $links->filter(function ($link) use ($date) {
             return date("Y-m-d", strtotime($link->active_from)) <= $date && date("Y-m-d", strtotime($link->active_until)) >= $date;
+        });
+    }
+
+    public static function myLinksEventRange()
+    {
+        // get my links based on user, then filter by event date range.
+        $user = auth()->user();
+        $links = $user->links;
+        $date = date("Y-m-d");
+
+        // condition will true if today, is before or equal to event date
+        // or, event date add day 1 days
+
+        return $links->filter(function ($link) use ($date) {
+            return date("Y-m-d", strtotime($link->event_date)) >= $date && date("Y-m-d", strtotime($link->event_date)) <= date("Y-m-d", strtotime($link->event_date . ' + 1 days'));
         });
     }
 
