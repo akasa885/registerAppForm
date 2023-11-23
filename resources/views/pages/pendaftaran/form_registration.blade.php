@@ -90,7 +90,7 @@
             <div class="flex flex-col p-5 sm:p-8">
                 <div class="block mb-2">
                     <div class="flex justify-center">
-                        <img data-src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="w-64 h-64 image-lazy-load" loading="lazy" >
+                        <img data-src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="md:h-64 sm:h-56 image-lazy-load" loading="lazy" >
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                 </div>
                 @enderror
                 <div class="flex flex-wrap">
-                    <label for="input-1" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-1" class="block required text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Full Name') }}:
                     </label>
 
@@ -135,7 +135,7 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-2" class="block required text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Email Address') }}:
                     </label>
 
@@ -152,7 +152,7 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-3" class="block required text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Phone Number (WhatsApp)') }}:
                     </label>
 
@@ -168,7 +168,7 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-4" class="block required text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Domicile (City)') }}:
                     </label>
 
@@ -184,7 +184,7 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-5" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-5" class="block required text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Instance / Company Name') }}:
                     </label>
 

@@ -77,7 +77,7 @@
                         </div>
 
                         <div class="flex flex-wrap">
-                            <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                            <label for="input-2" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4 required">
                                 {{ __('attend.form.email') }}
                             </label>
 
@@ -95,7 +95,7 @@
                         </div>
 
                         <div class="flex flex-wrap">
-                            <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                            <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4 required">
                                 {{ __('attend.form.phone_number') }}
                             </label>
 
