@@ -5,7 +5,7 @@
             <td width="100%" style="background-color: #f25454; color: #FFFFFF;">
                 <p class="heading"
                     style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; line-height: 1.5em; text-align: center;">
-                    Konfirmasi Bukti Bayar
+                    {{ __('mail.payment.title-confirmation') }}
                 </p>
             </td>
         </tr>
@@ -16,12 +16,12 @@
                     style="border: none; background-color: #ffffff; border-bottom: 1px solid #e8e5ef; border-top: 1px solid #e8e5ef; padding: 1.5em;">
                     <tr>
                         <td style="border:none;">
-                            <p>Kepada : <strong>{{ __(ucwords($data['name'])) }}</strong> </p>
+                            <p>{{ __('mail.template.to') }} : <strong>{{ __(ucwords($data['name'])) }}</strong> </p>
                         </td>
                     </tr>
                     <tr>
                         <td style="border:none;">
-                            <p>Yang mendaftar pada acara <strong>{{ $data['acara'] }}</strong></p>
+                            <p>{{ __('mail.template.registered-on') }} <strong>{{ $data['acara'] }}</strong></p>
                         </td>
                     </tr>
                     <tr>
@@ -40,13 +40,13 @@
                             <a href="{{ $data['link_pay'] }}" target="_blank"
                                 style="font-size: 14px; padding: 10px 15px; background-color:darkcyan; text-align: center;
                                 text-decoration: none; color: #FFF; width: 100%; border-radius: 10px; ">
-                                Link Upload Bayar
+                                {{ __('mail.template.btn-text-payment') }}
                             </a>
                         </td>
                     </tr>
                     <tr>
                         <td style="border:none;">
-                            <p>Atau anda bisa copy link dibawah ini..</p>
+                            <p>{{ __('mail.template.text-link-to-copy') }}</p>
                         </td>
                     </tr>
                     <tr>
@@ -59,7 +59,7 @@
                             <table class="wrapper" width="100%" style="border:none;">
                                 <tr>
                                     <td>
-                                        <p><strong>Terima Kasih Telah Menggunakan Layanan Kami !</strong></p>
+                                        <p><strong>{{ __('mail.template.footer-thanks') }}</strong></p>
                                     </td>
                                 </tr>
                             </table>
