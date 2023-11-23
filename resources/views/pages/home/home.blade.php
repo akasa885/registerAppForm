@@ -190,6 +190,7 @@
                 $(this).after(imageLoaderHtml);
                 // iamge is data-src
                 $(this).attr('src', $(this).attr('data-src'));
+                $(this).removeAttr('data-src');
                 $(this).on('load', function(){
                     $(this).next().remove();
                     $(this).next().remove();

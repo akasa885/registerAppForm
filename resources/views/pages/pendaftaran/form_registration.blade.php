@@ -90,7 +90,7 @@
             <div class="flex flex-col p-5 sm:p-8">
                 <div class="block mb-2">
                     <div class="flex justify-center">
-                        <img src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="w-64 h-64 image-lazy-load" loading="lazy" >
+                        <img data-src="{{ $link->banner == null ? asset('/images/default/no-image.png') : $link->banner }}" alt="img-{{ Str::snake($link->title,'-') }}" class="w-64 h-64 image-lazy-load" loading="lazy" >
                     </div>
                 </div>
             </div>
@@ -168,11 +168,11 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-3" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Domicile (City)') }}:
                     </label>
 
-                    <input id="input-3" type="text"
+                    <input id="input-4" type="text"
                         class="form-input w-full @error('domisili') border-red-500 @enderror" name="domisili"
                         value="{{ old('domisili') }}" required autofocus>
 
@@ -184,11 +184,11 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <label for="input-4" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
+                    <label for="input-5" class="block text-gray-700 text-sm font-bold mb-2 sm:mb-4">
                         {{ __('Instance / Company Name') }}:
                     </label>
 
-                    <input id="input-4" type="text"
+                    <input id="input-5" type="text"
                         class="form-input w-full @error('instansi') border-red-500 @enderror" name="instansi"
                         value="{{ old('instansi') }}" required autofocus>
 
@@ -210,3 +210,28 @@
         <!--end::card form register event-->
     </div>
 </div>
+@push('scripts')
+<script>
+    $(function () {
+            let imageOverlayHtml = '<div class="absolute inset-0 bg-gray-500 opacity-75 transition duration-300 ease-in-out hover:opacity-0"></div>';
+            let imageLoaderHtml = '<div class="absolute inset-0 flex justify-center items-center w-full" id="image-loader-animation"><button class="flex items-center justify-center px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"><svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>Loading</button></div>';
+            $('img').each(function(){ 
+                $(this).wrap('<div class="relative"></div>');
+                $(this).after(imageOverlayHtml);
+                $(this).after(imageLoaderHtml);
+                // iamge is data-src
+                $(this).attr('src', $(this).attr('data-src'));
+                $(this).removeAttr('data-src');
+                $(this).on('load', function(){
+                    $(this).next().remove();
+                    $(this).next().remove();
+                });
+
+                $(this).on('error', function(){
+                    $(this).next().remove();
+                    $(this).next().remove();
+                });
+            });
+        });
+</script>
+@endpush
