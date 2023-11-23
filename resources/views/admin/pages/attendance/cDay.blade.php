@@ -47,7 +47,7 @@
                 </div> --}}
                 <div class="row mb-3">
                     <div class="col-md-3 d-flex align-items-center">
-                        <label for="select-event" class="form-label fw-bolder mb-0">Pilih Acara : </label>
+                        <label for="select-event" class="form-label fw-bolder mb-0 required">Pilih Acara : </label>
                     </div>
                     <div class="col-md-9">
                         <select name="selected_event" id="select-event" class="form-control-sm form-control">
@@ -59,7 +59,7 @@
                 </div>
                 <div class="row mb-3">
                     <div class="col-md-3 d-flex align-items-center">
-                        <label for="input-date" class="form-label fw-bolder mb-0">Pilih Tanggal : </label>
+                        <label for="input-date" class="form-label fw-bolder mb-0 required">Pilih Tanggal : </label>
                     </div>
                     <div class="col-md-9">
                         <input type="date" name="date" id="input-date-1" format
