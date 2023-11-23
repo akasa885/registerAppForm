@@ -17,6 +17,13 @@ return [
         'reminder' => 'Your Event Reminder',
         'attendance_confirmation' => 'Your Attendance Information',
     ],
+    'template' => [
+        'to' => 'To',
+        'registered-on' => 'Registered on ',
+        'btn-text-payment' => 'Payment Confirmation Link',
+        'text-link-to-copy' => 'Or you can copy the link below..',
+        'footer-thanks' => 'Thank You For Using Our Service !',
+    ],
     'button' => [
         'attendance_confirmation' => 'Confirm Certificate Data',
     ],
@@ -24,4 +31,7 @@ return [
         'info_event' => 'Your event is scheduled on :event_date . Don\'t forget to attend the event!. Details are below.',
     ],
     'message-check-email-event-info' => 'Please check your email for event information',
+    'payment' => [
+        'title-confirmation' => 'Payment Confirmation',
+    ],
 ];
