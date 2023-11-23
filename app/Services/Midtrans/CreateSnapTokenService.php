@@ -14,6 +14,9 @@ class CreateSnapTokenService extends Midtrans
 
     protected $order;
     private $gopaySettings = false;
+    public $redirectUrlSnap;
+    private $paramsSnap;
+    public $transaction = null;
 
     public function __construct($order)
     {
@@ -43,9 +46,31 @@ class CreateSnapTokenService extends Midtrans
             $params = array_merge($params, $this->withGopayCallbacks());
         }
 
-        $snapToken = Snap::getSnapToken($params);
+        $this->paramsSnap = $params;
+
+        if (is_null($this->transaction)) {
+            $transaction = $this->createTransaction();
+        }
+
+        $snapToken = $this->transaction->token;
 
         return $snapToken;
+    }
+
+    private function createTransaction()
+    {
+        $transaction = Snap::createTransaction($this->paramsSnap);
+
+        $this->transaction = $transaction;
+
+        return $transaction;
+    }
+
+    public function getSnapUrl()
+    {
+        $snapUrl = $this->transaction->redirect_url;
+
+        return $snapUrl;
     }
 
     private function withGopayCallbacks()
