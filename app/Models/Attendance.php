@@ -19,6 +19,7 @@ class Attendance extends Model
         'price_certificate',
         'is_using_payment_gateway',
         'payment_information',
+        'category',
         'allow_non_register',
         'created_by',
     ];
@@ -29,6 +30,17 @@ class Attendance extends Model
         'with_verification_certificate' => 'boolean',
         'is_using_payment_gateway' => 'boolean',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($attendance) {
+            if ($attendance->with_verification_certificate) {
+                $attendance->category = 'certificate';
+            }
+        });
+    }
 
     public function isCertNeedVerification()
     {
@@ -48,5 +60,10 @@ class Attendance extends Model
     public function member_attend()
     {
         return $this->hasMany(MemberAttend::class, 'attend_id', 'id');
+    }
+
+    public function ordered()
+    {
+        return $this->morphMany(OrderDetail::class, 'orderable');
     }
 }

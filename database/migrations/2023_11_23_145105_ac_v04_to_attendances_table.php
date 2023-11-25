@@ -18,6 +18,7 @@ class AcV04ToAttendancesTable extends Migration
                 $table->float('price_certificate', 12, 2)->nullable()->default(0);
                 $table->boolean('is_using_payment_gateway')->nullable()->default(false);
                 $table->text('payment_information')->nullable();
+                $table->string('category')->nullable();
             });
         });
     }
@@ -33,6 +34,7 @@ class AcV04ToAttendancesTable extends Migration
             $table->dropColumn('price_certificate');
             $table->dropColumn('is_using_payment_gateway');
             $table->dropColumn('payment_information');
+            $table->dropColumn('category');
         });
     }
 }
