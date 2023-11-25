@@ -17,7 +17,7 @@
 @endsection
 
 @push('scripts')
-<script src="/vendor/laravel-filemanager/js/stand-alone-button.js"></script>
+<script src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 <script src="//cdn.ckeditor.com/4.17.2/standard/ckeditor.js"></script>
 <script type="text/javascript">
     $(document).ready(function(){
@@ -25,6 +25,21 @@
             placeholder: "Select Event",
             allowClear: true
         });
+
+        // confirm-cert on change
+        $('#confirm-cert').on('change', function(){
+            if($(this).is(':checked')){
+                $('#certificate_extended').removeClass('d-none');
+            }else{
+                $('#certificate_extended').addClass('d-none');
+            }
+        });
+
+        // get status of confirm-cert
+        var confirmCert = $('#confirm-cert').is(':checked');
+        if(confirmCert){
+            $('#certificate_extended').removeClass('d-none');
+        }
     });
 </script>
 @endpush
