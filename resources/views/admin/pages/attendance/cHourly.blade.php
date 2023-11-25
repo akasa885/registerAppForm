@@ -49,7 +49,7 @@
                         </label>
                     </div>
                     <div class="col-md-9">
-                        <input type="datetime-local" name="datetime_start" id="input-date-1" format
+                        <input type="datetime-local" name="datetime_start" id="input-date-1" value="{{ old('datetime_start') }}" format
                             class="form-control-sm form-control">
                     </div>
                 </div>
@@ -59,7 +59,7 @@
                         </label>
                     </div>
                     <div class="col-md-9">
-                        <input type="datetime-local" name="datetime_end" id="input-date-2" format
+                        <input type="datetime-local" name="datetime_end" id="input-date-2" value="{{ old('datetime_end') }}" format
                             class="form-control-sm form-control">
                     </div>
                 </div>
@@ -79,7 +79,7 @@
                     </div>
                     <div class="col-md-9">
                         <div class="form-check">
-                            <input class="form-check-input" name="mail_confirm" type="checkbox" id="confirm-cert">
+                            <input class="form-check-input" name="mail_confirm" type="checkbox" id="confirm-email">
                             <label class="form-check-label" for="confirm-email">
                                 Ya
                             </label>
@@ -94,13 +94,14 @@
                     </div>
                     <div class="col-md-9">
                         <div class="form-check">
-                            <input class="form-check-input" name="cert_confirm" type="checkbox" id="confirm-cert">
+                            <input class="form-check-input" name="cert_confirm" @If(old('cert_confirm')) checked @endif type="checkbox" id="confirm-cert">
                             <label class="form-check-label" for="confirm-cert">
                                 Ya
                             </label>
                         </div>
                     </div>
                 </div>
+                @include('admin.pages.attendance.partials.certification_extended_form')
                 <div class="row mb-3">
                     <div class="col-md-3 d-flex align-items-center">
                         <label for="input-date-2" class="form-label fw-bolder mb-0">Bolehkan Yang Belum Registrasi
