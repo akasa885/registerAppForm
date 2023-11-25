@@ -17,6 +17,7 @@ class AcV04ToAttendancesTable extends Migration
             $table->after('with_verification_certificate', function ($table) {
                 $table->float('price_certificate', 12, 2)->nullable()->default(0);
                 $table->boolean('is_using_payment_gateway')->nullable()->default(false);
+                $table->text('payment_information')->nullable();
             });
         });
     }
@@ -31,6 +32,7 @@ class AcV04ToAttendancesTable extends Migration
         Schema::table('attendances', function (Blueprint $table) {
             $table->dropColumn('price_certificate');
             $table->dropColumn('is_using_payment_gateway');
+            $table->dropColumn('payment_information');
         });
     }
 }

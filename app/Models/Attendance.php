@@ -18,6 +18,7 @@ class Attendance extends Model
         'with_verification_certificate',
         'price_certificate',
         'is_using_payment_gateway',
+        'payment_information',
         'allow_non_register',
         'created_by',
     ];
