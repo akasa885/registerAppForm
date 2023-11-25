@@ -44,6 +44,14 @@ class AttendanceRequest extends FormRequest
             'allow_non_register' => ['sometimes'],
         ];
 
+        if (isset($this->cert_confirm)) {
+            $roles = array_merge($roles, [
+                'price_certificate' => ['required', 'numeric'],
+                'payment_information' => ['required', 'string', 'max:2000'],
+                'is_using_payment_gateway' => ['sometimes'],
+            ]);
+        }
+
         switch ($type){
             case 'day' : 
                 $roles = array_merge($roles, [
@@ -66,6 +74,13 @@ class AttendanceRequest extends FormRequest
         $attributes = [];
         $attributes = [
             'selected_event' => 'Event',
+            'cert_confirm' => 'Sertifikat',
+            'mail_confirm' => 'Email Konfirmasi',
+            'confirmation_mail' => 'Isi Email Konfirmasi',
+            'allow_non_register' => 'Izinkan Non Register',
+            'price_certificate' => 'Harga Sertifikat',
+            'payment_information' => 'Informasi Pembayaran',
+            'is_using_payment_gateway' => 'Gunakan Payment Gateway',  
         ];
 
         switch($this->type_control){
@@ -115,7 +130,16 @@ class AttendanceRequest extends FormRequest
         if (!isset($validated['mail_confirm'])) {
             unset($validated['confirmation_mail']);
         }
-        
+
+        if (!isset($validated['cert_confirm'])) {
+            unset($validated['price_certificate']);
+            unset($validated['payment_information']);
+        }
+
+        if (isset($validated['is_using_payment_gateway'])) {
+            $validated['is_using_payment_gateway'] = true;
+        }
+
         unset($validated['selected_event']);
 
         return $validated;
