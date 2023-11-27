@@ -31,10 +31,18 @@ class AcV04ToAttendancesTable extends Migration
     public function down()
     {
         Schema::table('attendances', function (Blueprint $table) {
-            $table->dropColumn('price_certificate');
-            $table->dropColumn('is_using_payment_gateway');
-            $table->dropColumn('payment_information');
-            $table->dropColumn('category');
+            if (Schema::hasColumn('attendances', 'price_certificate')) {
+                $table->dropColumn('price_certificate');
+            }
+            if (Schema::hasColumn('attendances', 'is_using_payment_gateway')) {
+                $table->dropColumn('is_using_payment_gateway');
+            }
+            if (Schema::hasColumn('attendances', 'payment_information')) {
+                $table->dropColumn('payment_information');
+            }
+            if (Schema::hasColumn('attendances', 'category')) {
+                $table->dropColumn('category');
+            }
         });
     }
 }
