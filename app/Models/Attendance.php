@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Http\Traits\FormatNumberTrait;
 
 class Attendance extends Model
 {
-    use HasFactory;
+    use HasFactory, FormatNumberTrait;
 
     protected $fillable = [
         'attendance_path',
@@ -31,6 +32,10 @@ class Attendance extends Model
         'is_using_payment_gateway' => 'boolean',
     ];
 
+    protected $appends = [
+        'formatted_price_certificate',
+    ];
+
     protected static function boot()
     {
         parent::boot();
@@ -40,6 +45,11 @@ class Attendance extends Model
                 $attendance->category = 'certificate';
             }
         });
+    }
+
+    public function getFormattedPriceCertificateAttribute()
+    {
+        return $this->priceWithCurrencyAndDecimal($this->price_certificate);
     }
 
     public function isCertNeedVerification()
