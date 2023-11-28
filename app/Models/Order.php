@@ -17,10 +17,11 @@ class Order extends Model
         'pending', 'processing', 'completed', 'decline', 'cancel', 'void'
     ];
 
-    // order_number : ex. ORD.2023.1118.0001.0001
+    // order_number : ex. ORD.2023.1118.TCK.0001.0001
     // ORD: order
     // 2023: year
     // 1118: month.day
+    // TCK: ticket, CRT: certificate
     // 0001: order sequence same day
     // 0001: member id
 
@@ -63,19 +64,22 @@ class Order extends Model
         parent::boot();
 
         static::creating(function ($model) {
-            $model->order_number = $model->generateOrderNumber();
+            if ($model->order_number == null)
+                $model->order_number = $model->generateOrderNumber();
         });
     }
 
-    public function generateOrderNumber()
+    public function generateOrderNumber($categoryCode = null, $memberId = null)
     {
         $year = date('Y');
         $month = date('m');
         $day = date('d');
         $orderSequence = $this->generateOrderSequence();
-        $memberId = $this->member_id;
-
-        return "ORD.$year.$month$day.$orderSequence.$memberId";
+        $memberId = $this->member_id ? $this->member_id : $memberId;
+        if (!$categoryCode)
+            return "ORD.$year.$month$day.$orderSequence.$memberId";
+        else
+            return "ORD.$year.$month$day.$categoryCode.$orderSequence.$memberId";
     }
 
     public function generateOrderSequence()
