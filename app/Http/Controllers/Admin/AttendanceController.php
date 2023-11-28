@@ -7,14 +7,18 @@ use App\Http\Controllers\Controller;
 
 use App\Mail\ConfirmationAttendances;
 
+use App\Models\AttendPaymentStore;
 use App\Models\MemberAttend;
 use App\Models\Attendance;
 use App\Models\Invoice;
+use App\Models\Order;
 use App\Models\Email;
 use App\Models\Link;
 
 use App\Http\Traits\GenerateTokenUniqueColumnTrait;
+use App\Http\Traits\SnapTokenCreate;
 use App\Http\Traits\FileUploadTrait;
+use App\Http\Traits\AttendingTrait;
 
 use App\Http\Requests\AttendanceRequest;
 use App\Http\Requests\AttendingRequest;
@@ -28,7 +32,7 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
-    use GenerateTokenUniqueColumnTrait, FileUploadTrait;
+    use GenerateTokenUniqueColumnTrait, FileUploadTrait, AttendingTrait, SnapTokenCreate;
     /**
      * Display a listing of the resource.
      *
@@ -200,6 +204,16 @@ class AttendanceController extends Controller
                 $member->save();
             }
 
+            if ($attendance->is_using_payment_gateway) {
+                $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
+                if (!$payStore) {
+                    $order = $this->createOrderCertificate($attendance, $member, (isset($validated['full_name'])) ? $validated['full_name'] : null);
+                    DB::commit();
+
+                    return redirect()->route('attend.waiting-payment', ['attendance' => $attendance->attendance_path, 'orderNumber' => $order->order_number]);
+                }
+            }
+
             $MemberAttend = MemberAttend::create($validated);
             if ($validated['is_certificate'] && $MemberAttend) {
                 $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
@@ -224,6 +238,32 @@ class AttendanceController extends Controller
 
             return back()->with('error', 'Something went wrong, failed attend');
         }
+    }
+
+    public function waitingPayment($attendance, $orderNumber)
+    {
+        $checkPaymentStatusUrl = null;
+        $attendance = Attendance::where('attendance_path', $attendance)->first();
+        $order = Order::where('order_number', $orderNumber)->first();
+        if (!$attendance || !$order) {
+            abort(404);
+        }
+
+        $attendStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('order_id', $order->id)->first();
+        if (!$attendStore) {
+            abort(404);
+        }
+
+        if (!$order->paid_at) {
+            $checkPaymentStatusUrl = route('api.certificate.payment.check', ['order_number' => $order->order_number, 'temp_store_id' => $attendStore->id]);
+        }
+
+        $this->createTransaction($order);
+
+        return view('pages.absensi.waiting_payment', [
+            'title' => 'Pembayaran Sertifikat',
+            'finished' => $order->paid_at != null,
+        ], compact('attendance', 'order', 'checkPaymentStatusUrl'));
     }
 
     private function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id)
