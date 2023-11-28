@@ -28,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Relation::enforceMorphMap([
             'MorphLinks' => 'App\Models\Link',
+            'MorphAttend' => 'App\Models\Attendance',
         ]);
 
         view()->composer('partials.language_switcher_front', function ($view) {
