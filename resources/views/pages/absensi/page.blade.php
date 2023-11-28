@@ -142,35 +142,13 @@
                                     No
                                 </label>
                                 <label class="block mb-2 font-bold">
-                                    <input type="radio" name="is_certificate" value="yes" class="mr-2 leading-tight"
+                                    <input type="radio" name="is_certificate" id="is_cert_needed" value="yes" class="mr-2 leading-tight"
                                         onchange="toggleUploadForm(this)">
                                     Yes
                                 </label>
                             </div>
                         </div>
-
-                        <div class="flex flex-wrap hidden" id="uploadPay">
-                            <label for="input-4" class="block w-full text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('attend.form.upload_pay') }}
-                            </label>
-
-                            <input
-                                class="form-control block w-full
-                            px-3 py-1.5 text-base font-normal text-gray-700
-                            bg-white bg-clip-padding border border-solid border-gray-300 rounded
-                            transition ease-in-out m-0
-                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-                                type="file" name="bukti" accept=".jpeg, .jpg, .png" id="formFile">
-
-                            <span
-                                class="text-gray-600 text-xs mt-2 w-full">{{ __('attend.form.upload_pay_helper') }}</span><br />
-
-                            @error('bukti')
-                                <p class="text-red-500 text-xs italic mt-2">
-                                    {{ $message }}
-                                </p>
-                            @enderror
-                        </div>
+                        <x-attendance.payment-part-option :attendance="$attendance" />
                         @else
                             <input type="hidden" name="is_certificate" value="no">
                         @endif
@@ -178,7 +156,7 @@
                         <div class="flex flex-wrap">
                             <button type="submit"
                                 class="w-full select-none font-bold whitespace-no-wrap p-3 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">
-                                {{ __('Send') }}
+                                {{ __('Submit') }}
                             </button>
                         </div>
                     </form>
@@ -199,5 +177,13 @@
                 uploadForm.classList.add("hidden");
             }
         }
+
+        $(document).ready(function () {
+            // catch is_cert_needed value radio button is yes or no
+            var isCertNeeded = $('input[name="is_certificate"]:checked').val();
+            if (isCertNeeded === "yes") {
+                $('#uploadPay').removeClass('hidden');
+            }
+        })
     </script>
 @endpush
