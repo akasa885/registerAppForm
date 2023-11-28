@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 use App\Rules\AttendRegisteredEvent;
+use App\Rules\AttendingUpPayment;
 
 class AttendingRequest extends FormRequest
 {
@@ -29,8 +30,8 @@ class AttendingRequest extends FormRequest
             'full_name' => ['bail', 'nullable', 'string', 'max:255'],
             'email' => ['bail', 'required', 'email', 'max:255', new AttendRegisteredEvent($this->attendance)],
             'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', 'exists:members,contact_number'],
-            'is_certificate' => ['required', 'in:yes,no'],
-            'bukti' => ['required_if:is_certificate,yes', 'image', 'max:10240'],
+            'is_certificate' => ['required', 'in:yes,no', new AttendingUpPayment($this->attendance, $this->bukti)],
+            'bukti' => ['nullable', 'image', 'max:10240'],
             'corporation' => ['nullable', 'string', 'max:255'],
         ];
     }
@@ -63,7 +64,7 @@ class AttendingRequest extends FormRequest
         $validated['is_certificate'] = $validated['is_certificate'] == 'yes' ? true : false;
         $validated['certificate'] = $validated['is_certificate'];
         $validated['attend_id'] = $this->attendance->id;
-        if ($this->attendance->allow_non_register) {
+        if ($this->attendance->allow_non_register && !$this->attendance->is_using_payment_gateway) {
             $link = $this->attendance->link;
             $memberS = $link->members()->where('email', $validated['email'])->first();
             if (!$memberS) {
