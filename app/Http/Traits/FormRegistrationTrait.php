@@ -4,6 +4,7 @@ namespace App\Http\Traits;
 
 use App\Helpers\GenerateStringUnique;;
 
+use App\Models\Order;
 use App\Models\Link;
 use App\Models\Member;
 use App\Models\Invoice;
@@ -83,6 +84,7 @@ trait FormRegistrationTrait
     private function createOrder($invoice, $link, $member): void
     {
         $order = [
+            'order_number' => (new Order)->generateOrderNumber('TCK', $member->id),
             'member_id' => $member->id,
             'name' => 'Ticket Registration',
             'short_description' => 'Ticket ' . $link->title,
