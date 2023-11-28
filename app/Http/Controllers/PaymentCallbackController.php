@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Member;
 use App\Models\Invoice;
+use App\Models\AttendPaymentStore;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
@@ -30,9 +31,28 @@ class PaymentCallbackController extends Controller
         return $newOrder;
     }
 
+    private function availableOrderType()
+    {
+        return [
+            'TCK' => 'ticket',
+            'CRT' => 'certificate',
+        ];
+    }
+
+    private function orderType($order_number)
+    {
+        // order_number : ex. ORD.2023.1118.TCK.0001.0001
+
+        $orderType = explode('.', $order_number)[3];
+        
+        return $this->availableOrderType()[$orderType];
+
+    }
+
     public function receive()
     {
         try {
+            $orderType = 'ticket';
             DB::beginTransaction();
             $callback = new CallbackService;
 
@@ -40,8 +60,9 @@ class PaymentCallbackController extends Controller
                 $notification = $callback->getNotification();
                 $order = $callback->getOrder();
                 $invoice = $order->invoice;
+                $orderType = $this->orderType($order->order_number);
 
-                if (is_null($invoice)) {
+                if (is_null($invoice) && $orderType != 'certificate') {
                     return response()
                         ->json([
                             'error' => true,
@@ -55,15 +76,17 @@ class PaymentCallbackController extends Controller
                         'status' => 3,
                     ]);
 
-                    Invoice::where('id', $invoice->id)->update([
-                        'status' => 2,
-                        'payment_method' => $callback->getPaymentType(),
-                    ]);
+                    if ($orderType != 'certificate') {
+                        Invoice::where('id', $invoice->id)->update([
+                            'status' => 2,
+                            'payment_method' => $callback->getPaymentType(),
+                        ]);
 
-                    $member = $order->member;
-                    $linkMember = $member->link;
-
-                    $this->sendMailPaymentReceived($linkMember, $member);
+                        $member = $order->member;
+                        $linkMember = $member->link;
+    
+                        $this->sendMailPaymentReceived($linkMember, $member);
+                    }
                 }
 
                 if ($callback->isPending()) {
@@ -77,18 +100,23 @@ class PaymentCallbackController extends Controller
                         'status' => 6,
                     ]);
 
-                    $newOrder = $this->createDuplicateOrder($order);
+                    if ($orderType != 'certificate') {
+                        $newOrder = $this->createDuplicateOrder($order);
 
-                    $invoice->invoicedOrder->order_id = $newOrder->id;
-                    $invoice->invoicedOrder->save();
-
+                        $invoice->invoicedOrder->order_id = $newOrder->id;
+                        $invoice->invoicedOrder->save();
+                    } else {
+                        AttendPaymentStore::where('order_id', $order->id)->delete();
+                    }
                 }
 
                 if ($callback->isCancelled()) {
-                    $member = $order->member;
-
-                    // force delete member
-                    $member->forceDelete();
+                    if ($orderType != 'certificate') {
+                        $member = $order->member;
+                        $member->forceDelete();
+                    } else {
+                        AttendPaymentStore::where('order_id', $order->id)->delete();
+                    }
                 }
 
                 DB::commit();
@@ -131,6 +159,7 @@ class PaymentCallbackController extends Controller
     public function status(Request $request)
     {
         try {
+            $orderType = 'ticket';
             // // make validator for request
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required|exists:orders,order_number',
@@ -155,13 +184,22 @@ class PaymentCallbackController extends Controller
             $order = Order::where('order_number', $request->order_id)->firstOrFail();
             $customer = Member::where('id', $customer_id)->firstOrFail();
 
+            $orderType = $this->orderType($order->order_number);
+
             $data = [
                 'order_number' => $order->order_number,
                 'order_net_total' => $order->net_total,
                 'customer' => $customer ?? null,
                 'status' => $request->status,
-                'form_link' => route('form.link.view', ['link' => $customer->link->link_path])
+                'type' => $orderType,
             ];
+
+            if ($orderType != 'certificate') {
+                $data['form_link'] = route('form.link.view', ['link' => $customer->link->link_path]);
+            } else {
+                $attendance = $order->orderDetails->first()->orderable;
+                $data['form_link'] = route('attend.link', ['link' => $attendance->attendance_path]);
+            }
 
             return view('pages.transaction.callback-info', $data);
         } catch (\Throwable $th) {
