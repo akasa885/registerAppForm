@@ -254,6 +254,15 @@ class AttendanceController extends Controller
             abort(404);
         }
 
+        // check is attendStore->due_date is expired
+        if ($attendStore->due_date < Carbon::now()) {
+            $attendStore->delete();
+            $order->status = 'void';
+            $order->save();
+            
+            abort(404);
+        }
+
         if (!$order->paid_at) {
             $checkPaymentStatusUrl = route('api.certificate.payment.check', ['order_number' => $order->order_number, 'temp_store_id' => $attendStore->id]);
         }

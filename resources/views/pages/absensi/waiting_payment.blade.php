@@ -87,6 +87,7 @@
                     clearInterval(x);
                     TIME_LEFT_PAYMENT.innerHTML = "EXPIRED";
                     isClosed = true;
+                    window.location.reload();
                 }
 
                 time_left -= 1000;
@@ -146,7 +147,7 @@
                     // if user want to close the page
                     window.addEventListener('beforeunload', function (e) {
                         // if user click button pay now
-                        if (isClicked) {
+                        if (isClicked && !isClosed) {
                            // cancel the event
                            e.preventDefault();
                             // Chrome requires returnValue to be set
