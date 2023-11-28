@@ -5,7 +5,7 @@
 <main class="flex justify-center container px-7 sm:px-8 md:px-2 lg:px-0 py-10 sm:container sm:mx-auto">
     <div class="lg:w-6/12 sm:px-6 sm:w-10/12">
         <section class="flex flex-col break-words bg-white sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
-            <div class="bg-gray-100 h-screen">
+            <div class="bg-gray-100">
                 <div class="bg-white p-6  md:mx-auto">
                   <svg viewBox="0 0 24 24" class="text-green-600 w-16 h-16 mx-auto my-6">
                       <path fill="currentColor"
@@ -15,7 +15,11 @@
                   <div class="text-center">
                       <h3 class="md:text-2xl text-base text-gray-900 font-semibold text-center">Payment Done!</h3>
                       <p class="text-gray-600 my-2">{{ __('transaction.success-payment-auto-confirmed') }}</p>
+                      @if ($type != 'certificate')
                       <p>{{ __('mail.message-check-email-event-info') }}</p>
+                      @else
+                      <p>Absensi Berhasil Dilakukan !</p>
+                      @endif
                       <div class="py-10 text-center">
                           <a href="{{ $form_link }}" class="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
                               GO BACK 
