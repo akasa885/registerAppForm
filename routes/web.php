@@ -62,6 +62,9 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         Route::prefix('users-setting')->name('users.')->group(__DIR__.'/v1/admin/setting_user.php');
         // < ------------------------------- Users Admin ----------------------------------------- >
 
+        // < ------------------------------- Setting Site Admin ----------------------------------------- >
+        Route::prefix('setting-site')->name('setting.')->group(__DIR__.'/v1/admin/setting_site.php');
+
         // < -------------------------------Export ----------------------------------------- >
         Route::prefix('export')->name('export.')->group(__DIR__.'/v1/export.php');
         // < -------------------------------Export ----------------------------------------- >
