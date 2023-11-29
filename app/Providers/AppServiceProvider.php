@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Helpers\UrlAccessLocalCheck;
 use Illuminate\Database\Eloquent\Relations\Relation;
+use App\Helpers\Midtrans;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -17,6 +18,7 @@ class AppServiceProvider extends ServiceProvider
     {
         // check if current url is local or not
         UrlAccessLocalCheck::isLocal();
+        config()->set('midtrans', Midtrans::createConfig());
     }
 
     /**
