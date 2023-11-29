@@ -79,17 +79,10 @@
                                 Absensi
                             </a>
                           </li>
+                          @can('isSuperAdmin')
                           <li class="app-sidebar__heading">Settings</li>
-                          @can('isAdmin')                            
-                          <li>
-                              <a id="settingLink" href="#">
-                                  <i class="metismenu-icon pe-7s-display2"></i>
-                                  Setting
-                              </a>
-                          </li>
-                          @elsecan('isSuperAdmin')
-                          <li>
-                            <a id="settingLink" href="#">
+                          <li @if(Request::routeIs('admin.setting*')) class="mm-active" @endif>
+                            <a id="settingLink" href="{{ route('admin.setting.view') }}">
                                 <i class="metismenu-icon pe-7s-display2"></i>
                                 Setting
                             </a>
