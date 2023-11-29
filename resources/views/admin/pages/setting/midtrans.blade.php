@@ -20,7 +20,7 @@
                         <label for="input-merchant-id" class="form-label fw-bolder mb-0 required">Merchant ID</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" class="form-control" value="{{ old('midtrans_merchant_id') }}" autofocus
+                        <input type="text" class="form-control" value="{{ $midtransInfo['MIDTRANS_MERCHANT_ID'] ?? old('midtrans_merchant_id') }}" autofocus
                             name="midtrans_merchant_id" id="input-merchant-id">
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                         <label for="input-client-key" class="form-label fw-bolder mb-0 required">Client Key</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" class="form-control" value="{{ old('midtrans_client_key') }}"
+                        <input type="text" class="form-control" value="{{ $midtransInfo['MIDTRANS_CLIENT_KEY'] ?? old('midtrans_client_key') }}"
                             name="midtrans_client_key" id="input-client-key">
                     </div>
                 </div>
@@ -38,7 +38,7 @@
                         <label for="input-server-key" class="form-label fw-bolder mb-0 required">Server Key</label>
                     </div>
                     <div class="col-md-9">
-                        <input type="text" class="form-control" value="{{ old('midtrans_server_key') }}"
+                        <input type="text" class="form-control" value="{{ $midtransInfo['MIDTRANS_SERVER_KEY'] ?? old('midtrans_server_key') }}"
                             name="midtrans_server_key" id="input-server-key">
                     </div>
                 </div>
@@ -49,8 +49,8 @@
                     <div class="col-md-9">
                         <select name="midtrans_environment" id="select-environtment"
                             class="form-control-sm form-control">
-                            <option value="sandbox">Sandbox</option>
-                            <option value="production">Production</option>
+                            <option @if(!$midtransInfo['MIDTRANS_IS_PRODUCTION']) selected @endif value="sandbox">Sandbox</option>
+                            <option @if($midtransInfo['MIDTRANS_IS_PRODUCTION']) selected @endif value="production">Production</option>
                         </select>
                     </div>
                 </div>
