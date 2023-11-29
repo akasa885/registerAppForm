@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use App\Http\Controllers\Controller;
+use App\Helpers\Midtrans;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 
 class SiteSettingController extends Controller
@@ -40,8 +44,9 @@ class SiteSettingController extends Controller
     public function midtrans()
     {
         $menu = $this->generateMenu();
+        $midtransInfo = Midtrans::midtransInfo();
 
-        $content = view('admin.pages.setting.midtrans')->render();
+        $content = view('admin.pages.setting.midtrans', compact('midtransInfo'))->render();
 
         return view('admin.pages.setting.view', [
             'title' => 'Pengaturan Midtrans',
@@ -75,5 +80,24 @@ class SiteSettingController extends Controller
         }
 
         $validated = $validator->validated();
+
+        if ($validated['midtrans_environment'] == 'production') {
+            $validated['midtrans_is_production'] = true;
+        } else {
+            $validated['midtrans_is_production'] = false;
+        }
+
+        $env = [
+            'MIDTRANS_CLIENT_KEY' => $validated['midtrans_client_key'],
+            'MIDTRANS_SERVER_KEY' => $validated['midtrans_server_key'],
+            'MIDTRANS_MERCHANT_ID' => Crypt::encryptString($validated['midtrans_merchant_id']),
+            'MIDTRANS_IS_PRODUCTION' => $validated['midtrans_is_production'],
+        ];
+
+        $jsonMidtrans = json_encode($env);
+
+        Storage::disk('local')->put('key/midtrans.json', $jsonMidtrans);
+
+        return redirect()->back()->with('success', 'Midtrans settings updated successfully');
     }
 }
