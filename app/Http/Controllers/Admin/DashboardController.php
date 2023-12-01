@@ -24,6 +24,7 @@ class DashboardController extends Controller
         $viewdStatus = null; // will be drop, up, or same
         $linkCount = $this->getLinkCountLastOneYear();
         $memberFreeCount = $this->getMemberCountLinkTypeFreeLastOneYear();
+        $memberPayCount = $this->getMemberCountLInkTypePayLastOneYear();
         $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
 
         // comparing the last two month. is last month bigger than previous month?
@@ -34,13 +35,15 @@ class DashboardController extends Controller
         // summing array value
         $linkCount = array_sum($linkCount);
         $memberFreeCount = array_sum($memberFreeCount);
+        $memberPayCount = array_sum($memberPayCount);
 
-        $membersCount = $memberFreeCount;
+        $membersCount = $memberFreeCount + $memberPayCount;
         $lastViewedLinkCount = end($viewedLinkCount);
 
         // format number
         $linkCount = $this->shorterCounting($linkCount);
         $membersCount = $this->shorterCounting($membersCount);
+        $lastViewedLinkCount = $this->shorterCounting($lastViewedLinkCount);
         
         return view('admin.pages.home', compact('linkCount', 'membersCount', 'viewdStatus', 'lastViewedLinkCount'));
     }
@@ -48,15 +51,16 @@ class DashboardController extends Controller
     private function getLinkCountLastOneYear()
     {
         $linkCount = Link::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, count(*) as total')
-            ->where('created_at', '>=', Carbon::now()->subYear())
+            ->whereRaw('created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
+            ->whereMonth('created_at', '<', Carbon::now()->format('m'))
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
 
         $linkCount = $linkCount->pluck('total', 'month')->toArray();
 
-        $linkCount = $this->fillMissingMonth($linkCount);
-
+        $linkCount = $this->fillMissingMonth($linkCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
+        
         return $linkCount;
     }
 
@@ -65,14 +69,36 @@ class DashboardController extends Controller
         $memberCount = Member::selectRaw('DATE_FORMAT(members.created_at, "%Y-%m") as month, count(*) as total')
             ->join('links', 'links.id', '=', 'members.link_id')
             ->where('links.link_type', 'free')
-            ->where('members.created_at', '>=', Carbon::now()->subYear())
+            ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
+            ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
             ->groupBy('month')
             ->orderBy('month', 'asc')
             ->get();
 
         $memberCount = $memberCount->pluck('total', 'month')->toArray();
 
-        $memberCount = $this->fillMissingMonth($memberCount);
+        $memberCount = $this->fillMissingMonth($memberCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
+
+        return $memberCount;
+    }
+
+    public function getMemberCountLInkTypePayLastOneYear()
+    {
+        // member = link, member = invoice, invoice.status = 2
+        $memberCount = Member::selectRaw('DATE_FORMAT(members.created_at, "%Y-%m") as month, count(*) as total')
+            ->join('links', 'links.id', '=', 'members.link_id')
+            ->join('invoices', 'invoices.member_id', '=', 'members.id')
+            ->where('links.link_type', 'pay')
+            ->where('invoices.status', 2)
+            ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
+            ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
+            ->groupBy('month')
+            ->orderBy('month', 'asc')
+            ->get();
+
+        $memberCount = $memberCount->pluck('total', 'month')->toArray();
+
+        $memberCount = $this->fillMissingMonth($memberCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
 
         return $memberCount;
     }
@@ -121,9 +147,21 @@ class DashboardController extends Controller
         return $viewdStatus;
     }
 
-    private function fillMissingMonth($linkCount)
+    private function fillMissingMonth($linkCount, $startMonthYear = null, $endMonthYear = null)
     {
         $months = $this->getMonths();
+
+        if ($startMonthYear) {
+            $startMonth = Carbon::parse($startMonthYear)->format('Y-m');
+            $endMonth = Carbon::parse($endMonthYear)->format('Y-m');
+        } else {
+            $startMonth = Carbon::now()->subYear()->format('Y-m');
+            $endMonth = Carbon::now()->format('Y-m');
+        }
+
+        $months = array_filter($months, function ($month) use ($startMonth, $endMonth) {
+            return ($month >= $startMonth && $month <= $endMonth);
+        });
 
         foreach ($months as $month) {
             if (!isset($linkCount[$month])) {
@@ -140,7 +178,7 @@ class DashboardController extends Controller
     {
         $months = [];
 
-        for ($i = 0; $i < 12; $i++) {
+        for ($i = 1; $i <= 12; $i++) {
             $months[] = Carbon::now()->subMonths($i)->format('Y-m');
         }
 
