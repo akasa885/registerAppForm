@@ -10,14 +10,13 @@
                     </i>
                 </div>
                 <div>Analytics Dashboard
-                    <div class="page-title-subheading">This is an example dashboard created using build-in elements and
-                        components.
+                    <div class="page-title-subheading">Admin dashboard components
                     </div>
                 </div>
             </div>
             <div class="page-title-actions">
                 <button type="button" data-toggle="tooltip" title="" data-placement="bottom"
-                    class="btn-shadow mr-3 btn btn-dark" data-original-title="Example Tooltip">
+                    class="btn-shadow mr-3 btn btn-dark" data-original-title="Welcome">
                     <i class="fa fa-star"></i>
                 </button>
             </div>
@@ -73,19 +72,6 @@
                             @endif
                             <span>{{ $lastViewedLinkCount }}</span>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="d-xl-none d-lg-block col-md-6 col-xl-4">
-            <div class="card mb-3 widget-content bg-premium-dark">
-                <div class="widget-content-wrapper text-white">
-                    <div class="widget-content-left">
-                        <div class="widget-heading">Products Sold</div>
-                        <div class="widget-subheading">Revenue streams</div>
-                    </div>
-                    <div class="widget-content-right">
-                        <div class="widget-numbers text-warning"><span>$14M</span></div>
                     </div>
                 </div>
             </div>
