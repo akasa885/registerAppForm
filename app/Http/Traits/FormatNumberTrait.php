@@ -33,4 +33,24 @@ trait FormatNumberTrait
     {
         return number_format($number, 2, '.', '');
     }
+
+    public function shorterCounting($number)
+    {
+        $suffix = '';
+        if ($number >= 1000 && $number < 1000000) {
+            $number = round($number / 1000, 1);
+            $suffix = 'K';
+        } elseif ($number >= 1000000 && $number < 1000000000) {
+            $number = round($number / 1000000, 1);
+            $suffix = 'M';
+        } elseif ($number >= 1000000000 && $number < 1000000000000) {
+            $number = round($number / 1000000000, 1);
+            $suffix = 'B';
+        } elseif ($number >= 1000000000000) {
+            $number = round($number / 1000000000000, 1);
+            $suffix = 'T';
+        }
+
+        return $number . $suffix;
+    }
 }
