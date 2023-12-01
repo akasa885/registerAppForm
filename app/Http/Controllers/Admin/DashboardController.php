@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Link;
@@ -13,6 +14,8 @@ class DashboardController extends Controller
 {
     use FormatNumberTrait;
 
+    private $user;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -20,6 +23,7 @@ class DashboardController extends Controller
 
     public function index()
     {
+        $this->user = auth()->user();
         $membersCount = null;
         $viewdStatus = null; // will be drop, up, or same
         $linkCount = $this->getLinkCountLastOneYear();
@@ -51,6 +55,9 @@ class DashboardController extends Controller
     private function getLinkCountLastOneYear()
     {
         $linkCount = Link::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, count(*) as total')
+            ->when(Gate::allows('isAdmin'), function ($query) {
+                return $query->where('created_by', $this->user->id);
+            })
             ->whereRaw('created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
             ->whereMonth('created_at', '<', Carbon::now()->format('m'))
             ->groupBy('month')
@@ -69,6 +76,9 @@ class DashboardController extends Controller
         $memberCount = Member::selectRaw('DATE_FORMAT(members.created_at, "%Y-%m") as month, count(*) as total')
             ->join('links', 'links.id', '=', 'members.link_id')
             ->where('links.link_type', 'free')
+            ->when(Gate::allows('isAdmin'), function ($query) {
+                return $query->where('created_by', $this->user->id);
+            })
             ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
             ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
             ->groupBy('month')
@@ -89,6 +99,9 @@ class DashboardController extends Controller
             ->join('links', 'links.id', '=', 'members.link_id')
             ->join('invoices', 'invoices.member_id', '=', 'members.id')
             ->where('links.link_type', 'pay')
+            ->when(Gate::allows('isAdmin'), function ($query) {
+                return $query->where('created_by', $this->user->id);
+            })
             ->where('invoices.status', 2)
             ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
             ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
@@ -106,6 +119,9 @@ class DashboardController extends Controller
     private function getViewedLinkCountLastTwoMonth()
     {
         $viewedLinkCount = Link::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, sum(viewed_count) as total')
+            ->when(Gate::allows('isAdmin'), function ($query) {
+                return $query->where('created_by', $this->user->id);
+            })
             ->where('created_at', '>=', Carbon::now()->subMonths(2))
             ->groupBy('month')
             ->orderBy('month', 'asc')
@@ -136,9 +152,9 @@ class DashboardController extends Controller
     {
         $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
 
-        if ($viewedLinkCount[$lastMonth] > $viewedLinkCount[$previousMonth]) {
+        if (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] > $viewedLinkCount[$previousMonth]) {
             $viewdStatus = 'up';
-        } elseif ($viewedLinkCount[$lastMonth] < $viewedLinkCount[$previousMonth]) {
+        } elseif (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] < $viewedLinkCount[$previousMonth]) {
             $viewdStatus = 'down';
         } else {
             $viewdStatus = 'same';
