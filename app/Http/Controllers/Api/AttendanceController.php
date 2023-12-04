@@ -9,6 +9,7 @@ use App\Models\Attendance;
 use App\Models\MemberAttend;
 use App\Models\Member;
 use App\Models\Order;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
@@ -41,6 +42,20 @@ class AttendanceController extends Controller
                 'message' => 'Payment success',
                 'order_status' => $order->status,
                 'redirect' => route('attend.link', ['link' => $attendance->attendance_path])
+            ]);
+        }
+
+        // if order due_date expired
+        if ($order->due_date <= Carbon::now() && $order->status == 'pending') {
+            $tempStore->delete();
+            $order->status = 'void';
+            $order->save();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Payment expired',
+                'order_status' => $order->status,
+                'redirect' => route('attend.waiting-payment', ['attendance' => $attendance->attendance_path, 'orderNumber' => $order->order_number])
             ]);
         }
 
