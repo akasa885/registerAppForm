@@ -136,7 +136,9 @@
                         }
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        console.log(xhr);
+                        alert("something went wrong, please try again later");
+                        isClicked = false;
+                        window.location.reload();
                     }
                 });
             }
