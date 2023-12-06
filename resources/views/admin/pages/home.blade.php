@@ -78,4 +78,9 @@
         </div>
     </div>
     <!--end::row info 1-->
+    <!--begin::row info 2-->
+    <div class="row">
+        <x-admin.dashboard.top10-list-event-link />
+    </div>
+    <!--end::row info 2-->
 @endsection
