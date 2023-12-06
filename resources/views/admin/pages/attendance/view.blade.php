@@ -66,6 +66,8 @@
 </div>
 @endsection
 
+<x-admin.delete-js-alerted />
+
 @push('scripts')
 <script>
     $.ajaxSetup({
