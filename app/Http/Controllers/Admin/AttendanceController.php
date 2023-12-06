@@ -305,11 +305,11 @@ class AttendanceController extends Controller
 
     public function dtb_attendance()
     {
-        $data = Attendance::ownAttendance()->with('link')->get();
+        $data = Attendance::ownAttendance()->with('link:id,link_path,title,link_type')->get();
         
         return DataTables::of($data)
         ->addIndexColumn()
-        ->removeColumn('id', 'created_at', 'updated_at', 'created_by', 'link_id')
+        ->removeColumn('id', 'created_at', 'updated_at', 'created_by', 'link_id', "link.description", 'link.registration_info', 'confirmation_mail')
         ->addColumn('attend_path', function($data){
             return route('attend.link', $data->attendance_path);
         })
@@ -337,7 +337,9 @@ class AttendanceController extends Controller
             
         })
         ->addColumn("options", function($data) {
-            $edit = "<a href=\"".route('admin.attendance.delete', $data)."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-danger\" style=\"margin-right:0.2rem;\">
+            $edit = "<a href='javascript:void(0)' onclick=\"deleteScriptJs('";
+            $edit .= route('admin.attendance.delete', $data);
+            $edit .= "')\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-danger\" style=\"margin-right:0.2rem;\">
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                       <i class=\"pe-7s-trash fa-w-20\"></i>
                   </span>
