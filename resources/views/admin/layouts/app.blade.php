@@ -55,7 +55,8 @@
           </div>            
         </div>
     </div>
-    <script src="{{ asset('/vendor/bootstrap/js/popper.min.js') }}"></script>
+    {{-- <script src="{{ asset('vendor/bootstrap/js/popper.min.js') }}" defer></script> --}}
+    <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('/admin_assets/assets/scripts/main.js') }}"></script> 
     <script src="{{ asset('js/session.js') }}" defer></script>
     @stack('scripts')
