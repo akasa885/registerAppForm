@@ -140,9 +140,32 @@ class AttendanceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Attendance $attendance)
+    public function destroy(Request $request, Attendance $attendance)
     {
-        //
+        if ($request->ajax()) {
+            try {
+                DB::beginTransaction();
+                $attendance->delete();
+                DB::commit();
+
+                return response()->json([
+                    'message' => 'Attendance deleted successfully'
+                ], 200);
+            } catch (\Throwable $th) {
+                DB::rollback();
+                if (config('app.debug'))
+                    throw $th;
+                report($th);
+                
+                return response()->json([
+                    'message' => 'Something went wrong, failed delete attendance'
+                ], 500);
+            }
+        } else {
+            return response()->json([
+                'message' => 'Method not allowed'
+            ], 405);
+        }
     }
 
     public function page ($link)
