@@ -77,7 +77,7 @@
                 <li class="@if (Request::routeIs('admin.attendance*')) mm-active @endif">
                     <a id="contentLink" href="{{ route('admin.attendance.view') }}">
                         <i class="metismenu-icon pe-7s-paper-plane"></i>
-                        Absensi
+                        {{ __('Attendance') }}
                     </a>
                 </li>
                 @can('isSuperAdmin')
