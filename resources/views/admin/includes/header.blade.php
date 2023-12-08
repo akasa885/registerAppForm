@@ -28,42 +28,43 @@
                 </span>
             </button>
         </span>
-    </div>    <div class="app-header__content">
+    </div>
+    <div class="app-header__content">
 
         <div class="app-header-right">
             <div class="header-btn-lg pr-0">
-                <div class="widget-content p-0">
+                <div class="widget-content p-0 d-flex flex-row justify-content-between gap-3">
+                    <div class="widget-content-wrapper">
+                        @include('partials.language_switcher_admin')
+                    </div>
                     <div class="widget-content-wrapper">
                         <div class="widget-content-left">
                             <div class="btn-group">
-                                <a aria-expanded="false" class="p-0 btn">
-                                    <img width="42" class="rounded-circle" src="{{asset('/admin_assets/assets/images/avatars/1.jpg')}}" alt="">
+                                <a href="#profil" class="p-0 btn">
+                                    <img width="42" class="rounded-circle"
+                                        src="{{ asset('/admin_assets/assets/images/avatars/1.jpg') }}" alt="">
                                 </a>
                             </div>
                         </div>
                         <div class="widget-content-left  ml-3 header-user-info">
                             <div class="widget-heading">
-                                {{ Auth::user() ? Auth::user()->name : 'guest'}}
+                                {{ Auth::user() ? Auth::user()->name : 'guest' }}
                             </div>
                             <div class="widget-subheading">
                                 @can('isAdmin')
-                                Admin
+                                    Admin
                                 @elsecan('isAuthor')
-                                Author
+                                    Author
                                 @elsecan('isSuperAdmin')
-                                Super Admin
+                                    Super Admin
                                 @else
-                                Editor
-                                @endif
+                                    Editor
+                                    @endif
+                                </div>
                             </div>
-                        </div>
-                        <div class="widget-content-right header-user-info ml-3">
-                            <button type="button" class="btn-shadow p-1 btn btn-primary btn-sm show-toastr-example">
-                                <i class="fa text-white fa-calendar pr-1 pl-1"></i>
-                            </button>
                         </div>
                     </div>
                 </div>
-            </div>        </div>
+            </div>
+        </div>
     </div>
-</div>
