@@ -4,9 +4,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Eform for Registration Management">
-    <meta name="keywords"
-        content="eform, registration, management, laravel, php, mysql, bootstrap, tailwindcss, alpinejs, livewire, rizkiakbar, rizki, akbar">
+    <meta name="description" content="{{ $information_site['description'] }}">
+    <meta name="keywords" content="{{ $information_site['keywords'] }}">
+    <meta name="og:title" content="@yield('og_title', "")">
+    <meta name="og:description" content="{{ $information_site['description'] }}">
+    <meta name="og:locale" content="id_ID">
+    <meta name="og:site_name" content="{{ $information_site['sitename'] }}">
     <meta name="author" content="Rizki Akbar">
     <meta name="author_email" content="rixak98@gmail.com">
     <meta name="application-name" content="Eform for Registration Management">
