@@ -22,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         // check if current url is local or not
         UrlAccessLocalCheck::isLocal();
         config()->set('midtrans', Midtrans::createConfig());
+        config()->set('app.name', $this->getInformationFile()['sitename']);
     }
 
     /**
