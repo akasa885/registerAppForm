@@ -13,6 +13,15 @@ trait SiteContainTrait {
             $information = Storage::disk('local')->get('key/site.json');
             $information = json_decode($information, true);
 
+            $information = [
+                'sitename' => $information['SITE_NAME'],
+                'description' => $information['DESCRIPTION'],
+                'keywords' => $information['KEYWORDS'],
+                'developedby' => $information['DEVELOPED_BY'],
+                'license' => $information['LICENSE'],
+                'copyright' => $information['COPYRIGHT'],
+            ];
+
             return $information;
         } catch (FileNotFoundException $e) {
             $information = [
