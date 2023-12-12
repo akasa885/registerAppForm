@@ -8,10 +8,14 @@ use App\Helpers\Midtrans;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Crypt;
+use App\Http\Traits\SiteContainTrait;
 use Illuminate\Http\Request;
+use App\Http\Requests\SettingSiteRequest;
 
 class SiteSettingController extends Controller
 {
+    use SiteContainTrait;
+    
     private function generateMenu()
     {
         return [
@@ -31,14 +35,23 @@ class SiteSettingController extends Controller
     public function site()
     {
         $menu = $this->generateMenu();
+        // get singleton information from AppServiceProvider
+        $information = app()->make('information_site');
 
-        $content = view('admin.pages.setting.site')->render();
+        $keywords = explode(',', $information['keywords']);
+
+        $content = view('admin.pages.setting.site', compact('information', 'keywords'))->render();
 
         return view('admin.pages.setting.view', [
             'title' => 'Pengaturan Website',
             'header' => 'Pengaturan Website',
             'subheader' => 'This is a page where you can manage your regular website settings',
         ], compact('menu', 'content'));
+    }
+
+    public function siteUpdate(SettingSiteRequest $request)
+    {
+        //
     }
 
     public function midtrans()
