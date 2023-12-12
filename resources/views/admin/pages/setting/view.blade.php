@@ -17,7 +17,40 @@
 </div>
 
 <div class="row justify-content-md-center">
+    @if ($message = Session::get('success'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ $message }}</strong>
+            <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     <x-admin.linkable-nav :menu="$menu" />
     {!! $content !!}
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function() {
+        $('#validationKeywords').select2({
+            tags: true,
+            tokenSeparators: [','],
+            placeholder: "Masukkan Keywords Anda....",
+            maximumSelectionLength: 10,
+            allowClear: true,
+            createTag: function(params) {
+                var term = $.trim(params.term);
+
+                if (term === '') {
+                    return null;
+                }
+
+                return {
+                    id: term,
+                    text: term,
+                    newTag: true
+                }
+            }
+        });
+    });
+</script>
+@endpush
