@@ -2,7 +2,7 @@
     <div class="app-footer">
         <div class="app-footer__inner justify-content-center">
             <div class="app-footer-left">
-                <span class="fw-bold">Developed By UPQuality © Copyright 2022</span>
+                <span class="fw-bold">© Copyright 2022 {{ $information_site['copyright'] }}</span>
             </div>            
         </div>
     </div>
