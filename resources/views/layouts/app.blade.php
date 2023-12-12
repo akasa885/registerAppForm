@@ -8,8 +8,14 @@
     <meta name="keywords" content="{{ $information_site['keywords'] }}">
     <meta name="og:title" content="@yield('og_title', "")">
     <meta name="og:description" content="{{ $information_site['description'] }}">
+    <meta name="og:url" content="{{ url()->current() }}">
     <meta name="og:locale" content="id_ID">
     <meta name="og:site_name" content="{{ $information_site['sitename'] }}">
+    <meta name="og:image" content="@yield('og_image', asset('icon/favicon.png'))">
+    <meta name="og:image:alt" content="{{ $information_site['sitename'] }}">
+    <meta name="og:image:width" content="512">
+    <meta name="og:image:height" content="512">
+    <meta name="og:type" content="website">
     <meta name="author" content="Rizki Akbar">
     <meta name="author_email" content="rixak98@gmail.com">
     <meta name="application-name" content="Eform for Registration Management">
