@@ -15,7 +15,7 @@ use App\Http\Requests\SettingSiteRequest;
 class SiteSettingController extends Controller
 {
     use SiteContainTrait;
-    
+
     private function generateMenu()
     {
         return [
@@ -51,7 +51,31 @@ class SiteSettingController extends Controller
 
     public function siteUpdate(SettingSiteRequest $request)
     {
-        //
+        try {
+            $validated = $request->validated();
+
+            config()->set('app.name', $validated['sitename']);
+
+            $env = [
+                "SITE_NAME" => $validated['sitename'],
+                'COPYRIGHT' => $validated['copyright'],
+                'KEYWORDS' => $validated['keywords'],
+                'DESCRIPTION' => $validated['description'],
+                'LICENSE' => $validated['license'],
+                'DEVELOPED_BY' => $validated['developedby'],
+            ];
+
+            $jsonEnv = json_encode($env);
+
+            Storage::disk('local')->put('key/site.json', $jsonEnv);
+
+            return redirect()->back()->with('success', 'Site settings updated successfully');
+        } catch (\Throwable $th) {
+            if (config('app.debug')) throw $th;
+            report($th);
+
+            return redirect()->back()->with('error', 'Site settings failed to update');
+        }
     }
 
     public function midtrans()
@@ -113,4 +137,6 @@ class SiteSettingController extends Controller
 
         return redirect()->back()->with('success', 'Midtrans settings updated successfully');
     }
+
+
 }
