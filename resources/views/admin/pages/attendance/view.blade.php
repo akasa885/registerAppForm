@@ -67,6 +67,7 @@
 @endsection
 
 <x-admin.delete-js-alerted />
+<x-admin.clipboard-script />
 
 @push('scripts')
 <script>
@@ -106,6 +107,16 @@
                 }
             ],
             columnDefs: [
+                {
+                    targets: 1,
+                    render: function (data, type, row) {
+                        let html = "";
+                        html += `<span type="button" class="fw-bolder attend-path" id="attend-path-${row.DT_RowIndex}" onclick="copyClipboard(this);" data-toggle="tooltip" data-placement="top" title="Click to Copy!" data-original-title="Click to Copy!" data-link="${data}" style="font-size:.9em;">${data}</span><br/>`;
+                        html += `<input type="text" class="d-none" id="attend-path-${row.DT_RowIndex}-input" value="${data}">`;
+
+                        return html;
+                    }
+                },
                 {
                     targets: 2,
                     render: function (data, type, row) {
