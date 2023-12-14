@@ -78,6 +78,7 @@ class PaymentCallbackController extends Controller
 
                     if ($orderType != 'certificate') {
                         Invoice::where('id', $invoice->id)->update([
+                            'is_automatic' => true,
                             'status' => 2,
                             'payment_method' => $callback->getPaymentType(),
                         ]);
