@@ -349,11 +349,23 @@ class AttendanceController extends Controller
             $member = count($data->link->members);
             $attending = count($data->member_attend);
             if ($member != 0) {
-                $html = $attending . ' / ' . $member. ' (' . round($attending / $member * 100, 2) . '%)';
+                $html = $attending . ' / ' . $member;
             } else {
-                $html = $attending . ' / ' . $member. ' (0%)';
+                $html = $attending . ' / ' . $member;
             }
             
+            return $html;
+        })
+        ->addColumn('attend_percentage', function ($data) {
+            $member = count($data->link->members);
+            $attending = count($data->member_attend);
+
+            if ($member != 0) {
+                $html = round($attending / $member * 100, 2) . '%';
+            } else {
+                $html = '0%';
+            }
+
             return $html;
         })
         ->addColumn("status", function($data) {
