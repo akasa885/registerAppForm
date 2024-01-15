@@ -14,8 +14,7 @@
             if (result.isConfirmed) {
                 $.ajax({
                     url: url,
-                    method: 'DELETE',
-                    type: 'DELETE',
+                    type: 'POST',
                     data: {
                         _token: "{{ csrf_token() }}",
                         _method: "DELETE"
