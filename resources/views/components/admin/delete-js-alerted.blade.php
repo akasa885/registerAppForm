@@ -14,7 +14,11 @@
             if (result.isConfirmed) {
                 $.ajax({
                     url: url,
+                    method: 'DELETE',
                     type: 'DELETE',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                    },
                     dataType: 'json',
                     success: function (data) {
                         Swal.fire({

@@ -128,15 +128,7 @@
                     render: function (data, type, row) {
                         return `<span class="badge badge-primary">${data} Orang</span>`;
                     }
-                },
-                {
-                    targets: 1,
-                    render: function (data, type, row) {
-                        let html = "";
-                        html += `<span class="fw-bolder">${data}</span>`;
-                        return html;
-                    },
-                },
+                }
             ],
         });
     });
