@@ -8,14 +8,20 @@ use App\Models\Attendance;
 class AttendRegisteredEvent implements Rule
 {
     public $attendance;
+    protected $field;
     /**
      * Create a new rule instance.
      *
      * @return void
      */
-    public function __construct($attendance)
+    public function __construct($attendance, $field = null)
     {
         $this->attendance = $attendance;
+        if ($field == null) {
+            $this->field = 'email';
+        } else {
+            $this->field = $field;
+        }
     }
 
     /**
@@ -27,9 +33,19 @@ class AttendRegisteredEvent implements Rule
      */
     public function passes($attribute, $value)
     {
+        $attend = null;
+
         $link = $this->attendance->link;
         $nonRegAllowed = $this->attendance->allow_non_register;
-        $attend = $link->members()->where('email', $value)->first();
+
+        if ($this->field == 'email') {
+            $attend = $link->members()->where('email', $value)->first();
+        }
+
+        if ($this->field == 'contact_number') {
+            $attend = $link->members()->where('contact_number', $value)->first();
+        }
+
         if ($nonRegAllowed || $attend) {
             return true;
         } else {
