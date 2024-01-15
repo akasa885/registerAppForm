@@ -18,6 +18,7 @@
                     type: 'DELETE',
                     data: {
                         _token: "{{ csrf_token() }}",
+                        _method: "DELETE"
                     },
                     dataType: 'json',
                     success: function (data) {
