@@ -114,6 +114,8 @@
                         html += `<span type="button" class="fw-bolder attend-path" id="attend-path-${row.DT_RowIndex}" onclick="copyClipboard(this);" data-toggle="tooltip" data-placement="top" title="Click to Copy!" data-original-title="Click to Copy!" data-link="${data}" style="font-size:.9em;">${data}</span><br/>`;
                         html += `<input type="text" class="d-none" id="attend-path-${row.DT_RowIndex}-input" value="${data}">`;
 
+                        // data information date
+                        html += `<span class="text-muted" style="font-size:.8em;">Date: ${row.active_from}</span>`;
                         return html;
                     }
                 },

@@ -333,6 +333,12 @@ class AttendanceController extends Controller
         return DataTables::of($data)
         ->addIndexColumn()
         ->removeColumn('id', 'created_at', 'updated_at', 'created_by', 'link_id', "link.description", 'link.registration_info', 'confirmation_mail')
+        ->editColumn('active_from', function($data) {
+            return date("d-m-Y", strtotime($data->active_from));
+        })
+        ->editColumn('active_until', function($data) {
+            return date("d-m-Y", strtotime($data->active_until));
+        })
         ->addColumn('attend_path', function($data){
             return route('attend.link', $data->attendance_path);
         })
