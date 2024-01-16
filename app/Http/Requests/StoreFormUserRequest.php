@@ -35,7 +35,7 @@ class StoreFormUserRequest extends FormRequest
             'v0' => [
                 'link' => ['required', 'string', 'max:10'],
                 'fullname' => ['required', new FullnameRule()],
-                'email' => ['required', 'email'],
+                'email' => ['required', 'email:rfc,dns'],
                 'no_telpon' => ['numeric', 'digits_between:8,13'],
                 'domisili' => ['required', 'string', 'max:100'],
                 'instansi' => ['required']
@@ -58,10 +58,11 @@ class StoreFormUserRequest extends FormRequest
     {
         $attributes = [
             'v0' => [
-                'fullname' => 'Nama Lengkap',
-                'email' => 'Email',
-                'no_telpon' => 'Nomor Telepon',
-                'instansi' => 'Instansi'
+                'fullname' => __('Full Name'),
+                'email' => __('Email Address'),
+                'no_telpon' => __('Phone Number (WhatsApp)'),
+                'domisili' => __('Domicile (City)'),
+                'instansi' => __('Instance / Company Name')
             ],
             'v1' => [
                 'first_name' => 'Nama Depan',

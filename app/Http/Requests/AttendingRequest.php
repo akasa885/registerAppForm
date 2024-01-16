@@ -30,7 +30,7 @@ class AttendingRequest extends FormRequest
     {
         return [
             'full_name' => ['bail', 'nullable', 'string', 'max:255'],
-            'email' => ['bail', 'required', 'email', 'max:255', new AttendRegisteredEvent($this->attendance)],
+            'email' => ['bail', 'required', 'email:rfc,dns', 'max:255', new AttendRegisteredEvent($this->attendance)],
             'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', new AttendRegisteredEvent($this->attendance, 'contact_number')],
             'is_certificate' => ['required', 'in:yes,no', new AttendingUpPayment($this->attendance, $this->bukti)],
             'bukti' => ['nullable', 'image', 'max:10240'],
