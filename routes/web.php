@@ -58,6 +58,10 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         Route::prefix('attendance')->name('attendance.')->group(__DIR__.'/v1/admin/attendance.php');
         // < ------------------------------- Attendance Control ----------------------------------------- >
 
+        // < ------------------------------- Users Profile ----------------------------------------- >
+        Route::prefix('profile')->name('profile.')->group(__DIR__.'/v1/admin/user.php');
+        // < ------------------------------- Users Profile ----------------------------------------- >
+
         // < ------------------------------- Users Admin ----------------------------------------- >
         Route::prefix('users-setting')->name('users.')->group(__DIR__.'/v1/admin/setting_user.php');
         // < ------------------------------- Users Admin ----------------------------------------- >

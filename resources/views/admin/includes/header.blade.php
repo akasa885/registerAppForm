@@ -40,7 +40,7 @@
                     <div class="widget-content-wrapper">
                         <div class="widget-content-left">
                             <div class="btn-group">
-                                <a href="#profil" class="p-0 btn">
+                                <a href="{{ route('admin.profile.edit') }}" class="p-0 btn">
                                     <img width="42" class="rounded-circle"
                                         src="{{ asset('/admin_assets/assets/images/avatars/1.jpg') }}" alt="">
                                 </a>
