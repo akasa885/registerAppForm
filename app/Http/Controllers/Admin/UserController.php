@@ -101,7 +101,7 @@ class UserController extends Controller
     public function updateMineProfile(Request $request)
     {
         $user = auth()->user();
-        
+
         $this->validate($request, [
             'name' => ['required', 'string'],
             'email' => ['required', 'email:rfc,dns', 'unique:users,email,' . $user->id],
@@ -115,6 +115,38 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->route('admin.profile.edit')->with('success', 'Profile updated successfully');
+    }
+
+    public function changePassword()
+    {
+        $menu = $this->generateProfileMenu();
+        $user = auth()->user();
+
+        $content = view('admin.pages.profile.change-password', compact('user'))->render();
+
+        return view('admin.pages.profile.view', [
+            'title' => 'Change Password',
+            'header' => 'Change Password',
+            'subheader' => 'This is a page where you can change your password',
+        ], compact('menu', 'content'));
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $user = auth()->user();
+
+        $this->validate($request, [
+            'current_password' => ['required', 'password:web'],
+            'password' => ['required', 'confirmed', Password::min(8)],
+        ], [], [
+            'current_password' => __('Current Password'),
+            'password' => __('New Password'),
+        ]);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        return redirect()->route('admin.profile.change-password')->with('success', 'Password updated successfully');
     }
 
     public function update(Request $request, $id)
