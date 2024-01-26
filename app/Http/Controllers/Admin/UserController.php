@@ -8,12 +8,28 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash;
 
 use Auth;
-use Gate;
+use Illuminate\Support\Facades\Gate;
 use App\Models\User;
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
 {
+    private function generateProfileMenu()
+    {
+        return [
+            [
+                'label' => __('Profile'),
+                'route' => 'admin.profile.edit',
+                'link' => route('admin.profile.edit')
+            ],
+            [
+                'label' => __('Change Password'),
+                'route' => 'admin.profile.change-password',
+                'link' => route('admin.profile.change-password')
+            ]
+        ];
+    }
+
     public function index()
     {        
         if(Gate::allows('isSuperAdmin')){
@@ -66,6 +82,39 @@ class UserController extends Controller
             // return response()->json(['success' => false, 'message' => "not found", 'user' => ''], 404);
             abort(404);
         }        
+    }
+
+    public function edit()
+    {
+        $menu = $this->generateProfileMenu();
+        $user = auth()->user();
+
+        $content = view('admin.pages.profile.edit', compact('user'))->render();
+
+        return view('admin.pages.profile.view', [
+            'title' => 'Profile Setting',
+            'header' => 'Profile Setting',
+            'subheader' => 'This is a page where you can manage your profile settings',
+        ], compact('menu', 'content'));
+    }
+
+    public function updateMineProfile(Request $request)
+    {
+        $user = auth()->user();
+        
+        $this->validate($request, [
+            'name' => ['required', 'string'],
+            'email' => ['required', 'email:rfc,dns', 'unique:users,email,' . $user->id],
+        ], [], [
+            'name' => __('Full Name'),
+            'email' => __('Email Address'),
+        ]);
+
+        $user->email = $request->email;
+        $user->name = ucwords($request->name);
+        $user->save();
+
+        return redirect()->route('admin.profile.edit')->with('success', 'Profile updated successfully');
     }
 
     public function update(Request $request, $id)
