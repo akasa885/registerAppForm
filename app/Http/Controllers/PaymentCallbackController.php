@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Services\Midtrans\CallbackService;
 use App\Http\Traits\MailPaymentTrait;
+use Illuminate\Support\Facades\Schema;
 
 class PaymentCallbackController extends Controller
 {
@@ -165,7 +166,7 @@ class PaymentCallbackController extends Controller
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required|exists:orders,order_number',
                 'customer_id' => 'required',
-                'status' => 'required|in:success,pending,cancelled,expire',
+                'transaction_status' => 'nullable|in:success,pending,cancelled,expire',
             ]);
 
             // if validator fails
@@ -181,6 +182,7 @@ class PaymentCallbackController extends Controller
                 abort(404, 'Url invalid, page not found');
             }
 
+            // $customer_id = $request->customer_id;
             $customer_id = Crypt::decryptString($request->customer_id);
             $order = Order::where('order_number', $request->order_id)->firstOrFail();
             $customer = Member::where('id', $customer_id)->firstOrFail();
@@ -191,7 +193,7 @@ class PaymentCallbackController extends Controller
                 'order_number' => $order->order_number,
                 'order_net_total' => $order->net_total,
                 'customer' => $customer ?? null,
-                'status' => $request->status,
+                'status' => $order->status,
                 'type' => $orderType,
             ];
 
@@ -200,6 +202,22 @@ class PaymentCallbackController extends Controller
             } else {
                 $attendance = $order->orderDetails->first()->orderable;
                 $data['form_link'] = route('attend.link', ['link' => $attendance->attendance_path]);
+            }
+
+            if ($data['status'] == 'processing' || $data['status'] == 'pending') {
+                $data['status'] = 'processing';
+                $data['payment_page'] = route('form.link.pay', ['link' => $customer->link->link_path, 'payment' => $customer->invoices->token]);
+                $data['cancel_transaction'] = route('payments.request.cancel');
+            }
+
+            if (Schema::hasColumn('orders', 'snap_redirect') && $order->snap_redirect) {
+                $data['payment_page'] = $order->snap_redirect;
+                $urlArr = parse_url($order->snap_redirect);
+                $lastPath = explode('/', $urlArr['path']);
+                $lastPath = end($lastPath);
+                $transactionId = $lastPath;
+                $data['transaction_id'] = $transactionId;
+                isset($data['cancel_transaction']) && $data['cancel_transaction'] != null ? $data['cancel_transaction'] .= "?transaction_id={$transactionId}&order_number={$order->order_number}" : null;
             }
 
             return view('pages.transaction.callback-info', $data);
