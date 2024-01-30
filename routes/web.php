@@ -96,5 +96,6 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
 Route::prefix('/payments')->name('payments.')->group(function () {
     Route::post('/midtrans-notification', [PaymentCallbackController::class, 'receive'])->name('callback.catch');
     Route::get('/response/status', [PaymentCallbackController::class, 'status'])->name('callback.status.page');
+    Route::post('/cancel/transaction', [PaymentCallbackController::class, 'cancel'])->name('request.cancel');
 });
 
