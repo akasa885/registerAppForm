@@ -43,13 +43,15 @@
                                     transform="rotate(-90 11 17)" fill="currentColor" />
                             </svg>
                             <div class="text-center">
-                                <h3 class="md:text-2xl text-base text-gray-900 font-semibold text-center">Payment On Process!</h3>
+                                <h3 class="md:text-2xl text-base text-gray-900 font-semibold text-center">Payment On
+                                    Process!</h3>
                                 <p class="text-gray-600 my-2">{{ __('transaction.pending-payment-message') }}</p>
-                                <p class="text-gray-600 my-2">{{ __('transaction.pending-payment-title', ['order_number' => $order_number]) }}</p>
+                                <p class="text-gray-600 my-2">
+                                    {{ __('transaction.pending-payment-title', ['order_number' => $order_number]) }}</p>
                                 <div class="py-10 text-center flex flex-col gap-2">
-                                    <a href="{{ $payment_page }}" target="_blank"
+                                    <a href="{{ $payment_page }}" target="_blank" id="continue_payment_btn"
                                         class="px-12 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3">
-                                        Continue Payment
+                                        {{ __('Continue Payment') }}
                                     </a>
 
                                     {{-- <a href="{{ $form_link }}"
@@ -57,12 +59,10 @@
                                         Change Payment Method
                                     </a> --}}
 
-                                    <a href="{{ $cancel_transaction }}" onclick="event.preventDefault(); document.getElementById('cancelling_transaction_post').submit();"
+                                    <a href="{{ $cancel_transaction }}" id="cancelling_transaction_btn"
                                         class="px-12 bg-red-600 hover:bg-red-500 text-white font-semibold py-3">
-                                        Cancel Transaction
+                                        {{ __('Cancel Transaction') }}
                                     </a>
-                                    
-                                    <form action="{{ $cancel_transaction }}" method="POST" id="cancelling_transaction_post"></form>
                                 </div>
                             </div>
                         @endif
@@ -72,3 +72,74 @@
         </div>
     </main>
 @endsection
+
+@push('scripts')
+    <script>
+        $(document).ready(function() {
+            @if ($status == 'processing')
+                $('#cancelling_transaction_btn').on('click', function(e) {
+                    e.preventDefault();
+
+                    $('#continue_payment_btn').attr('disabled', true);
+                    $('#cancelling_transaction_btn').attr('disabled', true);
+
+                    Swal.fire({
+                        title: "Are you sure ?",
+                        text: "You will not be able to revert this!",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, cancel it!",
+                        cancelButtonText: "No, keep it",
+                        reverseButtons: true
+                    }).then(function(result) {
+                        if (result.value) {
+                            $.ajax({
+                                url: "{!! $cancel_transaction !!}",
+                                type: "POST",
+                                data: {
+                                    _token: "{{ csrf_token() }}",
+                                    order_number: "{{ $order_number }}",
+                                },
+                                success: function(data) {
+                                    if (data.status == 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Transaction Cancelled!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        }).then(function() {
+                                            window.location.href = data.redirect;
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Failed to cancel transaction!',
+                                            showConfirmButton: false,
+                                            timer: 1500
+                                        });
+                                    }
+                                },
+                                error: function(data) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Failed to cancel transaction!',
+                                        showConfirmButton: false,
+                                        timer: 1500
+                                    });
+                                }
+                            });
+                        } else if (result.dismiss === "cancel") {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Cancel Action',
+                                text: 'Your transaction is safe :)',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    })
+                });
+            @endif
+        });
+    </script>
+@endpush

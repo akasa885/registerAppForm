@@ -13,6 +13,9 @@ use Illuminate\Support\Facades\DB;
 use App\Services\Midtrans\CallbackService;
 use App\Http\Traits\MailPaymentTrait;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Http;
+use GuzzleHttp\Client;
+use App\Helpers\Midtrans as MidHelper;
 
 class PaymentCallbackController extends Controller
 {
@@ -198,6 +201,7 @@ class PaymentCallbackController extends Controller
             ];
 
             if ($orderType != 'certificate') {
+                $data['form_invoice'] = route('form.link.pay', ['link' => $customer->link->link_path, 'payment' => $customer->invoices->token]);
                 $data['form_link'] = route('form.link.view', ['link' => $customer->link->link_path]);
             } else {
                 $attendance = $order->orderDetails->first()->orderable;
@@ -206,7 +210,6 @@ class PaymentCallbackController extends Controller
 
             if ($data['status'] == 'processing' || $data['status'] == 'pending') {
                 $data['status'] = 'processing';
-                $data['payment_page'] = route('form.link.pay', ['link' => $customer->link->link_path, 'payment' => $customer->invoices->token]);
                 $data['cancel_transaction'] = route('payments.request.cancel');
             }
 
@@ -226,6 +229,97 @@ class PaymentCallbackController extends Controller
             report($th);
 
             abort(404, 'Url invalid, page not found');
+        }
+    }
+
+    public function cancel(Request $request)
+    {
+        if (!$request->ajax()) {
+            abort(404, 'Url invalid, page not found');
+        }
+
+        try {
+            $validator = Validator::make($request->all(), [
+                'transaction_id' => 'required|string',
+                'order_number' => 'required|exists:orders,order_number',
+            ]);
+
+            if ($validator->fails()) {
+                if (config('app.debug')) {
+                    return response()
+                        ->json([
+                            'error' => true,
+                            'message' => $validator->errors(),
+                        ], 422);
+                }
+
+                return response()
+                    ->json([
+                        'error' => true,
+                        'message' => 'Failed to cancel transaction',
+                    ], 422);
+            }
+
+            DB::beginTransaction();
+
+            // $midApiCancel = Http::withBasicAuth(config('midtrans.server_key'), '')
+            //     ->withHeaders([
+            //         'Accept' => 'application/json',
+            //         'Content-Type' => 'application/json',
+            //     ])
+            //     ->post(MidHelper::getVersioningApiUrl()."/{$request->order_number}/cancel");
+
+            $client = new Client();
+            $midApiCancel = $client->request('POST', MidHelper::getVersioningApiUrl()."/{$request->order_number}/cancel", [
+                'headers' => [
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ],
+                'auth' => [config('midtrans.server_key'), ''],
+            ]);
+
+            $midApiCancelBody = null;
+
+            if ($midApiCancel->getStatusCode() == 200) $midApiCancelBody = json_decode($midApiCancel->getBody()->getContents());
+            
+            if ($midApiCancel->getStatusCode() == 200 && $midApiCancelBody->fraud_status == 'accept') {
+                $order = Order::where('order_number', $request->order_number)->firstOrFail();
+                $order->update([
+                    'status' => 5,
+                ]);
+
+                $newOrder = $this->createDuplicateOrder($order);
+                $invoice = $order->invoice;
+
+                $invoice->invoicedOrder->order_id = $newOrder->id;
+                $invoice->invoicedOrder->save();
+
+                $customer = $order->member;
+                DB::commit();
+                return response()
+                    ->json([
+                        'status' => 'success',
+                        'message' => 'Transaction successfully cancelled',
+                        'redirect' => route('form.link.pay', ['link' => $customer->link->link_path, 'payment' => $customer->invoices->token])
+                    ]);
+            }
+
+            DB::rollBack();
+            return response()
+                ->json([
+                    'status' => 'failed',
+                    'message' => 'Failed to cancel transaction',
+                ], 500);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            if (config('app.debug')) throw $th;
+            report($th);
+
+            return response()
+                ->json([
+                    'status' => 'failed',
+                    'message' => 'Failed to cancel transaction',
+                ], 500);
         }
     }
 }
