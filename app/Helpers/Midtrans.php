@@ -9,6 +9,10 @@ use Illuminate\Contracts\Filesystem\FileNotFoundException;
 class Midtrans {
 
     public $midtransInfo;
+    public $midApiProduction = 'https://api.midtrans.com';
+    public $midApiSandbox = 'https://api.sandbox.midtrans.com';
+
+    protected $versionApi = 'v2';
 
     public function __construct()
     {
@@ -56,6 +60,20 @@ class Midtrans {
     {
         $midtrans = new Midtrans();
         return $midtrans->midtransInfo['MIDTRANS_IS_PRODUCTION'];
+    }
+
+    public static function getApiUrl()
+    {
+        $midtrans = new Midtrans();
+
+        return $midtrans->midtransInfo['MIDTRANS_IS_PRODUCTION'] ? $midtrans->midApiProduction : $midtrans->midApiSandbox;
+    }
+
+    public static function getVersioningApiUrl()
+    {
+        $midtrans = new Midtrans();
+
+        return $midtrans->midtransInfo['MIDTRANS_IS_PRODUCTION'] ? $midtrans->midApiProduction.'/'.$midtrans->versionApi : $midtrans->midApiSandbox.'/'.$midtrans->versionApi;
     }
 
     public static function createConfig()
