@@ -30,9 +30,6 @@ class OrderDetail extends Model
 
     protected $hidden = [
         'id',
-        'order_id',
-        'orderable_id',
-        'orderable_type',
     ];
 
     public function prepDupOrderDetail(): OrderDetail

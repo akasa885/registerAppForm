@@ -54,8 +54,6 @@ class Order extends Model
 
     protected $hidden = [
         'id',
-        'member_id',
-        'invoice_id',
         'snap_token_midtrans',
     ];
 
@@ -94,6 +92,15 @@ class Order extends Model
     {
         //this will prepare to duplicate order. without id, order_id, snap_token_midtrans, paid_at
         $order = new Order;
+        // check orderNumber contains 'TCK' or 'CRT'
+        if (strpos($this->order_number, 'TCK') !== false) {
+            $order->order_number = $order->generateOrderNumber('TCK', $this->member_id);
+        } else if (strpos($this->order_number, 'CRT') !== false) {
+            $order->order_number = $order->generateOrderNumber('CRT', $this->member_id);
+        } else {
+            $order->order_number = $order->generateOrderNumber();
+        }
+
         $order->name = $this->name;
         $order->short_description = $this->short_description;
         $order->gross_total = $this->gross_total;
