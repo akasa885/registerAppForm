@@ -38,7 +38,7 @@ class CreateSnapTokenService extends Midtrans
             'item_details' => $this->setDetailsOfOrder(),
             'customer_details' => $this->setCustomerInformation(),
             'callbacks' => [
-                'finish' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id)."&status=success",
+                'finish' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id),
             ]
         ];
 
@@ -78,7 +78,7 @@ class CreateSnapTokenService extends Midtrans
         return [
             'gopay' => [
                 'enable_callback' => true,
-                'callback_url' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id)."&status=success",
+                'callback_url' => route('payments.callback.status.page')."?order_id={$this->order->order_number}&customer_id=".Crypt::encryptString($this->order->member_id),
             ]
         ];
     }
