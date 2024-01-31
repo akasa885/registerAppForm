@@ -138,8 +138,6 @@
                 }, 1000);
             }
 
-            timerCounter();
-
             // if user current tab is not active then stop timer
             document.addEventListener('visibilitychange', function () {
                 if (document.visibilityState === 'visible') {
