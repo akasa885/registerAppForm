@@ -33,6 +33,6 @@ return [
     ],
     'message-check-email-event-info' => 'Silahkan cek email anda untuk informasi acara',
     'payment' => [
-        'title-confirmation' => 'Konfirmasi Tahanan Pembayaran',
+        'title-confirmation' => 'Konfirmasi Pembayaran',
     ],
 ];
