@@ -78,6 +78,7 @@ trait MailPaymentTrait {
             'acara'     => $link->title,
             'message'   =>   $information,
             'valid_until' => $invoice->valid_until,
+            'is_auto' => !$link->is_multiple_registrant_allowed,
             'link_pay'  => route('form.link.pay', ['link' => $link->link_path, 'payment' => $invoice->token])
         );
         $from_mail = Email::EMAIL_FROM;
