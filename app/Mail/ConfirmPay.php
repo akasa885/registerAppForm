@@ -28,7 +28,7 @@ class ConfirmPay extends Mailable
 
     public function setSubject($auto = false) {
         if ($auto) {
-            $this->subject = __('mail.subject.confirmed_pay');
+            $this->subject = __('mail.subject.confirm_pay_gateway');
             return;
         }
 
