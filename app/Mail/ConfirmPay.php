@@ -23,10 +23,15 @@ class ConfirmPay extends Mailable
     {
         $this->data = $data;
         $this->from_mail = $from;
-        $subject ? $this->subject = $subject : $this->setSubject();
+        $subject ? $this->subject = $subject : $this->setSubject($data['is_auto']);
     }
 
-    public function setSubject() {
+    public function setSubject($auto = false) {
+        if ($auto) {
+            $this->subject = __('mail.subject.confirmed_pay');
+            return;
+        }
+
         $this->subject = __('mail.subject.confirm_pay');
     }
 
