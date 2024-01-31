@@ -17,19 +17,36 @@ trait FormRegistrationTrait
 {
     use GenerateTokenUniqueColumnTrait, OrderedDetailTrait;
 
-    public function AvailableMemberOnEvent($member, $email)
+    /**
+     * 
+     * @param mixed $members : registered of current link
+     * @param mixed $email : email of new member
+     * @param mixed $link : current link registration
+     * @return bool 
+     */
+    public function AvailableMemberOnEvent($members, $email, $link)
     {
         $matched = 0;
-        foreach ($member as $item) {
+        foreach ($members as $item) {
             if ($item->email == $email) {
                 $matched += 1;
             }
         }
 
         if ($matched == 0) {
-            return true;
-        } else {
             return false;
+        } else {
+            if ($link->link_type == 'pay') {
+                $member = Member::where('email', $email)->where('link_id', $link->id)->first();
+                if ($member->invoices->status == 2) {
+                    return true;
+                } else if ($member->invoices->status == 1) {
+                    return true;
+                } 
+
+                return false;
+            }
+            return true;
         }
     }
 

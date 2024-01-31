@@ -40,7 +40,7 @@ class FormController extends Controller
             DB::beginTransaction();
             $link_coll = Link::where('link_path', $validated['link'])->first();
             $current_member = $link_coll->members;
-            if(!$check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'])){
+            if($check_avail = $this->AvailableMemberOnEvent($current_member, $validated['email'], $link_coll)){
                 if (config('app.locale') == 'id') {
                     return back()
                     ->withInput($request->all())
@@ -51,6 +51,15 @@ class FormController extends Controller
                     ->withErrors(['email' => 'The email you entered is already registered for this event!']);
                 }
             }
+
+            if ($link_coll->link_type == 'pay' && $member = Member::where('email', $validated['email'])->where('link_id', $link_coll->id)->first()) {
+                if ($member->invoices->status == 0 && $member->invoices->valid_until > Carbon::now()) {
+                    return redirect()->route('form.link.pay', 
+                    ['link' => $link_coll->link_path, 'payment' => $member->invoices->token]
+                    )->with('info', 'Anda sudah melakukan pendaftaran sebelumnya, silahkan lanjutkan pembayaran');
+                }
+            }
+
             if($link_coll->has_member_limit){
                 if($link_coll->link_type == 'free'){
                     if(!$check_quota = $this->isRegistrationMemberQuota($current_member, $link_coll->member_limit)){
@@ -316,7 +325,7 @@ class FormController extends Controller
             }
         }catch (\Throwable $th) {
             //nothing to do
-            \Log::error('Error on request show bill');
+            Log::error('Error on request show bill');
             report($th);
         }
     }
