@@ -32,6 +32,15 @@ class FormController extends Controller
 {
     use FileUploadTrait, FormRegistrationTrait, MailPaymentTrait;
 
+    private function getTimeLimit($limittime)
+    {
+        $currentDateTime = Carbon::now();
+        // get the time left, current time to limitTime. format 00:00:00
+        $timeLeft = $currentDateTime->diff($limittime)->format('%H:%I:%S');
+
+        return $timeLeft;
+    }
+
     public function storeIdentity(StoreFormUserRequest $request)
     {
         $validated = $request->validated();
@@ -166,11 +175,18 @@ class FormController extends Controller
         $expired = false;
         $used = false;
         $not_found = false;
+        $timeLeft = null;
+
+        if ($pay_detail) {
+            $timeLeft = $this->getTimeLimit($pay_detail->valid_until);
+        }
 
         $dataReturn = [
             'expired' => $expired,
             'used' => $used,
-            'not_found' => $not_found];
+            'not_found' => $not_found,
+            'timeLeft' => $timeLeft
+        ];
 
         if($pay_detail != null){
             $member = $pay_detail->member;
