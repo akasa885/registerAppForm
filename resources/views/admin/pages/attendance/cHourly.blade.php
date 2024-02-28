@@ -21,6 +21,13 @@
     <div class="col-md-10">
         <div class="card mb-3">
             <div class="card-body">
+                @if ($message = Session::get('error'))
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <strong>{{ $message }}</strong>
+                        <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 @if (count($errors) > 0)
                     <div class="alert alert-danger">
                         <ul>
