@@ -232,7 +232,7 @@ class AttendanceController extends Controller
                 $member->save();
             }
 
-            if ($attendance->is_using_payment_gateway) {
+            if ($attendance->is_using_payment_gateway && $validated['is_certificate']) {
                 $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
                 if (!$payStore) {
                     $order = $this->createOrderCertificate($attendance, $member, (isset($validated['full_name'])) ? $validated['full_name'] : null);
@@ -262,7 +262,7 @@ class AttendanceController extends Controller
             if (config('app.debug')) throw $th;
 
             Log::error('Error: AttendanceController - attending() | ');
-            Log::error($th->getMessage());
+            Log::error($th);
 
             return back()->with('error', 'Something went wrong, failed attend');
         }
@@ -310,7 +310,7 @@ class AttendanceController extends Controller
             if ($member == null) {
                 $member = Member::find($member_id);
             }
-            
+
             $data['name'] = $member->full_name;
             $data['email'] = $member->email;
             $data['phone'] = $member->contact_number;
