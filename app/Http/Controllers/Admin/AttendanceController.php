@@ -201,6 +201,7 @@ class AttendanceController extends Controller
     public function attending(AttendingRequest $request, Attendance $attendance)
     {
         try {
+            $attendance->load('link');
             DB::beginTransaction();
             $validated = $request->validated();
             if (!$validated['member_id']) {
@@ -263,9 +264,15 @@ class AttendanceController extends Controller
                 $this->sendConfirmationAttendanceMail($attendance, $validated['member_id'], $member, $asReg);
                 $email = true;
             }
+            $asReg = $attendance->link->hide_events && $attendance->allow_non_register;
             $emailText = $email ? __('attend.success_with_email', ['email' => $member->email]) : '';
 
             DB::commit();
+
+            if ($asReg) {
+                return back()->with('success', __('attend.success_as_reg').$emailText);;
+            }
+
             return back()->with('success', __('attend.success').$emailText);
         } catch (\Throwable $th) {
             DB::rollback();
@@ -274,7 +281,7 @@ class AttendanceController extends Controller
             Log::error('Error: AttendanceController - attending() | ');
             Log::error($th);
 
-            return back()->with('error', 'Something went wrong, failed attend');
+            return back()->with('error', 'Something went wrong');
         }
     }
 
