@@ -31,7 +31,8 @@ class Link extends Model
         'has_member_limit',
         'member_limit',
         'is_multiple_registrant_allowed',
-        'sub_member_limit'
+        'sub_member_limit',
+        'hide_events',
     ];
 
     protected $dates = [
@@ -43,6 +44,7 @@ class Link extends Model
     protected $casts = [
         'has_member_limit' => 'boolean',
         'is_multiple_registrant_allowed' => 'boolean',
+        'hide_events' => 'boolean',
     ];
 
     protected $appends = [
