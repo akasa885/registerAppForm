@@ -10,7 +10,9 @@ class IndexController extends Controller
 {
     public function index(Request $request)
     {
-        $link = Link::orderBy('id', 'DESC')->paginate(12);
+        $link = Link::where(function ($query) {
+            $query->IsLinkViewable();
+        })->orderBy('id', 'DESC')->paginate(12);
         if ($request->ajax()) {
             $view = view('pages.home.data.list-link', ['link' => $link])->render();
 

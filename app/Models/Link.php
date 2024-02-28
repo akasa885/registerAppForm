@@ -71,6 +71,14 @@ class Link extends Model
         return $query->orderBy('id','DESC');
     }
 
+    public function scopeIsLinkViewable($query)
+    {
+        $date = date("Y-m-d");
+        return $query->where(function ($query) use ($date) {
+            $query->where('hide_events', 0)->orWhere('active_until', '<', date('Y-m-d'));
+        });
+    }
+
     public static function filterActiveMyLinks()
     {
         $user = auth()->user();
@@ -104,7 +112,7 @@ class Link extends Model
         } else {
             $date = date("Y-m-d");
             // if today is after 3 days from active until, then link is viewable
-            return date("Y-m-d", strtotime($this->active_until)) <= date("Y-m-d", strtotime($date . ' + 3 days'));
+            return date("Y-m-d", strtotime($this->active_until)) < date("Y-m-d", strtotime($date));
         }
     }
 
