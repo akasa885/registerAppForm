@@ -66,7 +66,7 @@ class AttendingRequest extends FormRequest
         $validated['is_certificate'] = $validated['is_certificate'] == 'yes' ? true : false;
         $validated['certificate'] = $validated['is_certificate'];
         $validated['attend_id'] = $this->attendance->id;
-        if ($this->attendance->allow_non_register && !$this->attendance->is_using_payment_gateway) {
+        if ($this->attendance->allow_non_register) {
             $link = $this->attendance->link;
             $memberS = $link->members()->where('email', $validated['email'])->first();
             if (!$memberS) {
