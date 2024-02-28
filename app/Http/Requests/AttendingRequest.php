@@ -76,6 +76,9 @@ class AttendingRequest extends FormRequest
                     'contact_number' => $validated['no_telpon'],
                     'corporation' => $validated['corporation'],
                 ]);
+
+                $validated['new_member_created'] = true;
+                $validated['created_member'] = $memberS;
             }
             
         } else {
