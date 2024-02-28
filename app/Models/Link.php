@@ -97,6 +97,17 @@ class Link extends Model
         });
     }
 
+    public function isLinkViewable()
+    {
+        if (!$this->hide_events) {
+            return true;
+        } else {
+            $date = date("Y-m-d");
+            // if today is after 3 days from active until, then link is viewable
+            return date("Y-m-d", strtotime($this->active_until)) <= date("Y-m-d", strtotime($date . ' + 3 days'));
+        }
+    }
+
     /**
      * Get the user that owns the Link
      *

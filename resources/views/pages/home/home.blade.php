@@ -16,6 +16,9 @@
             @else
                 <div class="p-10 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="list-wrapper">
                     @foreach ($link as $item)
+                        @if ($item->isLinkViewable() == false)
+                            @continue
+                        @endif
                         @php
                             $open = false;
                             $close = false;
@@ -27,7 +30,6 @@
                                 $close = true;
                             }
                         @endphp
-                        
                         <div class="flex-1 p-4">
                             <a href="{{ route('form.link.view', ['link' => $item->link_path]) }}">
                                 <div class="flex flex-col h-full bg-white rounded-lg shadow-lg">
