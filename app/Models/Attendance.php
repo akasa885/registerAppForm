@@ -30,6 +30,7 @@ class Attendance extends Model
         'active_until' => 'datetime',
         'with_verification_certificate' => 'boolean',
         'is_using_payment_gateway' => 'boolean',
+        'allow_non_register' => 'boolean',
     ];
 
     protected $appends = [
