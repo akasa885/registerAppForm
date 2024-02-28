@@ -186,7 +186,7 @@ class AttendanceController extends Controller
             $link = $attendance->link;
         }
         
-        return view('pages.absensi.page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
+        return view('pages.absensi.temp_page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
     }
 
     public function attending(AttendingRequest $request, Attendance $attendance)
@@ -200,7 +200,12 @@ class AttendanceController extends Controller
                     ->withInput($request->only('email'))
                     ->with('error', __('attend.failed_member_not_found'));
             }
-            $member = Member::find($validated['member_id']);
+            if (isset($validated['new_member_created'])) {
+                $member = $validated['created_member'];
+            } else {
+                $member = Member::find($validated['member_id']);
+            }
+
             $member_attend = MemberAttend::where('member_id', $validated['member_id'])->where('attend_id', $attendance->id)->first();
             if ($member_attend) {
                 DB::rollback();
@@ -245,7 +250,7 @@ class AttendanceController extends Controller
 
             $email = false;
             if ($attendance->confirmation_mail) {
-                $this->sendConfirmationAttendanceMail($attendance, $validated['member_id']);
+                $this->sendConfirmationAttendanceMail($attendance, $validated['member_id'], $member);
                 $email = true;
             }
             $emailText = $email ? __('attend.success_with_email', ['email' => $member->email]) : '';
@@ -298,11 +303,14 @@ class AttendanceController extends Controller
         ], compact('attendance', 'order', 'checkPaymentStatusUrl'));
     }
 
-    private function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id)
+    private function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id, $member = null)
     {
         try {
             $data = [];
-            $member = Member::find($member_id);
+            if ($member == null) {
+                $member = Member::find($member_id);
+            }
+            
             $data['name'] = $member->full_name;
             $data['email'] = $member->email;
             $data['phone'] = $member->contact_number;
