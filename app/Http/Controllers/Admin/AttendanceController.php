@@ -303,7 +303,7 @@ class AttendanceController extends Controller
         ], compact('attendance', 'order', 'checkPaymentStatusUrl'));
     }
 
-    private function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id, $member = null)
+    public function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id, $member = null)
     {
         try {
             $data = [];

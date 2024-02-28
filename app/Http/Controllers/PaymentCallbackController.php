@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
 use App\Services\Midtrans\CallbackService;
+use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Traits\MailPaymentTrait;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Http;
@@ -92,6 +93,18 @@ class PaymentCallbackController extends Controller
     
                         $this->sendMailPaymentReceived($linkMember, $member);
                     }
+
+                    if ($orderType == 'certificate') {
+                        $attendPaymentStore = AttendPaymentStore::where('order_id', $order->id)->first();
+                        $attend = $attendPaymentStore->attend;
+                        if ($attend->confirmation_mail) {
+                            try {
+                                (new AttendanceController)->sendConfirmationAttendanceMail($attend, $attendPaymentStore->member_id, $attendPaymentStore->member);
+                            } catch (\Throwable $th) {
+                                report($th);
+                            }
+                        }
+                    }
                 }
 
                 if ($callback->isPending()) {
@@ -169,7 +182,7 @@ class PaymentCallbackController extends Controller
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required|exists:orders,order_number',
                 'customer_id' => 'required',
-                'transaction_status' => 'nullable|in:success,pending,cancelled,expire',
+                'transaction_status' => 'nullable|in:success,pending,cancelled,expire,settlement',
             ]);
 
             // if validator fails
@@ -182,7 +195,11 @@ class PaymentCallbackController extends Controller
                         ], 422);
                 }
 
-                abort(404, 'Url invalid, page not found');
+                return response()
+                    ->json([
+                        'error' => true,
+                        'message' => 'Status payment '. $request->transaction_status . '!, redirect failed',
+                    ], 422);
             }
 
             // $customer_id = $request->customer_id;
