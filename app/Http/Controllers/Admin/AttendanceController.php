@@ -91,7 +91,7 @@ class AttendanceController extends Controller
         } catch (\Throwable $th) {
             if (config('app.debug'))
                 throw $th;
-            \Log::error($th);
+            Log::error($th);
             
             return back()->with('error', 'Something went wrong, failed create attendance');
         }
@@ -172,6 +172,7 @@ class AttendanceController extends Controller
     {
         $show = true;
         $date = date("Y-m-d H:i:s");
+        $showFormAsRegister = false;
         $attendance = Attendance::where('attendance_path', $link)->first();
         if (!$attendance) {
             $show = false;
@@ -185,8 +186,16 @@ class AttendanceController extends Controller
             }
             $link = $attendance->link;
         }
-        
-        return view('pages.absensi.temp_page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
+
+        if ($attendance->link->hide_events && $attendance->allow_non_register) {
+            $showFormAsRegister = true;
+        }
+
+        if ($showFormAsRegister) {
+            return view('pages.absensi.temp_page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
+        }
+
+        return view('pages.absensi.page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
     }
 
     public function attending(AttendingRequest $request, Attendance $attendance)
@@ -250,7 +259,8 @@ class AttendanceController extends Controller
 
             $email = false;
             if ($attendance->confirmation_mail) {
-                $this->sendConfirmationAttendanceMail($attendance, $validated['member_id'], $member);
+                $asReg = $attendance->link->hide_events && $attendance->allow_non_register;
+                $this->sendConfirmationAttendanceMail($attendance, $validated['member_id'], $member, $asReg);
                 $email = true;
             }
             $emailText = $email ? __('attend.success_with_email', ['email' => $member->email]) : '';
@@ -303,9 +313,14 @@ class AttendanceController extends Controller
         ], compact('attendance', 'order', 'checkPaymentStatusUrl'));
     }
 
-    public function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id, $member = null)
+    public function sendConfirmationAttendanceMail(Attendance $attendance, int $member_id, $member = null, $asRegister = false)
     {
         try {
+            $customSubject = null;
+            if ($asRegister) {
+                $customSubject = 'Thank you for attending our event';
+            }
+
             $data = [];
             if ($member == null) {
                 $member = Member::find($member_id);
@@ -320,7 +335,7 @@ class AttendanceController extends Controller
 
             $from_mail = Email::EMAIL_FROM;
 
-            Mail::to($data['email'])->send(new ConfirmationAttendances($data, $from_mail));
+            Mail::to($data['email'])->send(new ConfirmationAttendances($data, $from_mail, $customSubject));
             $mail_db = new Email;
             $mail_db->send_from = $from_mail;
             $mail_db->send_to = $data['email'];

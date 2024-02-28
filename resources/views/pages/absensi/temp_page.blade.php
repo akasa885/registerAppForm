@@ -85,7 +85,7 @@
                                 class="form-input w-full @error('email') border-red-500 @enderror" name="email"
                                 value="{{ old('email') }}" required autofocus>
                             <span
-                                class="text-gray-600 text-xs mt-2 w-full">Masukan email yang valid</span><br />
+                                class="text-gray-600 text-xs mt-2 w-full">Masukan email anda yang valid</span><br />
 
                             @error('email')
                                 <p class="text-red-500 text-xs italic mt-2">
@@ -132,7 +132,7 @@
                         @if ($attendance->isCertNeedVerification())
                         <div class="flex flex-wrap">
                             <label for="input-4" class="block w-full text-gray-700 text-sm font-bold mb-2 sm:mb-4">
-                                {{ __('attend.form.is_certificate') }} ?
+                                {{ __('attend.form.is_certificate_long') }} ?
                             </label>
 
                             <div class="row flex-fill">
