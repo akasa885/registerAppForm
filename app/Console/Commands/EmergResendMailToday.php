@@ -130,33 +130,27 @@ class EmergResendMailToday extends Command
                 'message' => $emailRowMember->message,
                 'link_path' => $attendance->link->link_path,
             ];
+            $currentEmailSentCount = $emailRowMember->sent_count;
 
-            if ($member->email == 'akasa2444@gmail.com') {
-                $currentEmailSentCount = $emailRowMember->sent_count;
-                try {
-                    if ($currentEmailSentCount > 1) {
-                        $this->info('Skip send mail to: ' . $member->email . ' because the email has been re-sent twice');
-                        return;
-                    }
-
-                    Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, '[Resend] Thank you for attending our event'));
-                    $this->info('Success send count ' . $counterMail . ' of ' . $attends_count);
-                    $emailRowMember->update([
-                            'sent_count' => $currentEmailSentCount + 1
-                    ]);
-                    $emailRowMember->save();
-
-                    $counterMail++;
-                } catch (\Throwable $th) {
-                    $this->info('Failed to send mail to: ' . $member->email);
+            try {
+                if ($currentEmailSentCount > 1) {
+                    $this->info('Skip send mail to: ' . $member->email . ' because the email has been re-sent twice');
+                    return;
                 }
-            } else {
-                $this->info('Skip send mail to: ' . $member->email);
+
+                Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, 'Resend::Thank you for attending our event'));
+                $this->info('Success send count ' . $counterMail . ' of ' . $attends_count);
+                $emailRowMember->update([
+                        'sent_count' => $currentEmailSentCount + 1
+                ]);
+                $emailRowMember->save();
+
+                $counterMail++;
+            } catch (\Throwable $th) {
+                $this->info('Failed to send mail to: ' . $member->email);
             }
         });
 
         return $this->info('Resend Email run successfully');
-
-        return $dataReturn;
     }
 }
