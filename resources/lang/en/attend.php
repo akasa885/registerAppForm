@@ -20,7 +20,7 @@ return [
     'already_attend' => 'You have already attended !',
     'success' => 'Attendance successful !',
     'success_as_reg' => 'Form has been submitted successfully',
-    'success_with_email' => ' , and information email has been sent to :email',
+    'success_with_email' => ' , and information email has been sent to :email . Can also be seen in your spam/junk email folder if it is not in the inbox.',
     'failed_payment_status' => 'Your payment status is not paid on the system, please contact the committee for further information',
     'failed_member_not_found' => 'Participant data not found, make sure the email & phone number you entered is correct',
 ];
