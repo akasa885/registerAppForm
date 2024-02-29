@@ -141,7 +141,11 @@ class EmergResendMailToday extends Command
 
                     Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, '[Resend] Thank you for attending our event'));
                     $this->info('Success send count ' . $counterMail . ' of ' . $attends_count);
-                    $emails->where('user_id', $member->id)->first()->update(['sent_count', $currentEmailSentCount + 1]);
+                    $emailRowMember->update([
+                            'sent_count' => $currentEmailSentCount + 1
+                    ]);
+                    $emailRowMember->save();
+
                     $counterMail++;
                 } catch (\Throwable $th) {
                     $this->info('Failed to send mail to: ' . $member->email);
