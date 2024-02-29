@@ -242,6 +242,15 @@ class AttendanceController extends Controller
                 $member->save();
             }
 
+            if ($attendance->is_using_payment_gateway) {
+                $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
+                if ($payStore) {
+                    $order = $payStore->order;
+                    return redirect()->route('attend.waiting-payment', ['attendance' => $attendance->attendance_path, 'orderNumber' => $order->order_number])
+                        ->with('info', 'You have an unpaid order');
+                }
+            }
+
             if ($attendance->is_using_payment_gateway && $validated['is_certificate']) {
                 $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
                 if (!$payStore) {
