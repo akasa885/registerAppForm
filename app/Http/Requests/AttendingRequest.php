@@ -37,7 +37,7 @@ class AttendingRequest extends FormRequest
             'bukti' => ['nullable', 'image', 'max:10240'],
         ];
 
-        if ($this->aattendanceData->allow_non_register) {
+        if ($this->attendanceData->allow_non_register) {
             $rules['full_name'] = ['required', 'string', 'max:255'];
             $rules['corporation'] = ['required', 'string', 'max:255'];
         } else {
