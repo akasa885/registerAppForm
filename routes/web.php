@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\AjaxController as AdminAjaxC;
 use App\Http\Controllers\PaymentCallbackController;
 use App\Http\Controllers\FormController;
 use App\Http\Controllers\IndexController;
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,7 +25,7 @@ use App\Http\Controllers\IndexController;
 Route::get('/', [IndexController::class, 'index'])->name('home');
 
 Route::prefix('form')->name('form.')->group(__DIR__ . '/v1/user/form.php');
-Route::prefix('attend')->name('attend.')->group(__DIR__ . '/v1/user/attend.php');
+Route::prefix('attend')->name('attend.')->middleware('throttle:attendance')->group(__DIR__ . '/v1/user/attend.php');
 
 Route::get('language/{locale}', function ($locale) {
     app()->setLocale($locale);
