@@ -116,24 +116,32 @@ class EmergResendMailToday extends Command
 
         $attends = MemberAttend::whereIn('member_id', $interSecMemberId)->with('member', 'attendance')->get();
         $attends_count = $attends->count();
-        $counterMail = 0;
+        $counterMail = 1;
 
         $attends->each(function ($attend) use ($emails, $attends_count, $counterMail) {
             $member = $attend->member;
             $attendance = $attend->attendance;
+            $emailRowMember = $emails->where('user_id', $member->id)->first();
             $dataReturn = [
                 'name' => $member->full_name,
                 'email' => $member->email,
                 'phone' => $member->contact_number,
                 'event' => $attendance->link->title,
-                'message' => $emails->where('user_id', $member->id)->first()->message,
+                'message' => $emailRowMember->message,
                 'link_path' => $attendance->link->link_path,
             ];
 
             if ($member->email == 'akasa2444@gmail.com') {
+                $currentEmailSentCount = $emailRowMember->sent_count;
                 try {
+                    if ($currentEmailSentCount > 1) {
+                        $this->info('Skip send mail to: ' . $member->email . ' because the email has been re-sent twice');
+                        return;
+                    }
+
                     Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, '[Resend] Thank you for attending our event'));
                     $this->info('Success send count ' . $counterMail . ' of ' . $attends_count);
+                    $emails->where('user_id', $member->id)->first()->update(['sent_count', $currentEmailSentCount + 1]);
                     $counterMail++;
                 } catch (\Throwable $th) {
                     $this->info('Failed to send mail to: ' . $member->email);
