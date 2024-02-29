@@ -32,6 +32,9 @@ class EmergResendMailToday extends Command
         'reminder_event' => 'App\Mail\ReminderEvent',
     ];
 
+    private $mailClass = null;
+    private $fromMail;
+
     /**
      * Create a new command instance.
      *
@@ -54,6 +57,8 @@ class EmergResendMailToday extends Command
         $today = Carbon::now()->format('Y-m-d');
         $type = $this->argument('type');
         $mail = self::mail_type[$type];
+        $this->mailClass = $mail;
+        $this->fromMail = Email::EMAIL_FROM;
 
         $emails = Email::where('created_at', 'like', $today . '%')
             ->where('type_email', $type)
@@ -110,8 +115,10 @@ class EmergResendMailToday extends Command
         }
 
         $attends = MemberAttend::whereIn('member_id', $interSecMemberId)->with('member', 'attendance')->get();
+        $attends_count = $attends->count();
+        $counterMail = 0;
 
-        $attends->each(function ($attend) {
+        $attends->each(function ($attend) use ($emails, $attends_count, $counterMail) {
             $member = $attend->member;
             $attendance = $attend->attendance;
             $dataReturn = [
@@ -119,10 +126,21 @@ class EmergResendMailToday extends Command
                 'email' => $member->email,
                 'phone' => $member->contact_number,
                 'event' => $attendance->link->title,
-                'message' => $attendance->confirmation_mail,
+                'message' => $emails->where('user_id', $member->id)->first()->message,
                 'link_path' => $attendance->link->link_path,
             ];
 
+            if ($member->email == 'akasa2444@gmail.com') {
+                try {
+                    Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, '[Resend] Thank you for attending our event'));
+                    $this->info('Success send count ' . $counterMail . ' of ' . $attends_count);
+                    $counterMail++;
+                } catch (\Throwable $th) {
+                    $this->info('Failed to send mail to: ' . $member->email);
+                }
+            } else {
+                $this->info('Data Return: ' . json_encode($dataReturn));
+            }
         });
 
         return $this->info('Resend Email run successfully');
