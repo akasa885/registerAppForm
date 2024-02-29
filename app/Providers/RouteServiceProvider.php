@@ -68,7 +68,7 @@ class RouteServiceProvider extends ServiceProvider
 
         // RateLimiter for attendance, by ip
         RateLimiter::for('attendance', function (Request $request) {
-            return Limit::perMinute(3)->by($request->email);
+            return Limit::perMinute(100)->by($request->email);
         });
     }
 }
