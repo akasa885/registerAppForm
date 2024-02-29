@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\MemberAttend;
 use App\Models\Invoice;
 use App\Models\AttendPaymentStore;
 use App\Models\Order;
@@ -105,6 +106,16 @@ class PaymentCallbackController extends Controller
                                 report($th);
                             }
                         }
+
+                        try {
+                            MemberAttend::updateOrCreate(
+                                ['member_id' => $attendPaymentStore->member_id, 'attend_id' => $attend->id],
+                                ['certificate' => 1]
+                            );
+                        } catch (\Throwable $th) {
+                            report($th);
+                        }
+                    
                     }
                 }
 

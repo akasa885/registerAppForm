@@ -22,11 +22,10 @@ class AttendanceController extends Controller
 
         if ($order->status == 'completed') {
 
-            $memberAttend = MemberAttend::create([
-                'attend_id' => $tempStore->attend_id,
-                'member_id' => $tempStore->member_id,
-                'certificate' => 1
-            ]);
+            $memberAttend = MemberAttend::updateOrCreate(
+                ['member_id' => $tempStore->member_id, 'attend_id' => $tempStore->attend_id],
+                ['certificate' => 1]
+            );
 
             if ($tempStore->changed_full_name) {
                 $member = $order->member;
