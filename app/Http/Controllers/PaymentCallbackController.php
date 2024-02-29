@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Client;
 use App\Helpers\Midtrans as MidHelper;
+use Illuminate\Support\Facades\Log;
 
 class PaymentCallbackController extends Controller
 {
@@ -317,6 +318,8 @@ class PaymentCallbackController extends Controller
                 }
 
                 $customer = $order->member;
+
+                Log::info("#### Canceling Order by User ID: " .$customer->id ." Category :".$orderType." ##########");
                 DB::commit();
                 return response()
                     ->json([
