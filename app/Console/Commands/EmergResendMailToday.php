@@ -139,7 +139,7 @@ class EmergResendMailToday extends Command
                     $this->info('Failed to send mail to: ' . $member->email);
                 }
             } else {
-                $this->info('Data Return: ' . json_encode($dataReturn));
+                $this->info('Skip send mail to: ' . $member->email);
             }
         });
 
