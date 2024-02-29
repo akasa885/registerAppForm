@@ -305,11 +305,16 @@ class PaymentCallbackController extends Controller
                     'status' => 5,
                 ]);
 
-                $newOrder = $this->createDuplicateOrder($order);
-                $invoice = $order->invoice;
+                // name will be ticket registration & certificate payment
+                $orderType = $this->orderType($order->order_number);
 
-                $invoice->invoicedOrder->order_id = $newOrder->id;
-                $invoice->invoicedOrder->save();
+                if ($orderType != 'certificate') {
+                    $newOrder = $this->createDuplicateOrder($order);
+                    $invoice = $order->invoice;
+
+                    $invoice->invoicedOrder->order_id = $newOrder->id;
+                    $invoice->invoicedOrder->save();
+                }
 
                 $customer = $order->member;
                 DB::commit();
