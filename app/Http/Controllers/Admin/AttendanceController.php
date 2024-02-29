@@ -185,10 +185,10 @@ class AttendanceController extends Controller
                 $show = false;
             }
             $link = $attendance->link;
-        }
 
-        if ($attendance->link->hide_events && $attendance->allow_non_register) {
-            $showFormAsRegister = true;
+            if ($attendance->link->hide_events && $attendance->allow_non_register) {
+                $showFormAsRegister = true;
+            }
         }
 
         if ($showFormAsRegister) {
