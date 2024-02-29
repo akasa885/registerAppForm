@@ -244,7 +244,7 @@ class AttendanceController extends Controller
 
             if ($attendance->is_using_payment_gateway) {
                 $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
-                if ($payStore) {
+                if ($payStore != null) {
                     $order = $payStore->order;
                     return redirect()->route('attend.waiting-payment', ['attendance' => $attendance->attendance_path, 'orderNumber' => $order->order_number])
                         ->with('info', 'You have an unpaid order');
@@ -263,8 +263,11 @@ class AttendanceController extends Controller
 
             $MemberAttend = MemberAttend::create($validated);
             if ($validated['is_certificate'] && $MemberAttend) {
-                $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
-                $MemberAttend->save();
+                if (!$attendance->is_using_payment_gateway) {
+                    Log::info('######## create attending member with certificate without payment gateway ########');
+                    $MemberAttend->payment_proof = $this->saveInvoice($validated['bukti'], MemberAttend::CERT_PAYMENT_PROOF);
+                    $MemberAttend->save();
+                }
             }
 
             $email = false;
