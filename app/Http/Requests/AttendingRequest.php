@@ -9,6 +9,8 @@ use App\Rules\AttendingUpPayment;
 
 class AttendingRequest extends FormRequest
 {
+    protected $attendanceData;
+
     protected $stopOnFirstFailure = true;
     
     /**
@@ -28,14 +30,22 @@ class AttendingRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'full_name' => ['bail', 'nullable', 'string', 'max:255'],
+        $rules = [
             'email' => ['bail', 'required', 'email:rfc,dns', 'max:255', new AttendRegisteredEvent($this->attendance)],
             'no_telpon' => ['bail', 'required', 'numeric', 'digits_between:8,13', new AttendRegisteredEvent($this->attendance, 'contact_number')],
             'is_certificate' => ['required', 'in:yes,no', new AttendingUpPayment($this->attendance, $this->bukti)],
             'bukti' => ['nullable', 'image', 'max:10240'],
-            'corporation' => ['nullable', 'string', 'max:255'],
         ];
+
+        if ($this->aattendanceData->allow_non_register) {
+            $rules['full_name'] = ['required', 'string', 'max:255'];
+            $rules['corporation'] = ['required', 'string', 'max:255'];
+        } else {
+            $rules['full_name'] = ['nullable', 'string', 'max:255'];
+            $rules['corporation'] = ['nullable', 'string', 'max:255'];
+        }
+
+        return $rules;
     }
 
     public function attributes()
@@ -52,6 +62,8 @@ class AttendingRequest extends FormRequest
 
     public function validationData()
     {
+        $this->attendanceData = $this->route()->parameters()['attendance'];
+
         return array_merge($this->all(), $this->route()->parameters());
     }
 
