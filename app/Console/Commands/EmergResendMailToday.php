@@ -103,9 +103,13 @@ class EmergResendMailToday extends Command
             return [];
         }
 
-        // get same value from emailMap and attendancesMap
+        
+        if ($emailMap->count() < $attendancesMap->count()) {
+            // get the diff member id
+            $diffMemberId = $attendancesMap->diff($emailMap);
+        }
+
         $interSecMemberId = $emailMap->intersect($attendancesMap);
-        $diffMemberId = $emailMap->diff($attendancesMap);
 
         $this->info('Intersect Member Id Total: ' . $interSecMemberId->count());
         $this->info('Diff Member Id Total: ' . $diffMemberId->count());
@@ -157,9 +161,39 @@ class EmergResendMailToday extends Command
 
         // show not sended email
         $diffMemberId->each(function ($memberId) use ($emails) {
+            $this->info('send attended email that not sended yet ===' . $memberId);
             $emailRowMember = MemberAttend::where('member_id', $memberId)->first();
             $member = $emailRowMember->member;
-            $this->info('Email not sended: ' . $member->email);
+            $attendance = $emailRowMember->attendance;
+            $emailRowMember = $emails->where('user_id', $member->id)->first();
+
+            if ($emailRowMember == null) {
+                $dataReturn = [
+                    'name' => $member->full_name,
+                    'email' => $member->email,
+                    'phone' => $member->contact_number,
+                    'event' => $attendance->link->title,
+                    'message' => $attendance->confirmation_mail,
+                    'link_path' => $attendance->link->link_path,
+                ];
+
+                try {
+                    Mail::to($member->email)->send(new $this->mailClass($dataReturn, $this->fromMail, 'Thank you for attending our event'));
+                    $this->info('Success send mail to: ' . $member->email);
+
+                    $email = new Email();
+                    $email->user_id = $member->id;
+                    $email->send_from = $this->fromMail;
+                    $email->send_to = $member->email;
+                    $email->message = $dataReturn['message'];
+                    $email->type_email = 'attendance_confirmation';
+                    $email->sent_count = 1;
+                    $email->save();
+
+                } catch (\Throwable $th) {
+                    $this->info('Failed to send mail to: ' . $member->email);
+                }
+            }
         });
     }
 }
