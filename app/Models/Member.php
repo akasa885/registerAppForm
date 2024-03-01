@@ -35,6 +35,11 @@ class Member extends Model
         return ucwords(strtolower($value));
     }
 
+    public function getCertificateOrder()
+    {
+        return $this->order()->where('order_number', 'like', '%CRT%')->first();
+    }
+
     /**
      * Get the link that owns the Member
      *
@@ -64,5 +69,15 @@ class Member extends Model
     public function subMembers()
     {
         return $this->hasMany(SubMember::class, 'member_id', 'id');
+    }
+
+    public function certbuy()
+    {
+        return $this->hasOne(AttendPaymentStore::class, 'member_id', 'id');
+    }
+
+    public function order()
+    {
+        return $this->hasMany(Order::class, 'member_id', 'id');
     }
 }
