@@ -467,6 +467,12 @@ class AttendanceController extends Controller
         }
 
         $member = $member->sortByDesc('attend');
+        $member = $member->values();
+        $member = $member->map(function ($item, $key) {
+            $item->load('certbuy.order');
+
+            return $item;
+        });
 
         return DataTables::of($member)
             ->addIndexColumn()
@@ -486,6 +492,9 @@ class AttendanceController extends Controller
                 //diffForHumans
                 return $row->attend ? $row->attend->diffForHumans() : null;
             })
+            ->addColumn('transaction_cert', function ($row) {
+                return $row->certbuy ? $row->certbuy->order->status : null;
+            })
             ->editColumn('payment_proof', function ($row) {
                 return $row->payment_proof ? asset('storage/bukti_image/'.MemberAttend::CERT_PAYMENT_PROOF.$row->payment_proof) : null;
             })
@@ -496,7 +505,7 @@ class AttendanceController extends Controller
 
                 return false;
             })
-            ->only(['full_name', 'email', 'phone_number', 'instansi', 'attend', 'certificate', 'payment_proof', 'options'])
+            ->only(['full_name', 'email', 'phone_number', 'instansi', 'attend', 'certificate', 'transaction_cert', 'payment_proof', 'options'])
             ->rawColumns(['payment_proof'])
             ->make(true);
 

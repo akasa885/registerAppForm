@@ -50,6 +50,7 @@
                                 <th style="min-width:50px">#</th>
                                 <th style="min-width:125px">Nama Lengkap</th>
                                 <th style="min-width:150px">Informasi</th>
+                                <th style="min-width:80px">Certificate ?</th>
                                 <th style="min-width:150px">Instansi</th>
                                 <th style="min-width:100px">Options</th>
                             </tr>
@@ -75,6 +76,7 @@
                                 <th style="min-width:50px">#</th>
                                 <th style="min-width:125px">Nama Lengkap</th>
                                 <th style="min-width:150px">Informasi</th>
+                                <th style="min-width:80px">Cert Buy ?</th>
                                 <th style="min-width:150px">Instansi</th>
                                 <th style="min-width:100px">Options</th>
                             </tr>
@@ -155,6 +157,10 @@
                     name: 'email'
                 },
                 {
+                    data: 'certificate',
+                    name: 'certificate'
+                },
+                {
                     data: 'instansi',
                     name: 'instansi'
                 },
@@ -170,13 +176,6 @@
                         let html = '';
                         html += '<div class="widget-content-left flex2">';
                         html += '<div class="widget-heading">' + data + '</div>';
-                        html += '<div class="widget-subheading opacity-7">Sertifikat:';
-                            if (row.certificate) {
-                                html += '<span class="badge badge-success ml-2">Yes</span>';
-                            } else {
-                                html += '<span class="badge badge-danger ml-2">No</span>';
-                            }
-                        html += '</div>';
                         html += '<div class="widget-subheading opacity-7">' + row.attend + '</div>';
                         html += '</div>';
                         return html;
@@ -191,6 +190,20 @@
                         html += '<div class="widget-heading"> Email: ' + row.email + '</div>';
                         html += '<div class="widget-subheading opacity-7">Nomor: ' + row.phone_number + '</div>';
                         html += '</div>';
+                        return html;
+                    }
+                },
+                {
+                    targets: 3,
+                    render : function(data, type, row) {
+                        let html = '';
+
+                        if (data) {
+                            html += '<span class="badge badge-success ml-2">Yes</span>';
+                        } else {
+                            html += '<span class="badge badge-danger ml-2">No</span>';
+                        }
+
                         return html;
                     }
                 },
@@ -239,6 +252,10 @@
                     name: 'email'
                 },
                 {
+                    data: 'transaction_cert',
+                    name: 'transaction_cert'
+                },
+                {
                     data: 'instansi',
                     name: 'instansi'
                 },
@@ -257,6 +274,27 @@
                         html += '<div class="widget-heading"> Email: ' + row.email + '</div>';
                         html += '<div class="widget-subheading opacity-7">Nomor: ' + row.phone_number + '</div>';
                         html += '</div>';
+                        return html;
+                    }
+                },
+                {
+                    targets: 3,
+                    render : function(data, type, row) {
+                        let html = '';
+                        if (data == null) {
+                            return '<span class="badge badge-danger ml-2">No</span>';
+                        }
+
+                        if (data == 'completed') {
+                            html += `<span class="badge badge-success ml-2">COM</span>`;
+                        } else if (data == 'pending') {
+                            html += `<span class="badge badge-warning ml-2">PEN</span>`;
+                        } else if (data == 'void' || data == 'cancel') {
+                            html += `<span class="badge badge-danger ml-2">VOID</span>`;
+                        } else {
+                            html += `<span class="badge badge-danger ml-2">No</span>`;
+                        }
+
                         return html;
                     }
                 }
