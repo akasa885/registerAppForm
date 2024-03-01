@@ -23,7 +23,7 @@
                                 @if ($type != 'certificate')
                                     <p>{{ __('mail.message-check-email-event-info') }}</p>
                                 @else
-                                    <p>Absensi Berhasil Dilakukan !</p>
+                                    <p>Transaksi Berhasil Dilakukan !</p>
                                 @endif
                                 <div class="py-10 text-center">
                                     <a href="{{ $form_link }}"
