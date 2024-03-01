@@ -105,8 +105,10 @@ class EmergResendMailToday extends Command
 
         // get same value from emailMap and attendancesMap
         $interSecMemberId = $emailMap->intersect($attendancesMap);
+        $diffMemberId = $emailMap->diff($attendancesMap);
 
         $this->info('Intersect Member Id Total: ' . $interSecMemberId->count());
+        $this->info('Diff Member Id Total: ' . $diffMemberId->count());
 
         if ($interSecMemberId->count() == 0) {
             $this->info('Resend Email run successfully, but the intersect member id is empty.');
@@ -127,7 +129,7 @@ class EmergResendMailToday extends Command
                 'email' => $member->email,
                 'phone' => $member->contact_number,
                 'event' => $attendance->link->title,
-                'message' => $emailRowMember->message,
+                'message' => $attendance->confirmation_mail,
                 'link_path' => $attendance->link->link_path,
             ];
             $currentEmailSentCount = $emailRowMember->sent_count;
@@ -151,6 +153,13 @@ class EmergResendMailToday extends Command
             }
         });
 
-        return $this->info('Resend Email run successfully');
+        $this->info('Resend Email run successfully');
+
+        // show not sended email
+        $diffMemberId->each(function ($memberId) use ($emails) {
+            $emailRowMember = MemberAttend::where('member_id', $memberId)->first();
+            $member = $emailRowMember->member;
+            $this->info('Email not sended: ' . $member->email);
+        });
     }
 }
