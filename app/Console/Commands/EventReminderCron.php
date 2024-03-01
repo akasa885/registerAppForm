@@ -54,7 +54,7 @@ class EventReminderCron extends Command
                     Log::info('Sended Event Pay ID: '.$link->id.' Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['pay']);
                 } else {
                     $this->getMemberOfFreeEvent($link);
-                    Log::info('Sended Event Pay ID: '.$link->id.' Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['free']);
+                    Log::info('Sended Event Free ID: '.$link->id.' Reminder Count: ' . $this->sendedCount["link_id_".$link->id]['free']);
                 } 
             }
             Log::info('Event reminder has been sent successfully');
@@ -98,6 +98,12 @@ class EventReminderCron extends Command
     {
         $this->sendedCount["link_id_".$link->id]['free'] = 0;
         $members = $link->members()->get();
+        $doesThisEventHide = $link->hide_events;
+
+        if ($doesThisEventHide) {
+            $this->info('Event ID: '.$link->id.' is hidden, so the reminder will not be sent');
+            return;
+        }
 
         foreach ($members as $member) {
             if ($this->doesMemberRegisteredSameDay($link, $member, 'free')) {
