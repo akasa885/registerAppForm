@@ -75,6 +75,13 @@ return [
             'level' => env('LOG_LEVEL', 'critical'),
         ],
 
+        'job' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/job.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'days' => 14,
+        ],
+        
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
