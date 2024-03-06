@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
+use App\Jobs\SendEmailJob;
 
 use App\Services\Midtrans\CreateSnapTokenService;
 // request
@@ -306,18 +307,21 @@ class FormController extends Controller
             'message'   =>   $link->registration_info ?? $link->description,
         );
         $subject = 'Registrasi '.$link->title;
+        $data['subject'] = $subject;
+
         $from_mail = Email::EMAIL_FROM;
 
         try {
-            Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
-            $mail_db = new Email;
-            $mail_db->send_from = $from_mail;
-            $mail_db->send_to = $member->email;
-            $mail_db->message = $information;
-            $mail_db->user_id = $member->id;
-            $mail_db->type_email = Email::TYPE_EMAIL[3];
-            $mail_db->sent_count = 1;
-            $mail_db->save();
+            // Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
+            // $mail_db = new Email;
+            // $mail_db->send_from = $from_mail;
+            // $mail_db->send_to = $member->email;
+            // $mail_db->message = $information;
+            // $mail_db->user_id = $member->id;
+            // $mail_db->type_email = Email::TYPE_EMAIL[3];
+            // $mail_db->sent_count = 1;
+            // $mail_db->save();
+            SendEmailJob::sendMail($data, $link, $member, 'event_info');
         } catch (\Throwable $th) {
             throw $th;
             // abort(500);
