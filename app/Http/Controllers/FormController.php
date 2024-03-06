@@ -312,16 +312,16 @@ class FormController extends Controller
         $from_mail = Email::EMAIL_FROM;
 
         try {
-            // Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
-            // $mail_db = new Email;
-            // $mail_db->send_from = $from_mail;
-            // $mail_db->send_to = $member->email;
-            // $mail_db->message = $information;
-            // $mail_db->user_id = $member->id;
-            // $mail_db->type_email = Email::TYPE_EMAIL[3];
-            // $mail_db->sent_count = 1;
-            // $mail_db->save();
-            SendEmailJob::sendMail($data, $link, $member, 'event_info');
+            Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
+            $mail_db = new Email;
+            $mail_db->send_from = $from_mail;
+            $mail_db->send_to = $member->email;
+            $mail_db->message = $information;
+            $mail_db->user_id = $member->id;
+            $mail_db->type_email = Email::TYPE_EMAIL[3];
+            $mail_db->sent_count = 1;
+            $mail_db->save();
+            // SendEmailJob::sendMail($data, $link, $member, 'event_info');
         } catch (\Throwable $th) {
             throw $th;
             // abort(500);
