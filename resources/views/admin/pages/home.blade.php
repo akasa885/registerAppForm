@@ -1,5 +1,9 @@
 @extends('admin.layouts.app')
 
+@push('up_scripts')
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+@endpush
+
 @section('content')
     <!--being::header title-->
     <div class="app-page-title">
@@ -81,6 +85,7 @@
     <!--begin::row info 2-->
     <div class="row">
         <x-admin.dashboard.top10-list-event-link />
+        <x-admin.dashboard.six-month-count-income />
     </div>
     <!--end::row info 2-->
 @endsection
