@@ -85,7 +85,9 @@
     <!--begin::row info 2-->
     <div class="row">
         <x-admin.dashboard.top10-list-event-link />
-        <x-admin.dashboard.six-month-count-income />
+        @can('isSuperAdmin')
+            <x-admin.dashboard.six-month-count-income />
+        @endcan
     </div>
     <!--end::row info 2-->
 @endsection
