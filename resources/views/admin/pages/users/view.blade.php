@@ -17,6 +17,12 @@
         </div>
 
         <div class="row justify-content-md-center">
+            @if ($message = Session::get('success'))
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>{{ $message }}</strong>
+                    <button type="button" style="height:-webkit-fill-available; width: 50px;" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
             <div class="col-md-11 col-lg-11">
               <div class="mb-3 card">
                 <div class="card-header-tab card-header-tab-animation card-header">

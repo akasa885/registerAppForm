@@ -7,9 +7,9 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Facades\Hash;
 
-use Auth;
 use Illuminate\Support\Facades\Gate;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Yajra\DataTables\Facades\DataTables;
 
 class UserController extends Controller
@@ -65,9 +65,12 @@ class UserController extends Controller
             $user->status = 1;
             $user->role = $request->role;
             $user->save();
-            return redirect()->route('admin.users.view');
+            return redirect()->route('admin.users.view')->With('success', 'User created successfully');
         } catch (\Throwable $th) {
-            return $th;
+            if (config('app.debug')) throw $th;
+            report($th);
+
+            return redirect()->back()->withInput()->with('error', 'Something went wrong !');
         }        
     }
 
@@ -204,7 +207,8 @@ class UserController extends Controller
 
     public function dtUser()
     {
-        $data = User::where('role','!=','super admin')->orderBy('created_at', 'DESC')->get();
+        $me = Auth::user();
+        $data = User::orderBy('created_at', 'DESC')->where('id', '!=', $me->id)->get();
         $edit="";
             return DataTables::of($data)
         ->editColumn("status", function ($data) {
