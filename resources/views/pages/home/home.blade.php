@@ -6,7 +6,7 @@
     <div class="container-fluid mx-auto p-6 @if($link->count() == 0) h-full @endif">
         <div class="flex items-stretch -mx-4 flex-col">
             @if ($link->count() == 0)
-                <div class="grid cols-1">
+                <div class="grid cols-1"  style="height: calc(70vh + 48px)">
                     <div class="col-span-full text-center">
                         <div class="flex justify-center items-center w-full">
                             <span class="text-gray-500"> No Data Found </span>
