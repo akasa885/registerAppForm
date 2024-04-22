@@ -126,6 +126,9 @@ class MemberController extends Controller
                 $invoice->status = 0;
                 $invoice->save();
 
+                $order->status = 'decline';
+                $order->save();
+
                 $newOrder = $this->createDuplicateOrder($order);
                 
                 $invoice->invoicedOrder->order_id = $newOrder->id;
