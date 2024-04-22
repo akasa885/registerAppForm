@@ -10,5 +10,6 @@ Route::get('/members/{id}', [LinkController::class, 'show'])->name('detail');
 Route::get('/edit-event-payment/{id}', [LinkController::class, 'edit'])->name('edit');
 Route::get('/edit-event-free/{id}', [LinkController::class, 'editFree'])->name('edit.free');
 Route::put('/update/{id}', [LinkController::class, 'update'])->name('update');
+Route::delete('/delete/form/{link}', [LinkController::class, 'destroy'])->name('delete');
 Route::get('/dtable', [LinkController::class, 'dtb_link'])->name('dtable');
 Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');

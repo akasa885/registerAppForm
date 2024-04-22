@@ -16,8 +16,9 @@ use App\Models\User;
 
 use App\Http\Requests\LinkRequest;
 
-use DataTables;
+use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class LinkController extends Controller
 {
@@ -60,13 +61,12 @@ class LinkController extends Controller
             $link = new Link;
             $link->link_path = GenerateStringUnique::make(Link::select('link_path')->get()->toArray(), 'link_path')->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
-            if($request->filepath != null){
+            if ($request->filepath != null) {
                 $link->banner = $request->filepath;
             }
             $link->description = $request->desc;
             $link->registration_info = $request->registration_info;
-            if($request->member_limit > 0)
-            {
+            if ($request->member_limit > 0) {
                 $link->has_member_limit = true;
                 $link->member_limit = $request->member_limit;
             }
@@ -76,7 +76,7 @@ class LinkController extends Controller
                 $link->event_date = date("Y-m-d", strtotime($validated['event_date']));
             }
             $link->created_by = auth()->id();
-            if($request->event_type == 'pay'){
+            if ($request->event_type == 'pay') {
                 $link->price = $validated['price'];
                 $link->link_type = Link::LINK_TYPE[0];
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
@@ -90,18 +90,17 @@ class LinkController extends Controller
             $link->viewed_count = 0;
             $link->save();
 
-            if($request->event_type == 'pay'){
+            if ($request->event_type == 'pay') {
                 $this->saveEmailTemplate($link, $request->email_confirmation, 'confirmation');
                 $this->saveEmailTemplate($link, $request->email_confirmed, 'confirmed');
             }
 
             return redirect()->route('admin.link.view')->with('success', 'Berhasil ditambah');
-
         } catch (\Throwable $th) {
             if (config('app.debug')) throw $th;
-            \Log::error('Error in ' . __FILE__ . ' Line: ' . __LINE__ . ' Message ' . $th->getMessage());
-            \Log::error($th);
-            
+            Log::error('Error in ' . __FILE__ . ' Line: ' . __LINE__ . ' Message ' . $th->getMessage());
+            Log::error($th);
+
             return back()->withInput($request->all())->with('error', 'Server Error on Creating Link');
         }
     }
@@ -113,7 +112,7 @@ class LinkController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {   
+    {
         $link = Link::findorfail($id);
         return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link]);
     }
@@ -149,17 +148,16 @@ class LinkController extends Controller
             $validated = $request->validated();
             $link = Link::findorfail($id); // will return 404 if not found
             $link->title = $validated['title'];
-            if($request->filepath != null){
+            if ($request->filepath != null) {
                 // compare if the file is different
-                if($link->banner != $request->filepath){
+                if ($link->banner != $request->filepath) {
                     // delete the old file
                     $link->banner = $request->filepath;
                 }
             }
             $link->description = $validated['desc'];
             $link->registration_info = $validated['registration_info'];
-            if($validated['member_limit'] > 0)
-            {
+            if ($validated['member_limit'] > 0) {
                 $link->has_member_limit = true;
                 $link->member_limit = $validated['member_limit'];
             } else {
@@ -172,8 +170,8 @@ class LinkController extends Controller
                 $link->event_date = date("Y-m-d", strtotime($validated['event_date']));
             }
             $link->save();
-            
-            if($request->event_type == 'pay'){
+
+            if ($request->event_type == 'pay') {
                 $this->updateEmailTemplate($link, $request->email_confirmation, 'confirmation');
                 $this->updateEmailTemplate($link, $request->email_confirmed, 'confirmed');
             }
@@ -182,7 +180,6 @@ class LinkController extends Controller
                 'stored' => true,
                 'success' => 'Berhasil diubah'
             ]);
-
         } catch (\Throwable $th) {
             if (config('app.debug'))
                 return $th;
@@ -196,9 +193,20 @@ class LinkController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request, Link $link)
     {
-        //
+        try {
+            if ($request->ajax()) {
+                $link->delete();
+                return response()->json(['success' => 'Berhasil dihapus'], 200);
+            } else {
+                return response()->json(['error' => 'Request failed'], 400);
+            }
+        } catch (\Throwable $th) {
+            if (config('app.debug'))
+                return $th;
+            return abort(500, 'Request failed');
+        }
     }
 
     public function page(Request $request, $link)
@@ -207,19 +215,19 @@ class LinkController extends Controller
         $expired = true;
         $notYet = false;
         $date = date("Y-m-d");
-        if($data != null){
-            if($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ){
+        if ($data != null) {
+            if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
                 $expired = false;
                 $data->viewed_count += 1;
                 $data->save();
             } else if ($date < date("Y-m-d", strtotime($data->active_from))) {
                 $notYet = true;
-                return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true , 'notYet' => $notYet]);
+                return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true, 'notYet' => $notYet]);
             }
         } else {
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
-        return view('pages.pendaftaran.view', ['link' => $data, 'show'=> $expired]);
+        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired]);
     }
 
 
@@ -228,12 +236,11 @@ class LinkController extends Controller
         $link = Link::find($id);
         $data = $link->members;
         $edit = '';
-        if($link->link_type == 'pay'){
+        if ($link->link_type == 'pay') {
             return $this->payMemberList($data);
-        }else{
+        } else {
             return $this->freeMemberList($data);
         }
-        
     }
 
     public function dtb_link(User $user)
@@ -248,61 +255,68 @@ class LinkController extends Controller
         // sort data by id desc
         $data = $data->sortByDesc('id');
         // $data = Link::withCount('members')->get();
-        $edit ='';
+        $edit = '';
         return DataTables::of($data)
-        ->addIndexColumn()
-        ->removeColumn('created_at', 'updated_at', 'description')
-        ->addColumn('date_status', function($data){
-            $date = date("Y-m-d");
-            if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ) {
-                return '<div class="mb-2 mr-2 badge badge-info">Tutup Pada: '.$data->active_until.'</div>';
-            } else if ($date <= date("Y-m-d", strtotime($data->active_from))) {
-                return '<div class="mb-2 mr-2 badge badge-warning">Buka Pada: '.$data->active_from.'</div>';
-            } else if ($date >= date("Y-m-d", strtotime($data->active_until))) {
-                return '<div class="mb-2 mr-2 badge badge-danger">Selesai</div>';
-            }
-        })
-        ->editColumn("link_path", function($data){
-            return route('form.link.view', ['link' => $data->link_path]);
-        })
-        ->editColumn("members_count", function($data) {
-            return $data->members_count.' Orang';
-        })
-        ->addColumn("status", function($data) {
-            $date = date("Y-m-d");
-            if($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until)) ){
-                return '<div class="mb-2 mr-2 badge badge-success">Buka</div>';
-            }else{
-                return '<div class="mb-2 mr-2 badge badge-danger">Tutup</div>';
-            }
-            
-        })
-        ->addColumn("options", function($data) {
-            if($data->link_type == "pay"){
-                $edit = "<a href=\"".route('admin.link.edit', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Edit
+            ->addIndexColumn()
+            ->removeColumn('created_at', 'updated_at', 'description')
+            ->addColumn('date_status', function ($data) {
+                $date = date("Y-m-d");
+                if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
+                    return '<div class="mb-2 mr-2 badge badge-info">Tutup Pada: ' . $data->active_until . '</div>';
+                } else if ($date <= date("Y-m-d", strtotime($data->active_from))) {
+                    return '<div class="mb-2 mr-2 badge badge-warning">Buka Pada: ' . $data->active_from . '</div>';
+                } else if ($date >= date("Y-m-d", strtotime($data->active_until))) {
+                    return '<div class="mb-2 mr-2 badge badge-danger">Selesai</div>';
+                }
+            })
+            ->editColumn("link_path", function ($data) {
+                return route('form.link.view', ['link' => $data->link_path]);
+            })
+            ->editColumn("members_count", function ($data) {
+                return $data->members_count . ' Orang';
+            })
+            ->addColumn("status", function ($data) {
+                $date = date("Y-m-d");
+                if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
+                    return '<div class="mb-2 mr-2 badge badge-success">Buka</div>';
+                } else {
+                    return '<div class="mb-2 mr-2 badge badge-danger">Tutup</div>';
+                }
+            })
+            ->addColumn("options", function ($data) {
+                if ($data->link_type == "pay") {
+                    $edit = "<a href=\"" . route('admin.link.edit', ['id' => $data->id]) . "\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Edit
+                    </a>";
+                } else {
+                    $edit = "<a href=\"" . route('admin.link.edit.free', ['id' => $data->id]) . "\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Edit
+                    </a>";
+                }
+                $edit .= "<a href=\"" . route('admin.link.detail', ['id' => $data->id]) . "\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    List
                 </a>";
-            }else{
-                $edit = "<a href=\"".route('admin.link.edit.free', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-warning\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Edit
-                </a>";
-            }
-            $edit .= "<a href=\"".route('admin.link.detail', ['id' => $data->id])."\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                    <i class=\"pe-7s-rocket fa-w-20\"></i>
-                </span>
-                List
-              </a>";
-            return $edit;
-        })
-        ->rawColumns(['date_status','link_path','members_count','status', 'options'])
-        ->make(true);
+                $edit .= "<a href='javascript:void(0)' onclick=\"deleteScriptJs('";
+                $edit .= route('admin.link.delete', $data);
+                $edit .= "')\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-danger\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-trash fa-w-20\"></i>
+                    </span>
+                    Hapus
+                    </a>";
+                return $edit;
+            })
+            ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options'])
+            ->make(true);
     }
 
     private function getToken($length_token = 5)
@@ -310,40 +324,40 @@ class LinkController extends Controller
         $fix_token = '';
         $lock = 0;
         $data_token = Link::select('link_path')->get();
-        if(count($data_token) > 0){
+        if (count($data_token) > 0) {
             $loop = count($data_token);
-            for ($i=0; $i < $loop;) {
+            for ($i = 0; $i < $loop;) {
                 foreach ($data_token as $tok) {
                     $temp = $this->generate_token($length_token);
                     if ($tok->link_path != $temp) {
-                    $lock ++;
-                    }else{
-                    $lock = 0;
+                        $lock++;
+                    } else {
+                        $lock = 0;
                     }
                 }
                 if ($loop == $lock) {
                     $fix_token = $temp;
                     $i = $loop;
-                }else {
+                } else {
                     $i++;
                 }
             }
             return $fix_token;
-        }else{
+        } else {
             return $this->generate_token($length_token);
         }
     }
 
     public function generate_token($length = 5)
     {
-      $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-      $charactersLength = strlen($characters);
-      $randomString = '';
-      for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-      }
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
 
-      return $randomString;
+        return $randomString;
     }
 
     private function IncludeLink(User $user, $id)
@@ -359,75 +373,75 @@ class LinkController extends Controller
         // sort desc id
         $data = $data->sortByDesc('id');
         return DataTables::of($data)
-        ->addIndexColumn()
-        ->removeColumn('created_at', 'updated_at')
-        ->addColumn("status", function($data) {
-            $date = date("Y-m-d");
-            if($data->invoices->status == 0 ){
-                return '<div class="mb-2 mr-2 badge badge-danger">'.Invoice::INVO_STATUS[0].'</div>';
-            }
-            if($data->invoices->status == 1){
-                return '<div class="mb-2 mr-2 badge badge-warning">'.Invoice::INVO_STATUS[1].'</div>';
-            }
-            if($data->invoices->status == 2){
-                return '<div class="mb-2 mr-2 badge badge-success">'.Invoice::INVO_STATUS[2].'</div>';
-            }
-        })
-        ->addColumn('registered', function($data) {
-            return date("d/M/Y, H:i", strtotime($data->created_at)).' WIB';
-        })
-        ->addColumn("options", function($data) {
-            $link = $data->link;
-            if ($data->invoices->status == 1) {
-                $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(".$data->id.");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+            ->addIndexColumn()
+            ->removeColumn('created_at', 'updated_at')
+            ->addColumn("status", function ($data) {
+                $date = date("Y-m-d");
+                if ($data->invoices->status == 0) {
+                    return '<div class="mb-2 mr-2 badge badge-danger">' . Invoice::INVO_STATUS[0] . '</div>';
+                }
+                if ($data->invoices->status == 1) {
+                    return '<div class="mb-2 mr-2 badge badge-warning">' . Invoice::INVO_STATUS[1] . '</div>';
+                }
+                if ($data->invoices->status == 2) {
+                    return '<div class="mb-2 mr-2 badge badge-success">' . Invoice::INVO_STATUS[2] . '</div>';
+                }
+            })
+            ->addColumn('registered', function ($data) {
+                return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
+            })
+            ->addColumn("options", function ($data) {
+                $link = $data->link;
+                if ($data->invoices->status == 1) {
+                    $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(" . $data->id . ");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                       <i class=\"pe-7s-rocket fa-w-20\"></i>
                   </span>
                   Cek Bukti Bayar
                 </a>";
-            } else if ($data->invoices->status == 2) {
-                $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('".asset('storage/bukti_image/'.$data->bukti_bayar)."');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                } else if ($data->invoices->status == 2) {
+                    $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('" . asset('storage/bukti_image/' . $data->bukti_bayar) . "');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
                   <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                       <i class=\"pe-7s-rocket fa-w-20\"></i>
                   </span>
                   Lihat Bukti Bayar
                 </a>";
-            } else{
-                $edit = '';
-            }
+                } else {
+                    $edit = '';
+                }
 
-            if ($link->is_multiple_registrant_allowed) {
-                $edit .= "<a href=\"javascript:void(0);\" onClick=\"detailPeserta(".$data->id.");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalDetailPeserta\" class=\"mb-2 mr-2 badge badge-pill badge-secondary\" style=\"margin-right:0.2rem;\">
+                if ($link->is_multiple_registrant_allowed) {
+                    $edit .= "<a href=\"javascript:void(0);\" onClick=\"detailPeserta(" . $data->id . ");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalDetailPeserta\" class=\"mb-2 mr-2 badge badge-pill badge-secondary\" style=\"margin-right:0.2rem;\">
                     <span class=\"btn-icon-wrapper pr-2 opacity-7\">
                         <i class=\"pe-7s-rocket fa-w-20\"></i>
                     </span>
                     Detail Peserta
                 </a>";
-            }             
-            return $edit;
-        })
-        ->rawColumns(['status', 'options'])
-        ->make(true);
+                }
+                return $edit;
+            })
+            ->rawColumns(['status', 'options'])
+            ->make(true);
     }
 
     public function freeMemberList($data)
     {
         $data = $data->sortByDesc('id');
         return DataTables::of($data)
-        ->addIndexColumn()
-        ->removeColumn('created_at', 'updated_at')
-        ->addColumn('registered', function($data) {
-            return date("d/M/Y, H:i", strtotime($data->created_at)).' WIB';
-        })
-        ->addColumn("status", function($data) {
-            $date = date("Y-m-d");
-            return '<div class="mb-2 mr-2 badge badge-success">Terdaftar</div>';
-        })
-        ->addColumn("options", function($data) {
-            $edit = '';
-            return $edit;
-        })
-        ->rawColumns(['status', 'options'])
-        ->make(true);
+            ->addIndexColumn()
+            ->removeColumn('created_at', 'updated_at')
+            ->addColumn('registered', function ($data) {
+                return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
+            })
+            ->addColumn("status", function ($data) {
+                $date = date("Y-m-d");
+                return '<div class="mb-2 mr-2 badge badge-success">Terdaftar</div>';
+            })
+            ->addColumn("options", function ($data) {
+                $edit = '';
+                return $edit;
+            })
+            ->rawColumns(['status', 'options'])
+            ->make(true);
     }
 }
