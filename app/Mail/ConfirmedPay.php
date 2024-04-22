@@ -39,7 +39,7 @@ class ConfirmedPay extends Mailable
     public function build()
     {
         return $this
-        ->from($this->from_mail, "Event Organizer Upquality")
+        ->from($this->from_mail, \App\Models\Email::EMAIL_NAME)
         ->subject($this->subject)
         ->view('mails.penerimaan_bayar')
         ->with('data', $this->data);
