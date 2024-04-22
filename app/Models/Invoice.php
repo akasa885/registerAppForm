@@ -10,7 +10,7 @@ class Invoice extends Model
 {
     use HasFactory, UuidIdenty;
 
-    const PAYMENT_TYPE = 'multipayment';
+    const PAYMENT_TYPE = 'bank_transfer';
 
     const INVO_STATUS = [
         'BELUM UPLOAD/BAYAR',
