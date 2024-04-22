@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 @section('title', 'Halaman Pengelola Link')
 
+<x-sweet-alert />
+
 @section('content')
 <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -64,6 +66,7 @@
 </div>
 @endsection
 
+<x-admin.delete-js-alerted />
 <x-admin.clipboard-script />
 
 @push('scripts')
