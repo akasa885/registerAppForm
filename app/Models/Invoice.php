@@ -10,6 +10,8 @@ class Invoice extends Model
 {
     use HasFactory, UuidIdenty;
 
+    const PAYMENT_TYPE = 'multipayment';
+
     const INVO_STATUS = [
         'BELUM UPLOAD/BAYAR',
         'VERIFIKASI',
