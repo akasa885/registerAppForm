@@ -16,13 +16,14 @@ use App\Models\Invoice;
 use App\Models\Email;
 
 use App\Http\Traits\MailPaymentTrait;
+use App\Http\Traits\OrderCustomTrait;
 
 
 use Carbon\Carbon;
 
 class MemberController extends Controller
 {
-    use MailPaymentTrait;
+    use MailPaymentTrait, OrderCustomTrait;
     /**
      * Display a listing of the resource.
      *
@@ -104,9 +105,12 @@ class MemberController extends Controller
                 $data = $member->findorfail($request->id);
                 $invoice = Invoice::where('member_id', $data->id)->first();
                 $invoice->status = 2;
+                $order = $invoice->order;
+                $order->status = 'Completed';
 
                 $this->sendMailPaymentReceived($data->link, $data);
                 $invoice->save();
+                $order->save();
 
                 DB::commit();
                 $message = 'Pembayaran Diterima';
@@ -114,12 +118,18 @@ class MemberController extends Controller
                 DB::beginTransaction();
                 $data = $member->findorfail($request->id);
                 $invoice = Invoice::where('member_id', $data->id)->first();
+                $order = $invoice->order;
                 $currentDateTime = Carbon::now();
                 $newDateTime = Carbon::now()->addHours(24);
                 $invoice->token = $this->getToken(Member::PAYMENT_TOKEN_LENGTH);
                 $invoice->valid_until = $newDateTime;
                 $invoice->status = 0;
                 $invoice->save();
+
+                $newOrder = $this->createDuplicateOrder($order);
+                
+                $invoice->invoicedOrder->order_id = $newOrder->id;
+                $invoice->invoicedOrder->save();
                 
                 $message_html = "<p> Bukti pembayaran anda ditolak, silahkan upload bukti anda kembali </p>";
 
