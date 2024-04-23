@@ -1,7 +1,7 @@
 <div class="grid gap-8 lg:grid-cols-2 md:grid-cols-1">
     <div class="lg:order-2 sm:order-1 col-span-1">
         <!--begin::card event mini info-->
-        <div class="rounded-lg bg-white shadow-lg dark:bg-neutral-700 md:mb-5">
+        <div class="rounded-lg bg-white shadow-lg dark:bg-neutral-700 mb-5">
             <header class="font-semibold flex justify-center text-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
                 Event Info
             </header>
@@ -97,8 +97,14 @@
             <!--end::left sided information-->
         </div>
         <!--end::card event featured image-->
+        <div class="md:hidden block">
+            @include('pages.pendaftaran.partials.event-description')
+        </div>
     </div>
     <div class="lg:order-1 sm:order-2 col-span-1">
+        <div class="md:block hidden">
+            @include('pages.pendaftaran.partials.event-description')
+        </div>
         <!--begin::card form register event-->
         <div class="break-words bg-white rounded-lg shadow-lg dark:bg-neutral-700">
             <header class="font-semibold flex justify-center text-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">

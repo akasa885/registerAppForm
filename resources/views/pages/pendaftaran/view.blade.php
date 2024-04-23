@@ -1,6 +1,26 @@
 @extends('layouts.app')
 @section('title', 'Pendaftaran '.($link ? $link->title : $title))
 
+@push('stylesUp')
+    <style>
+        .html-description-container {
+            max-height: 400px !important;
+            overflow: auto;
+        }
+        .html-description-content {
+            line-height: 1.5;
+            color: #333;
+        }
+        .html-description-content a {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .html-description-content a:hover {
+            text-decoration: underline;
+        }
+    </style>
+@endpush
+
 @section('content')
 <main class="flex justify-center container px-7 sm:px-8 md:px-2 lg:px-0 py-10 sm:container sm:mx-auto">
     <div class=" @if($message = Session::get('success') || isset($notYet) || isset($notFound) || $show) lg:w-6/12 sm:px-6 sm:w-10/12 @endif  ">
