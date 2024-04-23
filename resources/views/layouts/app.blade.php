@@ -132,6 +132,8 @@
             background-position: center center;
         }
     </style>
+
+    @stack('stylesUp')
 </head>
 
 <body class="bg-gray-100 h-screen antialiased leading-none font-sans">
