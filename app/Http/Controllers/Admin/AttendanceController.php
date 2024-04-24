@@ -10,6 +10,7 @@ use App\Mail\ConfirmationAttendances;
 use App\Models\AttendPaymentStore;
 use App\Models\MemberAttend;
 use App\Models\Attendance;
+use App\Helpers\Midtrans;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Email;
@@ -242,7 +243,9 @@ class AttendanceController extends Controller
                 $member->save();
             }
 
-            if ($attendance->is_using_payment_gateway) {
+            $midtrandsConfig = new Midtrans();
+
+            if ($attendance->is_using_payment_gateway && $midtrandsConfig->isMidtransConfigured()) {
                 $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
                 if ($payStore != null) {
                     $order = $payStore->order;
@@ -251,7 +254,7 @@ class AttendanceController extends Controller
                 }
             }
 
-            if ($attendance->is_using_payment_gateway && $validated['is_certificate']) {
+            if (($attendance->is_using_payment_gateway && $midtrandsConfig->isMidtransConfigured()) && $validated['is_certificate']) {
                 $payStore = AttendPaymentStore::where('attend_id', $attendance->id)->where('member_id', $member->id)->first();
                 if (!$payStore) {
                     $order = $this->createOrderCertificate($attendance, $member, (isset($validated['full_name'])) ? $validated['full_name'] : null);

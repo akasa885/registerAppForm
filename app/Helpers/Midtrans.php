@@ -32,6 +32,11 @@ class Midtrans {
         $this->midtransInfo = $midtransInfo;
     }
 
+    public function isMidtransConfigured()
+    {
+        return $this->midtransInfo['MIDTRANS_CLIENT_KEY'] && $this->midtransInfo['MIDTRANS_SERVER_KEY'] && $this->midtransInfo['MIDTRANS_MERCHANT_ID'];
+    }
+
     public static function midtransInfo()
     {
         $midtrans = new Midtrans();
