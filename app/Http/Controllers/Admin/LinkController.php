@@ -170,7 +170,7 @@ class LinkController extends Controller
                 $link->event_date = date("Y-m-d", strtotime($validated['event_date']));
             }
 
-            if ($link->link_type = 'pay') {
+            if ($link->link_type == 'pay') {
                 $link->price = $validated['price'];
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
