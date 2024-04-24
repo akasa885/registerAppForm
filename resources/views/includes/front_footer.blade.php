@@ -6,7 +6,7 @@
         </div>
 
         <div class="text-sm text-gray-500 col-1">
-            <a href="https://upquality.net" class="text-blue-500 hover:text-blue-600">{{ $information_site['copyright'] }}</a>
+            <a href="https://ikkesindo.org" class="text-blue-500 hover:text-blue-600">{{ $information_site['copyright'] }}</a>
         </div>
     </div>
 </footer>
