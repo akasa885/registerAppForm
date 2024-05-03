@@ -88,7 +88,7 @@ trait FormRegistrationTrait
         $invoice->member_id = $member->id;
         $invoice->token = GenerateStringUnique::make(Invoice::all()->toArray(), 'token')->getToken(Member::PAYMENT_TOKEN_LENGTH);
         $currentDateTime = Carbon::now();
-        $newDateTime = Carbon::now()->addHours(24);
+        $newDateTime = Carbon::now()->addHours(72);
         $invoice->valid_until = $newDateTime;
         $invoice->status = 0;
         $invoice->save();

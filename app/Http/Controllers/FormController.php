@@ -36,8 +36,8 @@ class FormController extends Controller
     private function getTimeLimit($limittime)
     {
         $currentDateTime = Carbon::now();
-        // get the time left, current time to limitTime. format 00:00:00
-        $timeLeft = $currentDateTime->diff($limittime)->format('%H:%I:%S');
+        // get the time left, current time to limitTime. format 00:00:00:00
+        $timeLeft = $currentDateTime->diff($limittime)->format('%D:%H:%I:%S');
 
         return $timeLeft;
     }
@@ -180,6 +180,10 @@ class FormController extends Controller
 
         if ($pay_detail) {
             $timeLeft = $this->getTimeLimit($pay_detail->valid_until);
+            // timeleft is 00:00:00:00. if first 2 digit is 00, then delete it then show the rest
+            if (substr($timeLeft, 0, 2) == '00') {
+                $timeLeft = substr($timeLeft, 3);
+            }
         }
 
         $dataReturn = [

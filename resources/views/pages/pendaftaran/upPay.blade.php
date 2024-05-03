@@ -129,11 +129,49 @@
 @push('scripts')
     <script>
         $('document').ready(function() {
-                @if ($timeLeft)
-                    var timerCounter = () => {
-                        let time_left = "{{ $timeLeft }}";
-                        let time_left_payment = document.getElementById('time_left_payment');
-                        let time_left_array = time_left.split(':');
+            @if ($timeLeft)
+                var timerCounter = () => {
+                    let time_left = "{{ $timeLeft }}";
+                    let time_left_payment = document.getElementById('time_left_payment');
+                    let time_left_array = time_left.split(':');
+                    // count time left array if 4 then it's have day
+                    if (time_left_array.length == 4) {
+                        let days = time_left_array[0];
+                        let hours = time_left_array[1];
+                        let minutes = time_left_array[2];
+                        let seconds = time_left_array[3];
+                        let x = setInterval(function() {
+                            if (seconds > 0) {
+                                seconds--;
+                            } else {
+                                seconds = 59;
+                                if (minutes > 0) {
+                                    minutes--;
+                                } else {
+                                    minutes = 59;
+                                    if (hours > 0) {
+                                        hours--;
+                                    } else {
+                                        hours = 0;
+                                        minutes = 0;
+                                        seconds = 0;
+                                        clearInterval(x);
+                                        window.location.reload();
+                                    }
+                                }
+                            }
+                            // if seconds < 10 then add 0 before seconds
+                            if (seconds < 10) {
+                                seconds = '0' + seconds;
+                            }
+                            time_left_payment.innerHTML = days + "D:" + hours + ":" + minutes + ":" +
+                                seconds;
+                            if (days == 0 && hours == 0 && minutes == 0 && seconds == 0) {
+                                clearInterval(x);
+                                window.location.reload();
+                            }
+                        }, 1000);
+                    } else {
                         let hours = time_left_array[0];
                         let minutes = time_left_array[1];
                         let seconds = time_left_array[2];
@@ -168,9 +206,10 @@
                             }
                         }, 1000);
                     }
+                }
 
-                    timerCounter();
-                @endif
-            })
+                timerCounter();
+            @endif
+        })
     </script>
 @endpush
