@@ -51,26 +51,6 @@
                             </div>
                             <!-- end::alert Info -->
                         @endif
-                        @if ($message = Session::get('info'))
-                            <!-- begin::alert Info -->
-                            <div class="alert alert-info bg-blue-100 rounded-lg py-5 px-6  w-full alert-dismissible fade show"
-                                role="alert">
-                                <svg width="24" height="24" class="alert-icon w-10 h-10" viewBox="0 0 24 24"
-                                    fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10"
-                                        fill="currentColor" />
-                                    <rect x="11" y="14" width="7" height="2" rx="1"
-                                        transform="rotate(-90 11 14)" fill="currentColor" />
-                                    <rect x="11" y="17" width="2" height="2" rx="1"
-                                        transform="rotate(-90 11 17)" fill="currentColor" />
-                                </svg>
-                                <span class="ml-4 alert-message">{{ $message }}</span>
-                                <button type="button"
-                                    class="btn-close box-content w-4 h-4 p-1 ml-auto text-yellow-900 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-yellow-900 hover:opacity-75 hover:no-underline"
-                                    data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                            <!-- end::alert Info -->
-                        @endif
                         <!--begin::top rigth timer-->
                         <div class="flex justify-end">
                             <div class="flex flex-row gap-1">
@@ -149,46 +129,7 @@
 @push('scripts')
     <script>
         $('document').ready(function() {
-            $('document').ready(function() {
                 @if ($timeLeft)
-                    var timerCounter = () => {
-                        let time_left = "{{ $timeLeft }}";
-                        let time_left_payment = document.getElementById('time_left_payment');
-                        let time_left_array = time_left.split(':');
-                        let hours = time_left_array[0];
-                        let minutes = time_left_array[1];
-                        let seconds = time_left_array[2];
-                        let x = setInterval(function() {
-                            if (seconds > 0) {
-                                seconds--;
-                            } else {
-                                seconds = 59;
-                                if (minutes > 0) {
-                                    minutes--;
-                                } else {
-                                    minutes = 59;
-                                    if (hours > 0) {
-                                        hours--;
-                                    } else {
-                                        hours = 0;
-                                        minutes = 0;
-                                        seconds = 0;
-                                        clearInterval(x);
-                                        window.location.reload();
-                                    }
-                                }
-                            }
-                            // if seconds < 10 then add 0 before seconds
-                            if (seconds < 10) {
-                                seconds = '0' + seconds;
-                            }
-                            time_left_payment.innerHTML = hours + ":" + minutes + ":" + seconds;
-                            if (hours == 0 && minutes == 0 && seconds == 0) {
-                                clearInterval(x);
-                                window.location.reload();
-                            }
-                        }, 1000);
-                    }
                     var timerCounter = () => {
                         let time_left = "{{ $timeLeft }}";
                         let time_left_payment = document.getElementById('time_left_payment');
@@ -231,6 +172,5 @@
                     timerCounter();
                 @endif
             })
-        });
     </script>
 @endpush
