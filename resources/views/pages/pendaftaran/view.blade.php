@@ -23,6 +23,25 @@
         .html-description-content a:hover {
             text-decoration: underline;
         }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #6b7280;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: #4b5563;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
     </style>
 @endpush
 
