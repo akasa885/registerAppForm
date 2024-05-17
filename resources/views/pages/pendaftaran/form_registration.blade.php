@@ -206,7 +206,7 @@
                 </div>
 
                 <div class="flex flex-wrap">
-                    <button type="submit"
+                    <button type="button" id="submit-register"
                     class="w-full select-none font-bold whitespace-no-wrap p-3 mb-3 lg:mb-8 md:mb-6 sm:mb-4 rounded-lg text-base leading-normal no-underline text-gray-100 bg-blue-500 hover:bg-blue-700 sm:py-4">
                         {{ __('Submit') }}
                     </button>
@@ -239,5 +239,12 @@
                 });
             });
         });
+    $(document).ready(function() {
+        $('#submit-register').click(function() {
+            $(this).prop('disabled', true);
+            $(this).text('Loading...');
+            $(this).closest('form').submit();
+        });
+    });
 </script>
 @endpush
