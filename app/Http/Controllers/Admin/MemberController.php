@@ -17,8 +17,8 @@ use App\Models\Email;
 
 use App\Http\Traits\MailPaymentTrait;
 use App\Http\Traits\OrderCustomTrait;
-
-
+use App\Models\Link;
+use App\Models\MemberTrash;
 use Carbon\Carbon;
 
 class MemberController extends Controller
@@ -75,6 +75,37 @@ class MemberController extends Controller
     public function destroy(Member $member)
     {
         //
+    }
+
+    public function deleteRegistrant(Request $request, Link $link, Member $member)
+    {
+        try {
+            DB::beginTransaction();
+            $isPay = $link->link_type == 'pay' ? true : false;
+            
+            // check member is registered in the link
+            $data = Member::where('link_id', $link->id)->first();
+            if (!$data || $data->id != $member->id) {
+                return response()->json(['success' => false, 'message' => 'Registrant not found'], 404);
+            }
+
+            // make member to trash
+            $trash = $member->toArray();
+            $trash['deleted_time'] = Carbon::now();
+            $trash['link_id'] = $link->id;
+            $trash = MemberTrash::create($trash);
+
+            $member->delete();
+
+            DB::commit();
+            return response()->json(['success' => true, 'message' => 'Registrant Deleted']);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            if (config('app.debug')) throw $th;
+            Log::error('Error delete registrant');
+            Log::error($th->getMessage());
+            return response()->json(['success' => false, 'message' => 'Request Error'], 500);
+        }
     }
 
     public function viewSheet($id)
