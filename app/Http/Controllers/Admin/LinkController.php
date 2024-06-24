@@ -18,6 +18,7 @@ use App\Http\Requests\LinkRequest;
 
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class LinkController extends Controller
@@ -239,6 +240,22 @@ class LinkController extends Controller
         return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired]);
     }
 
+    public function changeVisibility($id)
+    {
+        $link = Link::where('id', $id)
+                ->when(!Gate::allows('isSuperAdmin'), function ($query) {
+                    return $query->where('created_by', auth()->id());
+                })->first();
+        if ($link) {
+            $link->hide_events = !$link->hide_events;
+            $link->save();
+
+            return response()->json(['message' => 'Berhasil mengubah status', 'success' => true], 200);
+        } else {
+            return response()->json(['message' => 'Request failed', 'success' => false], 400);
+        }
+    }
+
 
     public function dtb_memberLink($id)
     {
@@ -284,6 +301,23 @@ class LinkController extends Controller
             ->editColumn("members_count", function ($data) {
                 return $data->members_count . ' Orang';
             })
+            ->addColumn('hide_button', function ($data) {
+                if ($data->hide_events) {
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="pe-7s-close-circle fa-w-20"></i>
+                    </span>
+                    Hide
+                    </button>';
+                } else {
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="pe-7s-check fa-w-20"></i>
+                    </span>
+                    Showed
+                    </button>';
+                }
+            })
             ->addColumn("status", function ($data) {
                 $date = date("Y-m-d");
                 if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
@@ -324,7 +358,7 @@ class LinkController extends Controller
                     </a>";
                 return $edit;
             })
-            ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options'])
+            ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options', 'hide_button'])
             ->make(true);
     }
 

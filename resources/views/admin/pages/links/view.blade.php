@@ -72,9 +72,9 @@
 @push('scripts')
 <script>
     $.ajaxSetup({
-      headers: {
-        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-      }
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
     });
 
     $(function() {
@@ -115,7 +115,14 @@
                 },
                 {
                     targets: 4,
-                    className: 'text-center'
+                    className: 'text-center',
+                    render: function (data, type, row) {
+                        let html = "";
+                        
+                        html += `${data} <br/> ${row.hide_button}`;
+
+                        return html;
+                    }
                 },
                 {
                     targets: 1,
@@ -151,5 +158,47 @@
             }
         });
     });
+
+    function showHideEvent(idLink) {
+        let urlApi = "{{route('admin.link.change.visibility', ':id')}}";
+        urlApi = urlApi.replace(':id', idLink);
+        //prevent double click
+        $(`#show-hide-${idLink}`).prop('disabled', true);
+
+        $.ajax({
+            url: urlApi,
+            type: "POST",
+            data: {
+                id: idLink
+            },
+            success: function (response) {
+                if (response.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: response.message,
+                        icon: 'success',
+                        confirmButtonText: 'Ok'
+                    }).then(() => {
+                        $('#data_users_side').DataTable().ajax.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Failed!',
+                        text: response.message,
+                        icon: 'error',
+                        confirmButtonText: 'Ok'
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                Swal.fire({
+                    title: 'Failed!',
+                    text: 'Something went wrong!',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+            }
+        });
+    }
 </script>
 @endpush
