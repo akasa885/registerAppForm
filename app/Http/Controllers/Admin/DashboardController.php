@@ -152,8 +152,6 @@ class DashboardController extends Controller
     {
         $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
 
-        dd($viewedLinkCount);
-
         if (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] > $viewedLinkCount[$previousMonth]) {
             $viewdStatus = 'up';
         } elseif (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] < $viewedLinkCount[$previousMonth]) {
