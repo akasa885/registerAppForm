@@ -32,7 +32,7 @@ class DashboardController extends Controller
         $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
 
         // comparing the last two month. is last month bigger than previous month?
-        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+        $lastMonth = Carbon::now()->copy()->subMonthNoOverflow()->format('Y-m');
         $previousMonth = Carbon::now()->subMonths(2)->format('Y-m');
         $viewdStatus = $this->compareLastTwoMonth($lastMonth, $previousMonth);
 
@@ -151,6 +151,8 @@ class DashboardController extends Controller
     private function compareLastTwoMonth($lastMonth, $previousMonth)
     {
         $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
+
+        dd($viewedLinkCount);
 
         if (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] > $viewedLinkCount[$previousMonth]) {
             $viewdStatus = 'up';
