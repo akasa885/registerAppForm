@@ -36,7 +36,8 @@
                     </div>
                     <div class="btn-actions-pane-right">
                         <div class="nav">
-                            <!--empty-->
+                            <a href="{{ route('admin.export.member-export-all') }}"
+                                class="border-0 btn-transition btn btn-outline-primary">Download Data Member</a>
                         </div>
                     </div>
                 </div>

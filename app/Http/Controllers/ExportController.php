@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Exports\memberOfEvent;
 use App\Exports\attendanceOfEvent;
+use App\Exports\AllOfTheMember;
 use App\Models\Attendance;
 
 class ExportController extends Controller
@@ -39,6 +40,22 @@ class ExportController extends Controller
             return Excel::download($attendance_export, $filename);
         } catch (\Throwable $th) {
             if (config('app.debug')) throw $th;
+            Log::error($th);
+            return abort(404, 'Exportable model not found');
+        }
+    }
+
+    public function memberExportAll() {
+        try {
+            $member = new AllOfTheMember();
+            $member->exportProcess();
+
+            $filename = 'Export All Member - ' . date('Y-m-d H:i:s') . '.xlsx';
+
+
+            return Excel::download($member, $filename);
+        } catch (\Throwable $th) {
+            if(config('app.debug')) throw $th;
             Log::error($th);
             return abort(404, 'Exportable model not found');
         }
