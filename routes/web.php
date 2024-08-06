@@ -79,11 +79,7 @@ Route::prefix('dpanel')->name('admin.')->group(function(){
         // < ------------------------------- Ajax Admin ----------------------------------------- >
 
         // < ------------------------------- Members Admin ----------------------------------------- >
-        Route::prefix('member')->name('member.')->group(function(){
-            Route::get('/pay-sheet/{id}', [MemberController::class, 'viewSheet'])->name('lihat.bukti');
-            Route::post('/accepted-receipt', [MemberController::class, 'updateBukti'])->name('up.bukti');
-            Route::delete('/delete-registrant/{link}/id-member/{member}', [MemberController::class, 'deleteRegistrant'])->name('delete.registrant');
-        });
+        Route::prefix('member')->name('member.')->group(__DIR__.'/v1/admin/manage_member.php');
         // < ------------------------------- Members Admin ----------------------------------------- >
 
         // < ------------------------------- Session Ajax Check ----------------------------------------- >
