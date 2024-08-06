@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
+use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Gate;
 
 //mail
 use App\Mail\ConfirmedPay;
@@ -31,7 +33,10 @@ class MemberController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.pages.members.list', [
+            'title' => 'Kelola | Daftar Member',
+            'subtitle' => 'This is page where all member registered in the link will be listed & managed',
+        ]);
     }
 
     /**
@@ -77,12 +82,65 @@ class MemberController extends Controller
         //
     }
 
+    public function dtListAll(Request $request)
+    {
+        
+        $data = Member::query()
+            ->select(
+                'email', 
+                DB::raw('count(*) as registered_count'),
+                DB::raw('max(members.created_at) as last_registered')
+            )
+            ->join('links', 'members.link_id', '=', 'links.id')
+            ->leftJoin('invoices', function ($join) {
+                $join->on('members.id', '=', 'invoices.member_id')->where('invoices.status', 2);
+            })
+            ->where(function ($type) {
+                $type->where('links.link_type', 'free')
+                    ->orWhere(function ($query) {
+                        $query->where('links.link_type', 'pay')->whereNotNull('invoices.id');
+                    });
+            });
+        
+        if (Gate::allows('isSuperAdmin')) {
+            $data = $data->groupBy('email')
+            ->orderBy('registered_count', 'desc')
+            ->get();
+        } else {
+            
+            $data = $data->where('links.created_by', auth()->user()->id)
+            ->groupBy('email')
+            ->orderBy('registered_count', 'desc')
+            ->get();
+        }
+
+        // get the full_name & contact_number & domisili from member by data email
+
+        $data->map(function ($item) {
+            $member = Member::where('email', $item->email)->latest()->first();
+            $item->full_name = $member->full_name;
+            $item->contact_number = $member->contact_number;
+            $item->domisili = $member->domisili;
+
+            return $item;
+        });
+
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('options', function ($row) {
+                $btn = '<a href="#" class="btn btn-primary btn-sm">View</a>';
+                return $btn;
+            })
+            ->rawColumns(['options'])
+            ->make(true);
+    }
+
     public function deleteRegistrant(Request $request, Link $link, Member $member)
     {
         try {
             DB::beginTransaction();
             $isPay = $link->link_type == 'pay' ? true : false;
-            
+
             // check member is registered in the link
             $data = Member::where('link_id', $link->id)->first();
             if (!$data || $data->id != $member->id) {
@@ -114,7 +172,7 @@ class MemberController extends Controller
         if ($data->bukti_bayar == null) {
             return response()->json(['success' => false, 'message' => 'Bukti tidak ada!'], 404);
         }
-        return response()->json(['success' => true, 'message' => 'Bukti ditemukan', 'bukti' => asset('storage/bukti_image').'/'.$data->bukti_bayar, 'memberId' => $data->id], 200);
+        return response()->json(['success' => true, 'message' => 'Bukti ditemukan', 'bukti' => asset('storage/bukti_image') . '/' . $data->bukti_bayar, 'memberId' => $data->id], 200);
     }
 
     public function updateBukti(Request $request, Member $member)
@@ -131,7 +189,7 @@ class MemberController extends Controller
             $status = false;
         }
         try {
-            if ($status){
+            if ($status) {
                 DB::beginTransaction();
                 $data = $member->findorfail($request->id);
                 $invoice = Invoice::where('member_id', $data->id)->first();
@@ -161,10 +219,10 @@ class MemberController extends Controller
                 $order->save();
 
                 $newOrder = $this->createDuplicateOrder($order);
-                
+
                 $invoice->invoicedOrder->order_id = $newOrder->id;
                 $invoice->invoicedOrder->save();
-                
+
                 $message_html = "<p> Bukti pembayaran anda ditolak, silahkan upload bukti anda kembali </p>";
 
                 $this->sendMailPayment($data->link, $data, $invoice, true, $message_html);
@@ -190,39 +248,39 @@ class MemberController extends Controller
         $fix_token = '';
         $lock = 0;
         $data_token = Invoice::select('token')->get();
-        if(count($data_token) > 0){
+        if (count($data_token) > 0) {
             $loop = count($data_token);
-            for ($i=0; $i < $loop;) {
+            for ($i = 0; $i < $loop;) {
                 foreach ($data_token as $tok) {
                     $temp = $this->generate_token($lenght_token);
                     if ($tok->token != $temp) {
-                    $lock ++;
-                    }else{
-                    $lock = 0;
+                        $lock++;
+                    } else {
+                        $lock = 0;
                     }
                 }
                 if ($loop == $lock) {
                     $fix_token = $temp;
                     $i = $loop;
-                }else {
+                } else {
                     $i++;
                 }
             }
             return $fix_token;
-        }else{
+        } else {
             return $this->generate_token($lenght_token);
         }
     }
 
     public function generate_token($length = 10)
     {
-      $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-      $charactersLength = strlen($characters);
-      $randomString = '';
-      for ($i = 0; $i < $length; $i++) {
-        $randomString .= $characters[rand(0, $charactersLength - 1)];
-      }
+        $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
 
-      return $randomString;
+        return $randomString;
     }
 }
