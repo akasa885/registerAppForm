@@ -97,9 +97,9 @@ class FormController extends Controller
                 DB::commit();
 
                 if (config('app.locale') == 'id')
-                    return back()->with('success', 'Pendaftaran berhasil dilakukan. Silahkan Cek Email Anda untuk informasi event, terima kasih !');
+                    return back()->with('success', 'Pendaftaran berhasil dilakukan. Silahkan Cek Email Anda (inbox/spam) untuk informasi event, terima kasih !');
                 else
-                    return back()->with('success', 'Registration has been successfully done. Please check your email for event information, thank you!');
+                    return back()->with('success', 'Registration has been successfully done. Please check your email (inbox/spam) for event information, thank you !');
             }
             if($link_coll->link_type == 'pay'){
                 if ($link_coll->is_multiple_registrant_allowed) {
