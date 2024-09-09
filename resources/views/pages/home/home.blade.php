@@ -14,6 +14,58 @@
                     </div>
                 </div>
             @else
+                {{-- <div class="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+                    <!-- Card 1 -->
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
+                        <div class="relative">
+                            <img data-src="https://via.placeholder.com/400x200" alt="Course Image" class="w-full">
+                            <div class="absolute top-2 left-2 bg-blue-500 text-white text-xs px-2 py-1 rounded">Pelatihan</div>
+                            <div class="absolute top-2 right-2 bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded">Pemula</div>
+                        </div>
+                        <div class="p-4">
+                            <span class="bg-teal-100 text-teal-500 text-xs px-2 py-1 rounded">Transformasi Kesehatan</span>
+                            <h3 class="mt-2 font-semibold text-lg">Pelatihan Penanggulangan Tuberkulosis (TBC) bagi Perawat...</h3>
+                            <p class="text-sm text-gray-500">Direktorat Pencegahan dan Pengendalian Penyakit Menular</p>
+                            <div class="flex items-center mt-4 space-x-4 text-sm text-gray-600">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M5 2a2 2 0 00-2 2v10a2 2 0 002 2h6a2 2 0 002-2v-1h3.586l-1.293-1.293a1 1 0 011.414-1.414l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L16.586 14H13v1a4 4 0 01-4 4H5a4 4 0 01-4-4V4a4 4 0 014-4h6a4 4 0 014 4v3a1 1 0 11-2 0V4a2 2 0 00-2-2H5z"/>
+                                    </svg>
+                                    <span>35 JPL</span>
+                                </div>
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 text-gray-500 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v9a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm2 1v7h12V6H4z"/>
+                                    </svg>
+                                    <span>4 SKP</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center mt-4">
+                                <div class="flex items-center text-yellow-500 mr-2">
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                    <svg class="w-4 h-4 fill-current text-gray-300" viewBox="0 0 24 24">
+                                        <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+                                    </svg>
+                                </div>
+                                <span class="text-xs text-green-500">Online</span>
+                            </div>
+                            <button class="w-full bg-teal-500 text-white py-2 mt-4 rounded-md">DETAIL</button>
+                        </div>
+                    </div>
+                
+                    <!-- Repeat similar structure for Card 2 and Card 3 with different data -->
+                </div> --}}
                 <div class="p-10 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="list-wrapper">
                     @foreach ($link as $item)
                         @if ($item->isLinkViewable() == false)
