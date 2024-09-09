@@ -1,6 +1,7 @@
 <?php
 
 return [
+    "main_help" => "This data will be used for certificate issuance, make sure the data you enter is correct. (Full Name, Institution)",
     "full_name" => [
         "help" => "Please fill in with your degree! (If any!)",
     ],
