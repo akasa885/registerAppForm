@@ -75,7 +75,7 @@ class Link extends Model
     {
         $date = date("Y-m-d");
         return $query->where(function ($query) use ($date) {
-            $query->where('hide_events', 0)->orWhere('active_until', '<', date('Y-m-d'));
+            $query->where('hide_events', 0);
         });
     }
 
