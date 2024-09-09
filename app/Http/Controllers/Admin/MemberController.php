@@ -114,15 +114,15 @@ class MemberController extends Controller
         return DataTables::of($data)
             ->addIndexColumn()
             ->addColumn('full_name', function ($row) {
-                $member = Member::select('full_name')->where('email', $row->email)->first();
+                $member = Member::select('full_name')->where('email', $row->email)->latest()->first();
                 return $member->full_name;
             })
             ->addColumn('contact_number', function ($row) {
-                $member = Member::select('contact_number')->where('email', $row->email)->first();
+                $member = Member::select('contact_number')->where('email', $row->email)->latest()->first();
                 return $member->contact_number;
             })
             ->addColumn('domisili', function ($row) {
-                $member = Member::select('domisili')->where('email', $row->email)->first();
+                $member = Member::select('domisili')->where('email', $row->email)->latest()->first();
                 return $member->domisili;
             })
             ->addColumn('options', function ($row) {
