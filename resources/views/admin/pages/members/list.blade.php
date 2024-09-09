@@ -79,7 +79,9 @@
                 ajax: "{{ route('admin.member.dt.data.member') }}",
                 columns: [{
                         data: 'DT_RowIndex',
-                        name: 'DT_RowIndex'
+                        name: 'DT_RowIndex',
+                        orderable: false,
+                        searchable: false
                     },
                     {
                         data: 'full_name',
@@ -99,7 +101,9 @@
                     },
                     {
                         data: 'options',
-                        name: 'Options'
+                        name: 'Options',
+                        orderable: false,
+                        searchable: false
                     }
                 ],
                 columnDefs: [{

@@ -102,28 +102,53 @@ class MemberController extends Controller
                     });
             });
         
-        if (Gate::allows('isSuperAdmin')) {
-            $data = $data->groupBy('email')
-            ->orderBy('registered_count', 'desc')
-            ->get();
-        } else {
-            
-            $data = $data->where('links.created_by', auth()->user()->id)
-            ->groupBy('email')
-            ->orderBy('registered_count', 'desc')
-            ->get();
+        if (!Gate::allows('isSuperAdmin')) {
+            $data->where('links.created_by', auth()->user()->id);
         }
 
-        // get the full_name & contact_number & domisili from member by data email
+        $data->groupBy('email')
+            ->orderBy('registered_count', 'desc');
 
-        $data->map(function ($item) {
-            $member = Member::where('email', $item->email)->latest()->first();
-            $item->full_name = $member->full_name;
-            $item->contact_number = $member->contact_number;
-            $item->domisili = $member->domisili;
+        // add the information of full_name, phone_number, and domisili of the member
 
-            return $item;
-        });
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('full_name', function ($row) {
+                $member = Member::select('full_name')->where('email', $row->email)->first();
+                return $member->full_name;
+            })
+            ->addColumn('contact_number', function ($row) {
+                $member = Member::select('contact_number')->where('email', $row->email)->first();
+                return $member->contact_number;
+            })
+            ->addColumn('domisili', function ($row) {
+                $member = Member::select('domisili')->where('email', $row->email)->first();
+                return $member->domisili;
+            })
+            ->addColumn('options', function ($row) {
+                $btn = '<a href="#" class="btn btn-primary btn-sm">View</a>';
+                return $btn;
+            })
+            ->orderColumn('DT_RowIndex', function ($query, $keyword) {
+                // $query->where('email', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                $query->where('full_name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('contact_number', function ($query, $keyword) {
+                $query->where('contact_number', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('domisili', function ($query, $keyword) {
+                $query->where('domisili', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('registered_count', function ($query, $keyword) {
+                $query->having('registered_count', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('options', function ($query, $keyword) {
+                //
+            })
+            ->rawColumns(['options'])
+            ->make(true);
 
         return DataTables::of($data)
             ->addIndexColumn()
