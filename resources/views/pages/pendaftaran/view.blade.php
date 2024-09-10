@@ -79,7 +79,7 @@
                 @elseif($show)
                     @include('pages.pendaftaran.form_registration', ['expired_regist' => true])
                 @else
-                    @include('pages.pendaftaran.form_registration')
+                    @include('pages.pendaftaran.form_registration', ['expired_regist' => false])
                 @endif
             </section>
         </div>
