@@ -1,7 +1,7 @@
 <!--begin::card form description-->
 <div class="break-words bg-white rounded-lg shadow-lg dark:bg-neutral-700 mb-4">
     <header class="font-semibold flex justify-center text-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
-        Event Description
+        {{ __('form_regist.head.desc_block') }}
     </header>
     <div class="p-5 sm:p-6 max-h-30 html-description-container">
         <div class="block mb-2">

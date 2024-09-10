@@ -2,6 +2,14 @@
 
 return [
     "main_help" => "This data will be used for certificate issuance, make sure the data you enter is correct. (Full Name, Institution)",
+    "alert" => [
+        "close" => 'Registration closed!',
+        "not yet open" => 'Registration not yet open!',
+    ],
+    "head" => [
+        "info_block" => "Event Information",
+        "desc_block" => "Event Description",
+    ],
     "full_name" => [
         "help" => "Please fill in with your degree! (If any!)",
     ],
