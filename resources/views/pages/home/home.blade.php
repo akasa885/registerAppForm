@@ -98,7 +98,7 @@
                                     </div>
                                     <span class="text-xs text-green-500">Online</span>
                                 </div> --}}
-                                <button class="w-full bg-blue-500 text-white py-2 mt-4 rounded-md">{{ __('Register') }}</button>
+                                <button class="w-full bg-blue-500 text-white py-2 mt-4 rounded-md" onclick="window.location.href= '{{ route('form.link.view', ['link' => $item->link_path]) }}'">{{ __('Register') }}</button>
                             </div>
                         </div>
                     @endforeach
