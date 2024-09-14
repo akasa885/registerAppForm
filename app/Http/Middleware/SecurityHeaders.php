@@ -27,6 +27,7 @@ class SecurityHeaders
             $response->headers->set('Expect-CT', 'enforce, max-age=30');
             $response->headers->set('X-Content-Type-Options', 'nosniff');
             $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
+            $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
 
             $this->removeUnwantedHeaders($this->unwantedHeaders);
         }
