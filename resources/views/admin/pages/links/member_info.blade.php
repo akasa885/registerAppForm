@@ -1,6 +1,8 @@
 @extends('admin.layouts.app')
 @section('title', 'Halaman List Member Pendaftaran')
 
+<x-sweet-alert />
+
 @section('content')
 <div class="app-page-title">
     <div class="page-title-wrapper">
@@ -52,6 +54,8 @@
     </div>
 </div>
 @endsection
+
+<x-admin.delete-js-alerted />
 
 @push('modal')
 {{-- ============================= Modal  Section================================ --}}

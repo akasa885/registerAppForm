@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Absensi ' . $link?->title ?? 'Link Absensi Tidak Tersedia')
+@section('title', $webTitle . $link?->title ?? 'Link Absensi Tidak Tersedia')
 
 @section('content')
     <main class="flex justify-center py-10 sm:container sm:mx-auto">
@@ -25,7 +25,7 @@
                 @else
                     <header
                         class="font-semibold flex justify-center bg-gray-200 text-gray-700 py-5 px-6 sm:py-6 sm:px-8 sm:rounded-t-md">
-                        Absen {{ $link->title }}
+                        {{ $webTitle . $link->title }}
                     </header>
 
                     @if (Session::has('errors') || Session::has('info') || Session::has('error'))

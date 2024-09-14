@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\Invoice;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Models\MemberTrash;
 
 class CheckPaidEventWaiting extends Command
 {
@@ -93,6 +94,11 @@ class CheckPaidEventWaiting extends Command
     private function deleteMemberUnpaidExpired($members)
     {
         foreach ($members as $member) {
+            $trash = $member->toArray();
+            $trash['deleted_time'] = Carbon::now();
+            $trash['link_id'] = $member->link_id;
+            $trash = MemberTrash::create($trash);
+
             $member->delete();
         }
     }

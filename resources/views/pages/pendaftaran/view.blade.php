@@ -47,7 +47,7 @@
 
 @section('content')
     <main class="flex justify-center container px-7 sm:px-8 md:px-2 lg:px-0 py-10 sm:container sm:mx-auto">
-        <div class=" @if ($message = Session::get('success') || isset($notYet) || isset($notFound) || $show) lg:w-6/12 sm:px-6 sm:w-10/12 @endif  ">
+        <div class=" @if ($message = Session::get('success') || isset($notYet) || isset($notFound)) lg:w-6/12 sm:px-6 sm:w-10/12 @endif  ">
             <section class="flex flex-col">
                 @if ($message = Session::get('success'))
                     <div class="break-words bg-white sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
@@ -77,12 +77,9 @@
                         @include('pages.pendaftaran.not_found_link')
                     </div>
                 @elseif($show)
-                    <div
-                        class="text-center break-words bg-white lg:rounded-lg sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
-                        <h3 class="font-semibold p-10 sm:mx-auto">Link Register Not Available</h3>
-                    </div>
+                    @include('pages.pendaftaran.form_registration', ['expired_regist' => true])
                 @else
-                    @include('pages.pendaftaran.form_registration')
+                    @include('pages.pendaftaran.form_registration', ['expired_regist' => false])
                 @endif
             </section>
         </div>

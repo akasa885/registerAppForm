@@ -141,7 +141,11 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
 
     public function getFilename()
     {
-        return 'Rekap Peserta Event '. $this->link->title .'.xlsx';
+        $title = $this->link->title;
+        // delete special character
+        $title = preg_replace('/[^A-Za-z0-9\-]/', '', $title);
+
+        return 'Rekap Peserta Event '. $title .'.xlsx';
     }
 
     public function getMemberOfEvent()

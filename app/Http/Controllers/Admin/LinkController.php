@@ -18,6 +18,7 @@ use App\Http\Requests\LinkRequest;
 
 use Yajra\DataTables\Facades\DataTables;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 
 class LinkController extends Controller
@@ -239,6 +240,22 @@ class LinkController extends Controller
         return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired]);
     }
 
+    public function changeVisibility($id)
+    {
+        $link = Link::where('id', $id)
+                ->when(!Gate::allows('isSuperAdmin'), function ($query) {
+                    return $query->where('created_by', auth()->id());
+                })->first();
+        if ($link) {
+            $link->hide_events = !$link->hide_events;
+            $link->save();
+
+            return response()->json(['message' => 'Berhasil mengubah status', 'success' => true], 200);
+        } else {
+            return response()->json(['message' => 'Request failed', 'success' => false], 400);
+        }
+    }
+
 
     public function dtb_memberLink($id)
     {
@@ -246,9 +263,9 @@ class LinkController extends Controller
         $data = $link->members;
         $edit = '';
         if ($link->link_type == 'pay') {
-            return $this->payMemberList($data);
+            return $this->payMemberList($data, $link);
         } else {
-            return $this->freeMemberList($data);
+            return $this->freeMemberList($data, $link);
         }
     }
 
@@ -283,6 +300,23 @@ class LinkController extends Controller
             })
             ->editColumn("members_count", function ($data) {
                 return $data->members_count . ' Orang';
+            })
+            ->addColumn('hide_button', function ($data) {
+                if ($data->hide_events) {
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="pe-7s-close-circle fa-w-20"></i>
+                    </span>
+                    Hide
+                    </button>';
+                } else {
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
+                    <span class="btn-icon-wrapper pr-2 opacity-7">
+                        <i class="pe-7s-check fa-w-20"></i>
+                    </span>
+                    Showed
+                    </button>';
+                }
             })
             ->addColumn("status", function ($data) {
                 $date = date("Y-m-d");
@@ -324,7 +358,7 @@ class LinkController extends Controller
                     </a>";
                 return $edit;
             })
-            ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options'])
+            ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options', 'hide_button'])
             ->make(true);
     }
 
@@ -377,7 +411,7 @@ class LinkController extends Controller
         return $links;
     }
 
-    public function payMemberList($data)
+    public function payMemberList($data, $link)
     {
         // sort desc id
         $data = $data->sortByDesc('id');
@@ -399,7 +433,7 @@ class LinkController extends Controller
             ->addColumn('registered', function ($data) {
                 return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
             })
-            ->addColumn("options", function ($data) {
+            ->addColumn("options", function ($data) use ($link) {
                 $link = $data->link;
                 if ($data->invoices->status == 1) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(" . $data->id . ");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
@@ -427,13 +461,25 @@ class LinkController extends Controller
                     Detail Peserta
                 </a>";
                 }
+
+                if (auth()->user()->email == 'akasa2444@gmail.com') {
+                    $edit .= "<a href=\"javascript:void(0);\" onClick=\"deleteScriptJs('";
+                    $edit .= route('admin.member.delete.registrant', [$link, $data]);
+                    $edit .= "')\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-danger\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-trash fa-w-20\"></i>
+                    </span>
+                    Hapus
+                    </a>";
+                }
+
                 return $edit;
             })
             ->rawColumns(['status', 'options'])
             ->make(true);
     }
 
-    public function freeMemberList($data)
+    public function freeMemberList($data, $link)
     {
         $data = $data->sortByDesc('id');
         return DataTables::of($data)
@@ -446,8 +492,18 @@ class LinkController extends Controller
                 $date = date("Y-m-d");
                 return '<div class="mb-2 mr-2 badge badge-success">Terdaftar</div>';
             })
-            ->addColumn("options", function ($data) {
+            ->addColumn("options", function ($data) use ($link) {
                 $edit = '';
+                if (auth()->user()->email == 'akasa2444@gmail.com') {
+                    $edit .= "<a href=\"javascript:void(0);\" onClick=\"deleteScriptJs('";
+                    $edit .= route('admin.member.delete.registrant', [$link, $data]);
+                    $edit .= "')\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-danger\" style=\"margin-right:0.2rem;\">
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-trash fa-w-20\"></i>
+                    </span>
+                    Hapus
+                    </a>";
+                }
                 return $edit;
             })
             ->rawColumns(['status', 'options'])

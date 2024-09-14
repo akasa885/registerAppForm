@@ -196,7 +196,13 @@ class AttendanceController extends Controller
             return view('pages.absensi.temp_page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
         }
 
-        return view('pages.absensi.page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show'));
+        if (config('app.locale') == 'id') {
+            $webTitle = 'Absensi: ';
+        } else {
+            $webTitle = 'Attendance: ';
+        }
+
+        return view('pages.absensi.page', ['link' => $attendance->link ?? null] ,compact('attendance', 'show', 'webTitle'));
     }
 
     public function attending(AttendingRequest $request, Attendance $attendance)

@@ -80,6 +80,13 @@
                         {{ __('Attendance') }}
                     </a>
                 </li>
+                <li class="app-sidebar__heading">{{ __('Manage') }}</li>
+                <li @if (Request::routeIs('admin.member*')) class="mm-active" @endif>
+                    <a id="settingLink" href="{{ route('admin.member.list.member') }}">
+                        <i class="metismenu-icon pe-7s-display2"></i>
+                        {{ __('Member') }}
+                    </a>
+                </li>
                 @can('isSuperAdmin')
                     <li class="app-sidebar__heading">{{ __('Settings') }}</li>
                     <li @if (Request::routeIs('admin.setting*')) class="mm-active" @endif>

@@ -75,7 +75,7 @@ class Link extends Model
     {
         $date = date("Y-m-d");
         return $query->where(function ($query) use ($date) {
-            $query->where('hide_events', 0)->orWhere('active_until', '<', date('Y-m-d'));
+            $query->where('hide_events', 0);
         });
     }
 
@@ -111,8 +111,8 @@ class Link extends Model
             return true;
         } else {
             $date = date("Y-m-d");
-            // if today is after 3 days from active until, then link is viewable
-            return date("Y-m-d", strtotime($this->active_until)) < date("Y-m-d", strtotime($date));
+            // if today is after 3 days from event_date until, then link is viewable
+            return date("Y-m-d", strtotime($this->event_date)) < date("Y-m-d", strtotime($date));
         }
     }
 

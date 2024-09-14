@@ -1,6 +1,15 @@
 <?php
 
 return [
+    "main_help" => "Data ini akan kami gunakan untuk pengeluaran sertifikat, pastikan data yang anda masukkan benar. (Nama Lengkap, Instansi)",
+    "alert" => [
+        "close" => 'Pendaftaran ditutup!',
+        "not yet open" => 'Pendaftaran belum dibuka!',
+    ],
+    "head" => [
+        "info_block" => "Informasi Acara",
+        "desc_block" => "Tentang Acara",
+    ],
     "full_name" => [
         "help" => "Silahkan isi dengan gelar Anda! (Jika ada!)",
     ],

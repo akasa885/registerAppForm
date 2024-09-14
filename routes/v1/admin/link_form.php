@@ -13,3 +13,4 @@ Route::put('/update/{id}', [LinkController::class, 'update'])->name('update');
 Route::delete('/delete/form/{link}', [LinkController::class, 'destroy'])->name('delete');
 Route::get('/dtable', [LinkController::class, 'dtb_link'])->name('dtable');
 Route::get('/dtable-member/{id}', [LinkController::class, 'dtb_memberLink'])->name('dtable.member');
+Route::post('/change/visibility/{id}', [LinkController::class, 'changeVisibility'])->name('change.visibility');
