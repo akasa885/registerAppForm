@@ -83,7 +83,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
                 $member->contact_number,
                 $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
                 $member->corporation,
-                $member->invoices == null ? 'NaN' : $member->invoices->token,
+                $member->invoices == null ? 'NaN' : ($member->invoices->token . ' - ' . ($member->invoices->is_automatic ? $member->invoices->payment_method : 'Manual')),
                 date('d-m-Y H:i:s', strtotime($member->created_at)),
             ];
             foreach ($member->subMembers as $key => $sub_member) {
@@ -98,7 +98,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
                 $member->contact_number,
                 $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
                 $member->corporation,
-                $member->invoices == null ? 'NaN' : $member->invoices->token,
+                $member->invoices == null ? 'NaN' : ($member->invoices->token . ' - ' . ($member->invoices->is_automatic ? $member->invoices->payment_method : 'Manual')),
                 date('d-m-Y H:i:s', strtotime($member->created_at)),
             ];
         }

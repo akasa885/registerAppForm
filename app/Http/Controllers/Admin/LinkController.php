@@ -437,10 +437,10 @@ class LinkController extends Controller
                 $link = $data->link;
                 if ($data->invoices->status == 1) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(" . $data->id . ");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Cek Bukti Bayar
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Cek Bukti Bayar
                 </a>";
                 } else if ($data->invoices->status == 2 && (!$data->invoices->is_automatic)) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('" . asset('storage/bukti_image/' . $data->bukti_bayar) . "');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
