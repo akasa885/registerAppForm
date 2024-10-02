@@ -243,9 +243,9 @@ class LinkController extends Controller
     public function changeVisibility($id)
     {
         $link = Link::where('id', $id)
-                ->when(!Gate::allows('isSuperAdmin'), function ($query) {
-                    return $query->where('created_by', auth()->id());
-                })->first();
+            ->when(!Gate::allows('isSuperAdmin'), function ($query) {
+                return $query->where('created_by', auth()->id());
+            })->first();
         if ($link) {
             $link->hide_events = !$link->hide_events;
             $link->save();
@@ -303,14 +303,14 @@ class LinkController extends Controller
             })
             ->addColumn('hide_button', function ($data) {
                 if ($data->hide_events) {
-                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-' . $data->id . '" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
                     <span class="btn-icon-wrapper pr-2 opacity-7">
                         <i class="pe-7s-close-circle fa-w-20"></i>
                     </span>
                     Hide
                     </button>';
                 } else {
-                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-' . $data->id . '" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
                     <span class="btn-icon-wrapper pr-2 opacity-7">
                         <i class="pe-7s-check fa-w-20"></i>
                     </span>
@@ -442,15 +442,15 @@ class LinkController extends Controller
                   </span>
                   Cek Bukti Bayar
                 </a>";
-                } else if ($data->invoices->status == 2) {
+                } else if ($data->invoices->status == 2 && (!$data->invoices->is_automatic)) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('" . asset('storage/bukti_image/' . $data->bukti_bayar) . "');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Lihat Bukti Bayar
-                </a>";
-                } else if ($data->invoices->is_automatic == 1) {
-                    $edit = "<span class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">Method: " . $data->invoice->payment_method . "</span>";
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Lihat Bukti Bayar
+                    </a>";
+                } else if ($data->invoices->status == 2 && ($data->invoices->is_automatic)) {
+                    $edit = "<span class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">Method: " . $data->invoices->payment_method . "</span>";
                 } else {
                     $edit = '';
                 }
