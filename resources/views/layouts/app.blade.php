@@ -21,13 +21,16 @@
     <meta name="application-name" content="Eform for Registration Management">
     <meta name="googlebot" content="index, follow">
     <meta name="robots" content="index, unfollow">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('icon/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ asset('icon/favicon.ico') }}">
 
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <title>@yield('title', config('app.name', 'Laravel'))</title>
-
-    <link rel="shortcut icon" href="{{ asset('icon/favicon.png') }}" />
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet" />
 
