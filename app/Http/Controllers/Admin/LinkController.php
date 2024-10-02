@@ -449,6 +449,8 @@ class LinkController extends Controller
                   </span>
                   Lihat Bukti Bayar
                 </a>";
+                } else if ($data->invoices->is_automatic == 1) {
+                    $edit = "<span class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">Method: " . $data->invoice->payment_method . "</span>";
                 } else {
                     $edit = '';
                 }
