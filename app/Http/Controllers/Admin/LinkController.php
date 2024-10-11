@@ -135,7 +135,8 @@ class LinkController extends Controller
     public function edit($id)
     {
         $edit_link = Link::findorfail($id);
-        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'pay']);
+        $methodManual = Invoice::PAYMENT_TYPE != 'multipayment';
+        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'pay', 'methodManual' => $methodManual]);
     }
 
     public function editFree($id)
@@ -181,6 +182,13 @@ class LinkController extends Controller
 
             if ($link->link_type == 'pay') {
                 $link->price = $validated['price'];
+                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                    $link->bank_information = [
+                        'name' => $validated['bank']['name'],
+                        'account_number' => $validated['bank']['account_number'],
+                        'account_name' => $validated['bank']['account_name'],
+                    ];
+                }
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
