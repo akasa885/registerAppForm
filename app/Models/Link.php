@@ -46,6 +46,7 @@ class Link extends Model
         'has_member_limit' => 'boolean',
         'is_multiple_registrant_allowed' => 'boolean',
         'hide_events' => 'boolean',
+        'bank_information' => 'array',
     ];
 
     protected $appends = [

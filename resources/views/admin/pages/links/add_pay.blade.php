@@ -148,6 +148,25 @@
                     </div>
                 </div>
             </div>
+            @if ($methodManual)
+                <div class="card mb-3 d-flex flex-column">
+                    <div class="card-header-tab card-header-tab-animation card-header">
+                        <div class="card-header-title">
+                            Informasi Bank
+                        </div>
+                    </div>
+                    <div class="col-auto align-self-center my-2">
+                        <div class="form-group">
+                            <input type='text' name="bank[name]" value="{{ old('bank.name') }}" required
+                                class="form-control @if($errors->has('bank.name')) is-invalid @endif" placeholder="Nama Bank">
+                            <input type='text' name="bank[account_name]" value="{{ old('bank.account_name') }}" required
+                                class="form-control @if($errors->has('bank.account_name')) is-invalid @endif" placeholder="Nama Pemilik Rekening">
+                            <input type='text' name="bank[account_number]" value="{{ old('bank.account_number') }}" required
+                                class="form-control @if($errors->has('bank.account_number')) is-invalid @endif" placeholder="Nomor Rekening">
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="card mb-3 d-flex flex-column">
                 <div class="card-header-tab card-header-tab-animation card-header">
                     <div class="card-header-title">

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Invoice;
 
 class LinkRequest extends FormRequest
 {
@@ -51,6 +52,16 @@ class LinkRequest extends FormRequest
                     'email_confirmation' => ['required', 'max:2000'],
                     'email_confirmed' => ['required', 'max:2000'],
                 ];
+
+                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                    $rules += [
+                        'bank' => ['required'],
+                        'bank.name' => ['required'],
+                        'bank.account_number' => ['required', 'numeric'],
+                        'bank.account_name' => ['required'],
+                    ];
+                }
+
                 break;
             case "free" :
                 // nothing to do
@@ -80,6 +91,13 @@ class LinkRequest extends FormRequest
                 $attributes['email_confirmed'] = 'Email Konfirmasi Pembayaran';
                 $attributes['is_multiple_registrant_allowed'] = 'Pendaftaran Banyak Peserta';
                 $attributes['sub_member_limit'] = 'Batas Multi Peserta';
+
+                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                    $attributes['bank'] = 'Informasi Bank';
+                    $attributes['bank.name'] = 'Nama Bank';
+                    $attributes['bank.account_number'] = 'Nomor Rekening';
+                    $attributes['bank.account_name'] = 'Nama Pemilik Rekening';
+                }
                 break;
         }
 
