@@ -4,7 +4,27 @@
     <main class="flex justify-center py-10 sm:container sm:mx-auto">
         <div class="lg:w-6/12 sm:px-6 sm:w-10/12">
             <section class="flex flex-col h-auto break-words bg-white sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
-
+                <!--begin::error show-->
+                @if ($errors->any())
+                    <div class="alert alert-danger bg-red-100 rounded-lg py-5 px-6 w-full alert-dismissible fade show"
+                        role="alert">
+                        <svg width="24" height="24" class="alert-icon w-10 h-10" viewBox="0 0 24 24"
+                            fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect opacity="0.3" x="2" y="2" width="20" height="20" rx="10"
+                                fill="currentColor" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M12 4C11.4477 4 11 4.44772 11 5V11C11 11.5523 11.4477 12 12 12C12.5523 12 13 11.5523 13 11V5C13 4.44772 12.5523 4 12 4ZM12 14C11.4477 14 11 14.4477 11 15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15C13 14.4477 12.5523 14 12 14Z"
+                                fill="currentColor" />
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18Z"
+                                fill="currentColor" />
+                        </svg>
+                        <span class="ml-4 alert-message">{{ $errors->first() }}</span>
+                        <button type="button"
+                            class="btn-close box-content w-4 h-4 p-1 ml-auto text-red-900 border-none rounded-none opacity-50 focus:shadow-none focus:outline-none focus:opacity-100 hover:text-red-900 hover:opacity-75 hover:no-underline"
+                            data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 @if ($expired)
                     @include('pages.pendaftaran.pay_confirmation.expired_link')
                 @elseif($message = Session::get('success'))
@@ -97,10 +117,10 @@
                                 <div class="mb-3">
                                     @if (config('app.locale') == 'id')
                                         <label for="formFile" class="form-label inline-block mb-2 text-gray-700">Silakan
-                                            upload file yang diminta :</label>
+                                            upload file yang diminta : (Foto/Gambar)</label>
                                     @else
                                         <label for="formFile" class="form-label inline-block mb-2 text-gray-700">Please
-                                            upload the requested file :</label>
+                                            upload the requested file : (Photo/Image)</label>
                                     @endif
                                     <input
                                         class="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"

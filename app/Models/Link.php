@@ -21,6 +21,7 @@ class Link extends Model
         'description',
         'registration_info',
         'banner', 
+        'bank_information',
         'active_from', 
         'active_until',
         'event_date',
