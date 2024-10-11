@@ -113,6 +113,30 @@
                                     your proof of payment in the form below.
                                 </p>
                             @endif
+                            <!--bank::information-->
+                            <div class="flex flex-wrap">
+                                <div class="mb-3">
+                                    <label for="bank" class="form-label inline-block mb-2 text-gray-700">Bank</label>
+                                    <input type="text" class="form-control font-bold block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding  rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        value="{{ $link->bank_information ? $link->bank_information['name'] : 'Kosong' }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="norek" class="form-label inline-block mb-2 text-gray-700">No Rekening</label>
+                                    <input type="text" class="form-control font-bold block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding  rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        value="{{ $link->bank_information ? $link->bank_information['account_number'] : 'Kosong' }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="an" class="form-label inline-block mb-2 text-gray-700">Atas Nama</label>
+                                    <input type="text" class="form-control font-bold block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding  rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        value="{{ $link->bank_information ? $link->bank_information['account_name'] : 'Kosong' }}" readonly>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="nominal" class="form-label inline-block mb-2 text-gray-700">Nominal</label>
+                                    <input type="text" class="form-control font-bold block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding  rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
+                                        value="{{ $link->price_formatted }}" readonly>
+                                </div>
+                            </div>
+                            <!--bank:information-->
                             <div class="flex">
                                 <div class="mb-3">
                                     @if (config('app.locale') == 'id')
