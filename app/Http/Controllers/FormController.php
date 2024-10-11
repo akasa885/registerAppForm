@@ -280,9 +280,9 @@ class FormController extends Controller
                     DB::commit();
 
                     if (config('app.locale') == 'id')
-                        return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
+                        return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya dan balasan email. Terima kasih..!!!');
                     else
-                        return back()->with('success', 'Proof of payment has been uploaded, please wait for verification. Thank you..!!!');
+                        return back()->with('success', 'Proof of payment has been uploaded, please wait for verification and email reply. Thank you..!!!');
                 }
             }else{
                 abort(404);
