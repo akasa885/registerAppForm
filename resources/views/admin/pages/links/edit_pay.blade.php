@@ -166,7 +166,48 @@
                 </div>
             </div>
         </div>
-        @if ($methodManual)
+        @if (!$methodManual)
+            <div class="card mb-3 d-flex flex-column">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Metode Pembayaran
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="row mb-3">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <label for="change_payment_method" class="form-label fw-bolder mb-0">Pembayaran Otomatis ?</label>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" name="is_multipayment" @if (old('is_multipayment', ($link_detail->bank_information == null))) checked @endif type="checkbox"
+                                    id="change_payment_method_check">
+                                <label class="form-check-label" for="change_payment_method">
+                                    Ya
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mb-3 flex-column @if(old('is_multipayment', ($link_detail->bank_information == null))) d-none  @else d-flex @endif" id="bank_information_form">
+                <div class="card-header-tab card-header-tab-animation card-header">
+                    <div class="card-header-title">
+                        Informasi Bank
+                    </div>
+                </div>
+                <div class="col-auto align-self-center my-2">
+                    <div class="form-group">
+                        <input type='text' name="bank[name]" value="{{ $link_detail->bank_information['name'] ?? old('bank.name') }}"
+                            class="form-control @if($errors->has('bank.name')) is-invalid @endif" placeholder="Nama Bank">
+                        <input type='text' name="bank[account_name]" value="{{ $link_detail->bank_information['account_name'] ?? old('bank.account_name') }}"
+                            class="form-control @if($errors->has('bank.account_name')) is-invalid @endif" placeholder="Nama Pemilik Rekening">
+                        <input type='text' name="bank[account_number]" value="{{ $link_detail->bank_information['account_number'] ?? old('bank.account_number') }}"
+                            class="form-control @if($errors->has('bank.account_number')) is-invalid @endif" placeholder="Nomor Rekening">
+                    </div>
+                </div>
+            </div>
+        @else
             <div class="card mb-3 d-flex flex-column">
                 <div class="card-header-tab card-header-tab-animation card-header">
                     <div class="card-header-title">

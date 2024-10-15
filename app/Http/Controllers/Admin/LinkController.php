@@ -42,7 +42,8 @@ class LinkController extends Controller
     public function createPay()
     {
         $methodManual = Invoice::PAYMENT_TYPE != 'multipayment';
-        return view('admin.pages.links.add_pay', compact('methodManual'));
+        $methodPay = Link::METHOD;
+        return view('admin.pages.links.add_pay', compact('methodManual', 'methodPay'));
     }
 
     public function createFree()
@@ -81,7 +82,7 @@ class LinkController extends Controller
             if ($request->event_type == 'pay') {
                 $link->price = $validated['price'];
                 $link->link_type = Link::LINK_TYPE[0];
-                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                if (isset($validated['bank'])) {
                     $link->bank_information = [
                         'name' => $validated['bank']['name'],
                         'account_number' => $validated['bank']['account_number'],
@@ -182,7 +183,7 @@ class LinkController extends Controller
 
             if ($link->link_type == 'pay') {
                 $link->price = $validated['price'];
-                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                if (isset($validated['bank'])) {
                     $link->bank_information = [
                         'name' => $validated['bank']['name'],
                         'account_number' => $validated['bank']['account_number'],
