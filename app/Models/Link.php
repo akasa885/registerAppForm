@@ -14,6 +14,7 @@ class Link extends Model
     use HasFactory, FormatNumberTrait;
     const TOKEN_LENGTH = 5;
     const LINK_TYPE = ['pay', 'free'];
+    const METHOD = ['bank_transfer', 'multipayment'];
 
     protected $fillable = [
         'link_path', 
@@ -22,6 +23,7 @@ class Link extends Model
         'registration_info',
         'banner', 
         'bank_information',
+        'method_pay',
         'active_from', 
         'active_until',
         'event_date',

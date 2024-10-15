@@ -53,7 +53,7 @@ class LinkRequest extends FormRequest
                     'email_confirmed' => ['required', 'max:2000'],
                 ];
 
-                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                if (Invoice::PAYMENT_TYPE != 'multipayment' || $this->is_multipayment == null) {
                     $rules += [
                         'bank' => ['required'],
                         'bank.name' => ['required'],
@@ -92,7 +92,7 @@ class LinkRequest extends FormRequest
                 $attributes['is_multiple_registrant_allowed'] = 'Pendaftaran Banyak Peserta';
                 $attributes['sub_member_limit'] = 'Batas Multi Peserta';
 
-                if (Invoice::PAYMENT_TYPE != 'multipayment') {
+                if (Invoice::PAYMENT_TYPE != 'multipayment' || $this->is_multipayment == null) {
                     $attributes['bank'] = 'Informasi Bank';
                     $attributes['bank.name'] = 'Nama Bank';
                     $attributes['bank.account_number'] = 'Nomor Rekening';
