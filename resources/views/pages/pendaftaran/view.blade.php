@@ -20,6 +20,23 @@
             text-decoration: none;
         }
 
+        /* Ensure unordered and ordered lists display their list-style */
+        .html-description-content ul {
+            list-style-type: disc; /* You can change this to circle, square, etc. */
+            padding-left: 20px; /* Add some indentation for the list */
+            margin-left: 0;
+        }
+
+        .html-description-content ol {
+            list-style-type: decimal; /* Ensure ordered lists have numbers */
+            padding-left: 20px;
+            margin-left: 0;
+        }
+
+        .html-description-content li {
+            margin-bottom: 5px; /* Adds spacing between list items */
+        }
+
         .html-description-content a:hover {
             text-decoration: underline;
         }
