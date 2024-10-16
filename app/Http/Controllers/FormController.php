@@ -212,7 +212,7 @@ class FormController extends Controller
                     $dataReturn['used'] = $used;
                     $dataReturn['expired'] = $expired;
 
-                    if (config('app.version') && config('app.version') == '1.1.0' && Invoice::PAYMENT_TYPE == 'multipayment') {
+                    if (config('app.version') && config('app.version') == '1.1.0' && Invoice::PAYMENT_TYPE == 'multipayment' && $link_detail->method_pay == 'multipayment') {
                         $this->checkSnapToken($pay_detail);
                         if ($pay_detail->order->snap_token_midtrans) {
                             $dataReturn['snap_token'] = $pay_detail->order->snap_token_midtrans;

@@ -89,6 +89,9 @@ class LinkController extends Controller
                         'account_name' => $validated['bank']['account_name'],
                     ];
                 }
+
+                $link->method_pay = $request->is_multipayment == null ? 'bank_transfer' : 'multipayment';
+                
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
@@ -190,6 +193,7 @@ class LinkController extends Controller
                         'account_name' => $validated['bank']['account_name'],
                     ];
                 }
+                $link->method_pay = $request->is_multipayment == null ? 'bank_transfer' : 'multipayment';
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
