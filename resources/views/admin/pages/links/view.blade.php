@@ -135,7 +135,7 @@
                         } else {
                             html += `Unlimited`;
                         }
-                        html += `</span></span><br/>`;
+                        html += `<span class="text-primary"> | ${row.method_pay}</span></span></span><br/>`;
                         html += `<span class="text-muted" style="font-size:.85em;">Views: <span class="text-info"> ${row.viewed_count} kali</span></span><br/>`;
                         return html;
                     },

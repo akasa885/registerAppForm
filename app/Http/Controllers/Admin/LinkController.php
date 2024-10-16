@@ -316,6 +316,9 @@ class LinkController extends Controller
                     return '<div class="mb-2 mr-2 badge badge-danger">Selesai</div>';
                 }
             })
+            ->editColumn("method_pay", function ($data) {
+                return $data->method_pay == 'bank_transfer' ? 'bank' : 'multi';
+            })
             ->editColumn("link_path", function ($data) {
                 return route('form.link.view', ['link' => $data->link_path]);
             })
