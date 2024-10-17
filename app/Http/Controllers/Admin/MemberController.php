@@ -41,7 +41,7 @@ class MemberController extends Controller
 
     public function logEvent(Request $request, Member $member)
     {
-        // if (!$request->ajax()) return response()->json(['code' => 400, 'success' => false, 'message' => 'Invalid Request'], 400);
+        if (!$request->ajax()) return response()->json(['code' => 400, 'success' => false, 'message' => 'Invalid Request'], 400);
 
         $members = Member::where('email', $member->email)->with('link:id,title,link_type')->get();
 
