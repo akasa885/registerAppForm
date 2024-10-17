@@ -65,6 +65,9 @@ class MemberController extends Controller
 
         $links = $linkPay->merge($freeLink)->sortByDesc('id');
 
+        $links = $links->filter(function ($link) {
+            return $link != null;
+        })->values();
 
 
         $view = view('admin.pages.members.render.list-event-member', compact('links'))->render();

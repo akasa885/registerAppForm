@@ -74,7 +74,7 @@
                         <span aria-hidden="true">×</span>
                     </button>
                 </div>
-                <div class="modal-body" id="body-content">
+                <div class="modal-body" id="body-content" style="max-height: 500px; overflow-y: auto;">
                     
                 </div>
                 <div class="modal-footer">

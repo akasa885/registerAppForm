@@ -1,5 +1,3 @@
-<!--list of member event-->
-<!--make list of sub members-->
 <div class="list-group">
     @if ($links->isEmpty())
         <!--if no sub members : text alert-->
