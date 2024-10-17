@@ -13,13 +13,17 @@ class GenerateStringUnique
 
     /**
      * 
-     * @param array $model | model data list in array
+     * @param array $modelName | model name
      * @param string $column_unique | column name that want to be unique
-     * @return void 
      */
-    public function __construct(array $model, string $column_unique)
+    public function __construct(string $modelName, string $column_unique)
     {
-        $this->model = $model;
+        $modelClass = 'App\Models\\'.$modelName;
+        if (!class_exists($modelClass)) {
+            throw new \Exception('Model not found');
+        }
+
+        $this->model = $modelClass;
         $this->column_unique = $column_unique;
     }
 
@@ -38,18 +42,22 @@ class GenerateStringUnique
         return $this;
     }
 
-    private function getTokenTypeBased($lengthToken, $type): string
+    /**
+     * Make token
+     *
+     * @param string $type
+     * @param integer $length_token
+     * @return string
+     */
+    private function makeToken(string $type, $length_token): string
     {
-        $token = '';
         if ($type == 'all') {
-            $token = $this->generateToken($lengthToken);
-        } elseif ($type == 'splited') {
-            $token = $this->generateSplitedToken($lengthToken);
-        } else {
-            $token = $this->generateTokenNumber($lengthToken);
+            return $this->generateToken($length_token);
+        } else if ($type == 'number') {
+            return $this->generateTokenNumber($length_token);
+        } else if ($type == 'splited') {
+            return $this->generateSplitedToken($length_token);
         }
-
-        return $token;
     }
 
     /**
@@ -62,58 +70,34 @@ class GenerateStringUnique
      */
     public function getToken($length_token = 6, string $prefix = null, $type = 'all'): string
     {
-        // private variable
-        $listedData = $this->model;
+        $modelClass = $this->model;
         $column_unique = $this->column_unique;
-        $same = true;
-        $lock = 0;
-        $fixedToken = '';
+        $fixToken = null;
 
         if (!in_array($type, $this->availableType())) {
             throw new \Exception("Type is not available");
         }
 
-        if (count($listedData) > 0) {
-            $loop = count($listedData);
-            while ($same) {
-                $token = $this->getTokenTypeBased($length_token, $type);
-                
-                // check token is available or not               
-                foreach ($listedData as $tok) { //5x
-                    if ($tok[$column_unique] != $token) {
-                        $lock++;
-                    } else {
-                        $lock = 0;
-                    }
-                }
-                if ($loop == $lock) {
-                    $same = false;
-                    $fixedToken = $token;
-                }
+        $fixToken = $this->makeToken($type, $length_token);
+        $exists = true;
+
+        while ($exists) {
+            if ($prefix != null) { $fixToken = $prefix . $fixToken; }
+            $column = $modelClass::select($column_unique)->where($column_unique, $fixToken)->first();
+
+            if ($column) {
+                $fixToken = $this->makeToken($type, $length_token);
+            } else {
+                $exists = false;
             }
-
-            if($prefix != null){
-                if ($type != 'splited')
-                    $fixedToken = $prefix.$fixedToken;
-            }
-
-            return $fixedToken;
-
-        } else {
-            $fixedToken = $this->getTokenTypeBased($length_token, $type);
-            
-            if($prefix != null){
-                if ($type != 'splited')
-                $fixedToken = $prefix.$fixedToken;
-            }
-
-            return $fixedToken;
         }
+
+        return $fixToken;
     }
 
     private function generateToken($length = 32, $capitalTextOnly = false)
     {
-        $capital = $capitalTextOnly ? $capitalTextOnly : $this->capitalOnly;
+        $capital = !$this->capitalOnly ? $capitalTextOnly : $this->capitalOnly;
 
         if ($capital) {
             $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -179,7 +163,7 @@ class GenerateStringUnique
         $fix_username = '';
         $lock = 0;
         $same = true;
-        $data_username = $model;
+        $data_username = $model::select($unique_column)->get()->toArray();
         // check this token on model is available or not
         if (count($data_username) > 0) {
             $loop = count($data_username); // 5
@@ -209,13 +193,13 @@ class GenerateStringUnique
 
     /**
      * 
-     * @param array $model | model data list in array
+     * @param string $modelName | model name
      * @param string $column_unique | column name that want to be unique
-     * @return static 
+     * @return GenerateStringUnique 
      */
-    public static function make(array $model, string $column_unique)
+    public static function make(string $modelName, string $column_unique)
     {
-        return new static($model, $column_unique);
+        return new static($modelName, $column_unique);
     }
 
 

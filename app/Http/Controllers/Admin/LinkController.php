@@ -62,7 +62,7 @@ class LinkController extends Controller
         try {
             $validated = $request->validated();
             $link = new Link;
-            $link->link_path = GenerateStringUnique::make(Link::select('link_path')->get()->toArray(), 'link_path')->getToken(Link::TOKEN_LENGTH);
+            $link->link_path = GenerateStringUnique::make('Link', 'link_path')->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
             if ($request->filepath != null) {
                 $link->banner = $request->filepath;
@@ -384,35 +384,6 @@ class LinkController extends Controller
             })
             ->rawColumns(['date_status', 'link_path', 'members_count', 'status', 'options', 'hide_button'])
             ->make(true);
-    }
-
-    private function getToken($length_token = 5)
-    {
-        $fix_token = '';
-        $lock = 0;
-        $data_token = Link::select('link_path')->get();
-        if (count($data_token) > 0) {
-            $loop = count($data_token);
-            for ($i = 0; $i < $loop;) {
-                foreach ($data_token as $tok) {
-                    $temp = $this->generate_token($length_token);
-                    if ($tok->link_path != $temp) {
-                        $lock++;
-                    } else {
-                        $lock = 0;
-                    }
-                }
-                if ($loop == $lock) {
-                    $fix_token = $temp;
-                    $i = $loop;
-                } else {
-                    $i++;
-                }
-            }
-            return $fix_token;
-        } else {
-            return $this->generate_token($length_token);
-        }
     }
 
     public function generate_token($length = 5)
