@@ -8,6 +8,7 @@ Route::get('/', function(){
 });
 
 Route::get('/list', [MemberController::class, 'index'])->name('list.member');
+Route::get('/log/event/{member}', [MemberController::class, 'logEvent'])->name('log.event');
 
 Route::get('/table/data', [MemberController::class, 'dtListAll'])->name('dt.data.member');
 
