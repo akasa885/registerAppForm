@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "main_help" => "This data will be used for certificate issuance, make sure the data you enter is correct. (Full Name, Institution)",
+    "main_help" => "Make sure your NIK is correct. The data on this form is used for access verification on Plataran Sehat.",
     "alert" => [
         "close" => 'Registration closed!',
         "not yet open" => 'Registration not yet open!',

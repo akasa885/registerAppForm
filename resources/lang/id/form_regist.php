@@ -1,7 +1,7 @@
 <?php
 
 return [
-    "main_help" => "Data ini akan kami gunakan untuk pengeluaran sertifikat, pastikan data yang anda masukkan benar. (Nama Lengkap, Instansi)",
+    "main_help" => "Pastikan NIK Anda sudah tepat. Data pada form ini kami gunakan untuk verifikasi akses di Plataran Sehat.",
     "alert" => [
         "close" => 'Pendaftaran ditutup!',
         "not yet open" => 'Pendaftaran belum dibuka!',
