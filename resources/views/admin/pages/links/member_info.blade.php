@@ -230,9 +230,31 @@
                         }
                     ],
                     drawCallback: function(settings) {
-                        // _updateMoneyCount({{ $id }});
+                        _updateMoneyCount({{ $id }});
                     }
                 });
+            }
+            
+            const _updateMoneyCount = (linkId) => {
+                let url = "{{ route('admin.ajax.transaction.link.total', ['linkId' => ':id']) }}";
+                url = url.replace(':id', linkId);
+                $.ajax({
+                    type: "get",
+                    url: url,
+                    cache: false,
+                    success: function(data) {
+                        if (data.status == 'success') {
+                            document.getElementById("pendapatan_count_show").innerHTML = data.total;
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        if (xhr.status == 422) {
+                            alert(xhr.responseJSON.message);
+                        } else {
+                            alert("Response server error");
+                        }
+                    }
+                })
             }
 
             const _behaviorButton = () => {
