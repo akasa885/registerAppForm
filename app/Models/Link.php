@@ -65,6 +65,11 @@ class Link extends Model
         return $this->hasMany(Member::class, 'link_id', 'id');
     }
 
+    public function membersTrash()
+    {
+        return $this->hasMany(MemberTrash::class, 'link_id', 'id');
+    }
+
     public function getPriceFormattedAttribute()
     {
         return $this->priceWithCurrencyAndDecimal($this->price);
@@ -132,7 +137,7 @@ class Link extends Model
 
     public function ownsMember(Member $member)
     {
-      return $this->id === $member->link->id;
+        return $this->id === $member->link->id;
     }
 
     /**

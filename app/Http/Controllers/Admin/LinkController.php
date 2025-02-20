@@ -127,7 +127,44 @@ class LinkController extends Controller
     public function show($id)
     {
         $link = Link::findorfail($id);
-        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link]);
+        $menu = [
+            [
+                'label' => 'Active',
+                'route' => 'admin.link.detail',
+                'link' => route('admin.link.detail', $id)
+            ],
+            [
+                'label' => 'Trash',
+                'route' => 'admin.link.detail.trash',
+                'link' => route('admin.link.detail.trash', $link)
+            ]
+        ];
+
+        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link, 'menu' => $menu]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showTrash(Link $link)
+    {
+        $menu = [
+            [
+                'label' => 'Active',
+                'route' => 'admin.link.detail',
+                'link' => route('admin.link.detail', $link->id)
+            ],
+            [
+                'label' => 'Trash',
+                'route' => 'admin.link.detail.trash',
+                'link' => route('admin.link.detail.trash', $link)
+            ]
+        ];
+
+        return view('admin.pages.links.member_info_trash', ['id' => $link->id, 'title' => $link->title, 'link' => $link, 'menu' => $menu]);
     }
 
     /**
@@ -281,13 +318,41 @@ class LinkController extends Controller
     public function dtb_memberLink($id)
     {
         $link = Link::find($id);
-        $data = $link->members;
+        $data = Member::query()->where('link_id', $id)->with('invoices');
         $edit = '';
         if ($link->link_type == 'pay') {
             return $this->payMemberList($data, $link);
         } else {
             return $this->freeMemberList($data, $link);
         }
+    }
+
+    public function dtb_memberLinkTrash(Link $link)
+    {
+        $memberTrash = $link->membersTrash;
+        $memberTrash = $memberTrash->sortBy('id');
+
+        return DataTables::of($memberTrash)
+            ->addIndexColumn()
+            ->removeColumn('created_at', 'updated_at')
+            ->addColumn('registered', function ($data) {
+                return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
+            })
+            ->addColumn("status", function ($data) {
+                $date = date("Y-m-d");
+                return '<div class="mb-2 mr-2 badge badge-danger">Exp / Deleted</div>';
+            })
+            ->addColumn("options", function ($data) use ($link) {
+                $edit = "<a href=\"javascript:void(0);\" onClick=\"pageTrashMemberLink.info(" . $data->id . ");\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                    <i class=\"pe-7s-rocket fa-w-20\"></i>
+                </span>
+                Show Info
+                </a>";
+                return $edit;
+            })
+            ->rawColumns(['status', 'options'])
+            ->make(true);
     }
 
     public function dtb_link(User $user)
@@ -408,11 +473,18 @@ class LinkController extends Controller
 
     public function payMemberList($data, $link)
     {
+        if (request()->has('order')) $colOrder = request()->order[0]['column'];
         // sort desc id
-        $data = $data->sortByDesc('id');
+        $data = $data
+        ->join('invoices', 'members.id', '=', 'invoices.member_id')
+        ->select('members.*', 'invoices.status as invoice_status')
+        ->when($colOrder === '0', function ($query) {
+            $query->orderBy('id', 'desc'); // Default order if no sorting is applied
+        });
+
         return DataTables::of($data)
             ->addIndexColumn()
-            ->removeColumn('created_at', 'updated_at')
+            ->removeColumn('created_at', 'updated_at', 'invoices')
             ->addColumn("status", function ($data) {
                 $date = date("Y-m-d");
                 if ($data->invoices->status == 0) {
@@ -472,16 +544,47 @@ class LinkController extends Controller
 
                 return $edit;
             })
+            ->filterColumn('status', function ($query, $keyword) {
+                //
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                $query->where('full_name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('email', function ($query, $keyword) {
+                $query->where('email', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('corporation', function ($query, $keyword) {
+                $query->where('corporation', 'like', '%' . $keyword . '%');
+            })
+            ->orderColumn('full_name', function ($query, $direction) {
+                $query->orderBy('full_name', $direction);
+            })
+            ->orderColumn('email', function ($query, $direction) {
+                $query->orderBy('email', $direction);
+            })
+            ->orderColumn('corporation', function ($query, $direction) {
+                $query->orderBy('corporation', $direction);
+            })
+            ->orderColumn('status', function ($query, $direction) {
+                $query->orderBy('invoice_status', $direction)->orderBy('id', $direction);
+            })
             ->rawColumns(['status', 'options'])
             ->make(true);
     }
 
     public function freeMemberList($data, $link)
     {
-        $data = $data->sortByDesc('id');
+        if (request()->has('order')) $colOrder = request()->order[0]['column'];
+        $data = $data->when($colOrder === '0', function ($query) {
+            $query->orderBy('id', 'desc'); // Default order if no sorting is applied
+        });
+
         return DataTables::of($data)
             ->addIndexColumn()
             ->removeColumn('created_at', 'updated_at')
+            ->orderColumn('DT_RowIndex', function ($query, $keyword) {
+                // $query->where('email', 'like', '%' . $keyword . '%');
+            })
             ->addColumn('registered', function ($data) {
                 return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
             })
@@ -502,6 +605,30 @@ class LinkController extends Controller
                     </a>";
                 }
                 return $edit;
+            })
+            ->filterColumn('status', function ($query, $keyword) {
+                //
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                $query->where('full_name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('email', function ($query, $keyword) {
+                $query->where('email', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('corporation', function ($query, $keyword) {
+                $query->where('corporation', 'like', '%' . $keyword . '%');
+            })
+            ->orderColumn('full_name', function ($query, $direction) {
+                $query->orderBy('full_name', $direction);
+            })
+            ->orderColumn('email', function ($query, $direction) {
+                $query->orderBy('email', $direction);
+            })
+            ->orderColumn('corporation', function ($query, $direction) {
+                $query->orderBy('corporation', $direction);
+            })
+            ->orderColumn('status', function ($query, $direction) {
+                //
             })
             ->rawColumns(['status', 'options'])
             ->make(true);
