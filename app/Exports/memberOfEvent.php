@@ -58,6 +58,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'Domisili',
             'Instansi',
             'Invoice Code',
+            'Order Code',
             'Mendaftar Pada',
         ];
 
@@ -84,6 +85,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
                 $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
                 $member->corporation,
                 $member->invoices == null ? 'NaN' : ($member->invoices->token . ' - ' . ($member->invoices->is_automatic ? $member->invoices->payment_method : 'Manual')),
+                count($member->order) > 0 ? $member->order->first()->order_number : 'NaN',
                 date('d-m-Y H:i:s', strtotime($member->created_at)),
             ];
             foreach ($member->subMembers as $key => $sub_member) {
@@ -99,6 +101,7 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
                 $member->domisili == null || $member->domisili == '' ? 'NaN' : $member->domisili,
                 $member->corporation,
                 $member->invoices == null ? 'NaN' : ($member->invoices->token . ' - ' . ($member->invoices->is_automatic ? $member->invoices->payment_method : 'Manual')),
+                count($member->order) > 0 ? $member->order->first()->order_number : 'NaN',
                 date('d-m-Y H:i:s', strtotime($member->created_at)),
             ];
         }
@@ -116,7 +119,8 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             'E' => 30, // domisili
             'F' => 30, // instansi
             'G' => 30, // invoice code
-            'H' => 30, // mendaftar pada
+            'H' => 30, // order code
+            'I' => 30, // mendaftar pada
         ];
         $countDefault = count($default_col);
 
@@ -161,6 +165,10 @@ class memberOfEvent implements FromCollection, WithMapping, WithProperties, With
             $this->member = $this->member->filter(function ($member) {
                 return $member->invoices->status == 2;
             });
+
+            $this->member->load(['order' => function ($query) {
+                $query->where('status', 'completed')->where('order_number', 'like', '%TCK%');
+            }]);
         }
 
         return $this;
