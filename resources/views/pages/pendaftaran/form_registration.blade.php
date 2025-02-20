@@ -280,13 +280,6 @@
         @endphp
         const pageRegHelper = @json($pageRegHelp);
         window.pageRegHelper = pageRegHelper;
-        $(document).ready(function() {
-            $('#submit-register').click(function() {
-                $(this).prop('disabled', true);
-                $(this).text('Loading...');
-                $(this).closest('form').submit();
-            });
-        });
     </script>
     <script defer id="front_script" src="{{ mix('js/front.js') }}" data-page="form_reg" data-page-script="true"></script>
 @endpush
