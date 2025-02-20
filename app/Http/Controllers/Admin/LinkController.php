@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Helpers\GenerateStringUnique;
 
 use App\Http\Traits\MailPaymentTrait;
+use App\Http\Traits\FormRegistrationTrait;
 
 use App\Models\Link;
 use App\Models\Member;
@@ -23,7 +24,7 @@ use Illuminate\Support\Facades\Log;
 
 class LinkController extends Controller
 {
-    use MailPaymentTrait;
+    use MailPaymentTrait, FormRegistrationTrait;
     /**
      * Display a listing of the resource.
      *
@@ -280,8 +281,18 @@ class LinkController extends Controller
     public function page(Request $request, $link)
     {
         $data = Link::where('link_path', $link)->first();
+        $currentLinkMembers = $data->members;
+        $isLinkFull = false;
         $expired = true;
         $notYet = false;
+
+        if ($data->has_member_limit) {
+            if ($data->link_type === 'free')
+                $isLinkFull = !$this->isRegistrationMemberQuota($currentLinkMembers, $data->member_limit);
+            else
+                $isLinkFull = !$this->isRegistrationPaidMemberQuota($currentLinkMembers, $data->member_limit);
+        }
+
         $date = date("Y-m-d");
         if ($data != null) {
             if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
@@ -295,7 +306,8 @@ class LinkController extends Controller
         } else {
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
-        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired]);
+
+        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired, 'selectCities' => [], 'isLinkFull' => $isLinkFull]);
     }
 
     public function changeVisibility($id)

@@ -114,6 +114,11 @@
                 class="text-center break-words bg-white lg:rounded-lg sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
                 <h3 class="font-semibold p-10 sm:mx-auto"> {{ __('form_regist.alert.close') }} </h3>
             </div>
+        @elseif ($isLinkFull)
+            <div
+                class="text-center break-words bg-white lg:rounded-lg sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
+                <h3 class="font-semibold p-10 sm:mx-auto"> {{ __('form_regist.alert.quota') }} </h3>
+            </div>
         @else
             <!--begin::card form register event-->
             <div class="break-words bg-white rounded-lg shadow-lg dark:bg-neutral-700">
@@ -263,6 +268,18 @@
                 });
             });
         });
+        @php
+            $pageRegHelp = [
+                'warn_txt' => __('form_regist.alert.warn_confirmation'),
+                'submit_txt' => __('Submit'),
+                'event_txt' => __('form_regist.alert.warn_subTxt', ['event' => Str::limit($link->title, 40)]),
+                'swal_ok' => __('Yes'),
+                'swal_cancel' => __('Cancel'),
+                'err_filled' => __('form_regist.alert.err_filled'),
+            ];
+        @endphp
+        const pageRegHelper = @json($pageRegHelp);
+        window.pageRegHelper = pageRegHelper;
         $(document).ready(function() {
             $('#submit-register').click(function() {
                 $(this).prop('disabled', true);
@@ -271,4 +288,5 @@
             });
         });
     </script>
+    <script defer id="front_script" src="{{ mix('js/front.js') }}" data-page="form_reg" data-page-script="true"></script>
 @endpush

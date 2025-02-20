@@ -94,9 +94,9 @@
                         @include('pages.pendaftaran.not_found_link')
                     </div>
                 @elseif($show)
-                    @include('pages.pendaftaran.form_registration', ['expired_regist' => true])
+                    @include('pages.pendaftaran.form_registration', ['expired_regist' => true, 'isLinkFull' => $isLinkFull])
                 @else
-                    @include('pages.pendaftaran.form_registration', ['expired_regist' => false])
+                    @include('pages.pendaftaran.form_registration', ['expired_regist' => false, 'isLinkFull' => $isLinkFull])
                 @endif
             </section>
         </div>

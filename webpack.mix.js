@@ -22,6 +22,8 @@ mix
   ]);
 mix
   .js('resources/js/pages/page.js', 'public/js')
+mix
+  .js('resources/js/front/front.js', 'public/js');
 
 if (mix.inProduction()) {
   mix
