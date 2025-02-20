@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use UniSharp\LaravelFilemanager\Controllers\UploadController;
 use Illuminate\Http\JsonResponse;
+use App\Models\Member;
+use App\Models\Invoice;
+use App\Models\Link;
+use App\Models\MemberTrash;
+use App\Models\OrderDetail;
 
 class AjaxController extends Controller
 {
@@ -67,5 +72,111 @@ class AjaxController extends Controller
                 'message' => 'Session is invalid',
             ]);
         }
+    }
+
+    public function getMemberUploadBuktiTransfer(Request $request)
+    {
+        if (!$request->expectsJson()) {
+            return new JsonResponse([
+                'status' => 'error',
+                'message' => 'Invalid request',
+            ]);
+        }
+
+        $request->validate([
+            'member_id' => 'required|exists:members,id',
+        ]);
+        $member = $request->member_id;
+        $member = Member::find($member);
+        $invoice = $member->invoices;
+        $invoiceRoute = route('form.pay.store', $invoice->token);
+        $view = view('admin.ajax.member.upload-bukti-transfer', compact('member', 'invoiceRoute'))->render();
+
+        return new JsonResponse([
+            'success' => true,
+            'status' => 'success',
+            'view' => $view,
+            'code' => 200,
+        ], 200);
+    }
+
+    public function getMemberInfo(Request $request, $memberId)
+    {
+        if (!$request->expectsJson()) {
+            return new JsonResponse([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Invalid request',
+                'code' => 400,
+            ]);
+        }
+
+        if ($request->type == 'trash') {
+            $member = MemberTrash::find($memberId);
+        } else {
+            $member = Member::find($memberId);
+        }
+
+        if (!$member) {
+            return new JsonResponse([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Member not found',
+                'code' => 404,
+            ]);
+        }
+
+        $view = view('admin.ajax.member.member-info', compact('member'))->render();
+
+        return new JsonResponse([
+            'success' => true,
+            'status' => 'success',
+            'view' => $view,
+        ]);
+    }
+
+    public function getTransactionLinkTotal(Request $request, $linkId)
+    {
+        if (!$request->expectsJson()) {
+            return new JsonResponse([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Invalid request',
+                'code' => 400,
+            ]);
+        }
+
+        $link = Link::find($linkId);
+        if (!$link) {
+            return new JsonResponse([
+                'success' => false,
+                'status' => 'error',
+                'message' => 'Link not found',
+                'code' => 404,
+            ]);
+        }
+
+        if ($link->link_type === 'free') {
+            return new JsonResponse([
+                'success' => true,
+                'status' => 'success',
+                'total' => makeCurrency(0, true),
+            ]);
+        }
+
+        $orderDetail = OrderDetail::where('orderable_id', $linkId)->where('orderable_type', 'MorphLinks')->whereHas('order', function ($query) {
+            $query->where('status', 'completed');
+        })->get();
+        $total = 0;
+
+        foreach ($orderDetail as $order) {
+            $total += $order->total;
+        }
+
+        return new JsonResponse([
+            'success' => true,
+            'status' => 'success',
+            'total' => makeCurrency($total, true),
+        ]);
     }
 }
