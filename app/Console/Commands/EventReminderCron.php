@@ -11,6 +11,7 @@ use App\Models\Member;
 use App\Models\Email;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendEmailJob;
 
 class EventReminderCron extends Command
 {
@@ -174,16 +175,18 @@ class EventReminderCron extends Command
 
         $from_mail = Email::EMAIL_FROM;
 
-        Mail::to($member->email)->send(new ReminderEvent($data, $from_mail));
+        SendEmailJob::sendMail(dataMail: $data, link: $link, member: $member, type: 'reminder_event');
 
-        $mail_db = new Email;
-        $mail_db->send_from = $from_mail;
-        $mail_db->send_to = $member->email;
-        $mail_db->message = $data['message'];
-        $mail_db->user_id = $member->id;
-        $mail_db->type_email = Email::TYPE_EMAIL[1];
-        $mail_db->sent_count = 1;
-        $mail_db->save();
+        // Mail::to($member->email)->send(new ReminderEvent($data, $from_mail));
+
+        // $mail_db = new Email;
+        // $mail_db->send_from = $from_mail;
+        // $mail_db->send_to = $member->email;
+        // $mail_db->message = $data['message'];
+        // $mail_db->user_id = $member->id;
+        // $mail_db->type_email = Email::TYPE_EMAIL[1];
+        // $mail_db->sent_count = 1;
+        // $mail_db->save();
 
         $this->sendedCount["link_id_".$link->id][$type] += 1;
     }

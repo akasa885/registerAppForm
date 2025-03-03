@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class SendEmailJob implements ShouldQueue
 {
@@ -29,7 +30,10 @@ class SendEmailJob implements ShouldQueue
     protected $registerMail = [
         'attendance_confirmation' => 'App\Mail\ConfirmationAttendances',
         'event_info' => 'App\Mail\EventInfo',
-        'confirmation_pay' => 'App\Mail\ConfirmPay',
+        'confirm_pay' => 'App\Mail\ConfirmPay',
+        'confirmed_pay' => 'App\Mail\ConfirmedPay',
+        'reject_pay' => 'App\Mail\RejectedPay',
+        'reminder_event' => 'App\Mail\ReminderEvent',
     ];
 
     protected $link;
@@ -66,9 +70,9 @@ class SendEmailJob implements ShouldQueue
         $mail = $this->registerMail[$this->type];
         $from = Email::EMAIL_FROM;
 
-        Mail::to($this->member->email)->send(new $mail($this->datamail, $from, $this->datamail['subject'] ?? null));
-
         try {
+            DB::beginTransaction();
+            Mail::to($this->member->email)->send(new $mail($this->datamail, $from, $this->datamail['subject'] ?? null));
             $emailDb = new Email();
             $emailDb->send_from = $from;
             $emailDb->send_to = $this->member->email;
@@ -77,14 +81,16 @@ class SendEmailJob implements ShouldQueue
             $emailDb->type_email = $this->type;
             $emailDb->sent_count = 1;
             $emailDb->save();
+            DB::commit();
         } catch (\Throwable $th) {
+            DB::rollBack();
             Log::channel('job')->error('Save email failed', [
                 'message' => $th->getMessage(),
                 'type' => $this->type,
                 'email' => $this->member->email,
             ]);
+            Log::channel('job')->error($th);
         }
-
     }
 
     public function retryUntil()
@@ -101,10 +107,31 @@ class SendEmailJob implements ShouldQueue
         ]);
     }
 
+    public function tags()
+    {
+        return ['email'];
+    }
+
+    public function delay()
+    {
+        return now()->addSeconds(10);
+    }
+
+    // make delay for 10 seconds
+    public function backoff()
+    {
+        return [300];
+    }
+    
+
     public static function sendMail($dataMail, $link, $member, $type, $attendance = null)
     {
         $mail = new SendEmailJob($link, $member, $dataMail, $type, $attendance);
         $mail->onQueue('emails');
         dispatch($mail);
     }
+
+
+
+    // bellow is the job payload example
 }
