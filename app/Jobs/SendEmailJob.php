@@ -46,18 +46,31 @@ class SendEmailJob implements ShouldQueue
 
     protected $type;
 
-    public function __construct($link, $member, $data, $type, $attendance = null)
+    protected $recipient;
+
+    public function __construct($link, $member, $data, $type, $attendance = null, $recipient = null)
     {
         $this->attendance = $attendance;
         $this->datamail = $data;
         $this->link = $link;
         $this->member = $member;
+        $this->recipient = 'email_recipient_' . $recipient;
         // type must be one of the keys of $registerMail
         if (array_key_exists($type, $this->registerMail)) {
             $this->type = $type;
         } else {
             throw new \Exception('Invalid type');
         }
+    }
+
+    public function uniqueId()
+    {
+        return $this->type . '_' . $this->member->id;
+    }
+
+    public function uniqid()
+    {
+        return $this->type . '_' . $this->member->id;
     }
 
     /**
@@ -90,6 +103,7 @@ class SendEmailJob implements ShouldQueue
                 'email' => $this->member->email,
             ]);
             Log::channel('job')->error($th);
+            $this->fail($th);
         }
     }
 
@@ -126,7 +140,7 @@ class SendEmailJob implements ShouldQueue
 
     public static function sendMail($dataMail, $link, $member, $type, $attendance = null)
     {
-        $mail = new SendEmailJob($link, $member, $dataMail, $type, $attendance);
+        $mail = new SendEmailJob($link, $member, $dataMail, $type, $attendance, $member->email);
         $mail->onQueue('emails');
         dispatch($mail);
     }
