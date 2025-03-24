@@ -54,10 +54,10 @@ class SendEmailJob implements ShouldQueue
         $this->datamail = $data;
         $this->link = $link;
         $this->member = $member;
-        $this->recipient = 'email_recipient_' . $recipient;
         // type must be one of the keys of $registerMail
         if (array_key_exists($type, $this->registerMail)) {
             $this->type = $type;
+            $this->recipient = $type . '_' . $recipient;
         } else {
             throw new \Exception('Invalid type');
         }

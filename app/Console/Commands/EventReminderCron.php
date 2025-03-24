@@ -170,7 +170,7 @@ class EventReminderCron extends Command
     private function pendingJobAvailable($member, $type)
     {
         $fullNameCheck = "%{$member->full_name}%";
-        $memberEmailCheck = "%{$member->email}%";
+        $memberEmailCheck = "%reminder_event_{$member->email}%";
         $job = DB::table('jobs')
             ->where('payload', 'like', "%reminder_event%")
             ->where('payload', 'like', $fullNameCheck)
