@@ -134,10 +134,6 @@
                     action="{{ route('form.link.store', ['link' => $link->link_path]) }}">
                     @csrf
                     <input type="hidden" name="link" value="{{ $link->link_path }}">
-                    <!--begin::helper text-->
-                    <div class="text-center text-blue-800 text-sm font-bold">
-                        <p>{{ __('form_regist.main_help') }}</p>
-                    </div>
                     @error('message')
                         <div class="flex items-center bg-red-500 text-white text-sm font-bold px-4 py-3" role="alert">
                             <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
