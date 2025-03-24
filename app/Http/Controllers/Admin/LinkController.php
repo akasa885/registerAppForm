@@ -14,6 +14,8 @@ use App\Models\Member;
 use App\Models\MailPayment;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\LocationCity;
+use Illuminate\Support\Facades\Cache;
 
 use App\Http\Requests\LinkRequest;
 
@@ -280,11 +282,30 @@ class LinkController extends Controller
 
     public function page(Request $request, $link)
     {
-        $data = Link::where('link_path', $link)->first();
+        $data = Cache::remember("link_{$link}", 60*3, function () use ($link) {
+            return Link::where('link_path', $link)->first();
+        });
+
+        if ($data == null) {
+            Cache::forget("link_{$link}");
+            abort(404);
+        }
+
         $currentLinkMembers = $data->members;
         $isLinkFull = false;
         $expired = true;
         $notYet = false;
+
+        try {
+            $cities = LocationCity::all();
+            $selectCities = $cities->pluck('name', 'id');
+            $selectCities = $selectCities->map(function ($item, $key) {
+                return ucwords(strtolower($item));
+            });
+        } catch (\Throwable $th) {
+            $cities = [];
+            $selectCities = [];
+        }
 
         if ($data->has_member_limit) {
             if ($data->link_type === 'free')
@@ -307,7 +328,7 @@ class LinkController extends Controller
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
 
-        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired, 'selectCities' => [], 'isLinkFull' => $isLinkFull]);
+        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired, 'selectCities' => $selectCities, 'isLinkFull' => $isLinkFull]);
     }
 
     public function changeVisibility($id)

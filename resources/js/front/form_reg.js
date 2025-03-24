@@ -30,7 +30,6 @@ const formReg = (function () {
     return {
         init: () => {
             behaviorFormRegBtn();
-            behaviorMembershipCheck();
         },
 
     }
