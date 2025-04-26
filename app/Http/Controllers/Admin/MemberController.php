@@ -39,6 +39,47 @@ class MemberController extends Controller
         ]);
     }
 
+    public function logEvent(Request $request, Member $member)
+    {
+        if (!$request->ajax()) return response()->json(['code' => 400, 'success' => false, 'message' => 'Invalid Request'], 400);
+
+        $members = Member::where('email', $member->email)->with('link:id,title,link_type')->get();
+
+        // for link, link_type = pay. then check invoices
+
+        $linkPay = $members->filter(function ($member) {
+            return $member->link->link_type == 'pay';
+        })->flatten();
+
+        $freeLink = $members->filter(function ($member) {
+            return $member->link->link_type == 'free';
+        })->flatten();
+        
+        // linkPay, is only when invoices is status = 2
+        $linkPay = $linkPay->map(function ($member) {
+            $invoice = Invoice::where('member_id', $member->id)->first();
+            if ($invoice && $invoice->status == 2) {
+                return $member;
+            }
+        });
+
+        $links = $linkPay->merge($freeLink)->sortByDesc('id');
+
+        $links = $links->filter(function ($link) {
+            return $link != null;
+        })->values();
+
+
+        $view = view('admin.pages.members.render.list-event-member', compact('links'))->render();
+
+        return response()->json([
+            'code' => 200,
+            'success' => true,
+            'message' => 'Event Log',
+            'data' => $view,
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -126,7 +167,8 @@ class MemberController extends Controller
                 return $member->domisili;
             })
             ->addColumn('options', function ($row) {
-                $btn = '<a href="#" class="btn btn-primary btn-sm">View</a>';
+                $member = Member::select('id')->where('email', $row->email)->first();
+                $btn = '<a href="javascript:void(0);" onclick="memberListPageMain.getMemberEventLog(\''. $member->getRouteKey() .'\')" class="btn btn-primary btn-sm">View</a>';
                 return $btn;
             })
             ->orderColumn('DT_RowIndex', function ($query, $keyword) {

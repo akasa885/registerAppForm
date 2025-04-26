@@ -7,12 +7,15 @@ use Illuminate\Http\Request;
 use App\Helpers\GenerateStringUnique;
 
 use App\Http\Traits\MailPaymentTrait;
+use App\Http\Traits\FormRegistrationTrait;
 
 use App\Models\Link;
 use App\Models\Member;
 use App\Models\MailPayment;
 use App\Models\Invoice;
 use App\Models\User;
+use App\Models\LocationCity;
+use Illuminate\Support\Facades\Cache;
 
 use App\Http\Requests\LinkRequest;
 
@@ -23,7 +26,7 @@ use Illuminate\Support\Facades\Log;
 
 class LinkController extends Controller
 {
-    use MailPaymentTrait;
+    use MailPaymentTrait, FormRegistrationTrait;
     /**
      * Display a listing of the resource.
      *
@@ -41,7 +44,9 @@ class LinkController extends Controller
      */
     public function createPay()
     {
-        return view('admin.pages.links.add_pay');
+        $methodManual = Invoice::PAYMENT_TYPE != 'multipayment';
+        $methodPay = Link::METHOD;
+        return view('admin.pages.links.add_pay', compact('methodManual', 'methodPay'));
     }
 
     public function createFree()
@@ -60,7 +65,7 @@ class LinkController extends Controller
         try {
             $validated = $request->validated();
             $link = new Link;
-            $link->link_path = GenerateStringUnique::make(Link::select('link_path')->get()->toArray(), 'link_path')->getToken(Link::TOKEN_LENGTH);
+            $link->link_path = GenerateStringUnique::make('Link', 'link_path')->getToken(Link::TOKEN_LENGTH);
             $link->title = ucwords($request->title);
             if ($request->filepath != null) {
                 $link->banner = $request->filepath;
@@ -80,6 +85,16 @@ class LinkController extends Controller
             if ($request->event_type == 'pay') {
                 $link->price = $validated['price'];
                 $link->link_type = Link::LINK_TYPE[0];
+                if (isset($validated['bank'])) {
+                    $link->bank_information = [
+                        'name' => $validated['bank']['name'],
+                        'account_number' => $validated['bank']['account_number'],
+                        'account_name' => $validated['bank']['account_name'],
+                    ];
+                }
+
+                $link->method_pay = $request->is_multipayment == null ? 'bank_transfer' : 'multipayment';
+                
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
@@ -115,7 +130,44 @@ class LinkController extends Controller
     public function show($id)
     {
         $link = Link::findorfail($id);
-        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link]);
+        $menu = [
+            [
+                'label' => 'Active',
+                'route' => 'admin.link.detail',
+                'link' => route('admin.link.detail', $id)
+            ],
+            [
+                'label' => 'Trash',
+                'route' => 'admin.link.detail.trash',
+                'link' => route('admin.link.detail.trash', $link)
+            ]
+        ];
+
+        return view('admin.pages.links.member_info', ['id' => $id, 'title' => $link->title, 'link' => $link, 'menu' => $menu]);
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function showTrash(Link $link)
+    {
+        $menu = [
+            [
+                'label' => 'Active',
+                'route' => 'admin.link.detail',
+                'link' => route('admin.link.detail', $link->id)
+            ],
+            [
+                'label' => 'Trash',
+                'route' => 'admin.link.detail.trash',
+                'link' => route('admin.link.detail.trash', $link)
+            ]
+        ];
+
+        return view('admin.pages.links.member_info_trash', ['id' => $link->id, 'title' => $link->title, 'link' => $link, 'menu' => $menu]);
     }
 
     /**
@@ -127,7 +179,8 @@ class LinkController extends Controller
     public function edit($id)
     {
         $edit_link = Link::findorfail($id);
-        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'pay']);
+        $methodManual = Invoice::PAYMENT_TYPE != 'multipayment';
+        return view('admin.pages.links.edit', ['link_detail' => $edit_link, 'type_reg' => 'pay', 'methodManual' => $methodManual]);
     }
 
     public function editFree($id)
@@ -173,6 +226,14 @@ class LinkController extends Controller
 
             if ($link->link_type == 'pay') {
                 $link->price = $validated['price'];
+                if (isset($validated['bank'])) {
+                    $link->bank_information = [
+                        'name' => $validated['bank']['name'],
+                        'account_number' => $validated['bank']['account_number'],
+                        'account_name' => $validated['bank']['account_name'],
+                    ];
+                }
+                $link->method_pay = $request->is_multipayment == null ? 'bank_transfer' : 'multipayment';
                 $link->is_multiple_registrant_allowed = isset($validated['is_multiple_registrant_allowed']) ? true : false;
                 if (isset($validated['is_multiple_registrant_allowed'])) {
                     $link->sub_member_limit = $validated['sub_member_limit'];
@@ -221,9 +282,38 @@ class LinkController extends Controller
 
     public function page(Request $request, $link)
     {
-        $data = Link::where('link_path', $link)->first();
+        $data = Cache::remember("link_{$link}", 60*3, function () use ($link) {
+            return Link::where('link_path', $link)->first();
+        });
+
+        if ($data == null) {
+            Cache::forget("link_{$link}");
+            abort(404);
+        }
+
+        $currentLinkMembers = $data->members;
+        $isLinkFull = false;
         $expired = true;
         $notYet = false;
+
+        try {
+            $cities = LocationCity::all();
+            $selectCities = $cities->pluck('name', 'id');
+            $selectCities = $selectCities->map(function ($item, $key) {
+                return ucwords(strtolower($item));
+            });
+        } catch (\Throwable $th) {
+            $cities = [];
+            $selectCities = [];
+        }
+
+        if ($data->has_member_limit) {
+            if ($data->link_type === 'free')
+                $isLinkFull = !$this->isRegistrationMemberQuota($currentLinkMembers, $data->member_limit);
+            else
+                $isLinkFull = !$this->isRegistrationPaidMemberQuota($currentLinkMembers, $data->member_limit);
+        }
+
         $date = date("Y-m-d");
         if ($data != null) {
             if ($date >= date("Y-m-d", strtotime($data->active_from)) && $date <= date("Y-m-d", strtotime($data->active_until))) {
@@ -237,15 +327,16 @@ class LinkController extends Controller
         } else {
             return view('pages.pendaftaran.view', ['link' => $data, 'title' => 'Form Register Not Found', 'show' => $expired, 'notFound' => true]);
         }
-        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired]);
+
+        return view('pages.pendaftaran.view', ['link' => $data, 'show' => $expired, 'selectCities' => $selectCities, 'isLinkFull' => $isLinkFull]);
     }
 
     public function changeVisibility($id)
     {
         $link = Link::where('id', $id)
-                ->when(!Gate::allows('isSuperAdmin'), function ($query) {
-                    return $query->where('created_by', auth()->id());
-                })->first();
+            ->when(!Gate::allows('isSuperAdmin'), function ($query) {
+                return $query->where('created_by', auth()->id());
+            })->first();
         if ($link) {
             $link->hide_events = !$link->hide_events;
             $link->save();
@@ -260,13 +351,41 @@ class LinkController extends Controller
     public function dtb_memberLink($id)
     {
         $link = Link::find($id);
-        $data = $link->members;
+        $data = Member::query()->where('link_id', $id)->with('invoices');
         $edit = '';
         if ($link->link_type == 'pay') {
             return $this->payMemberList($data, $link);
         } else {
             return $this->freeMemberList($data, $link);
         }
+    }
+
+    public function dtb_memberLinkTrash(Link $link)
+    {
+        $memberTrash = $link->membersTrash;
+        $memberTrash = $memberTrash->sortBy('id');
+
+        return DataTables::of($memberTrash)
+            ->addIndexColumn()
+            ->removeColumn('created_at', 'updated_at')
+            ->addColumn('registered', function ($data) {
+                return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
+            })
+            ->addColumn("status", function ($data) {
+                $date = date("Y-m-d");
+                return '<div class="mb-2 mr-2 badge badge-danger">Exp / Deleted</div>';
+            })
+            ->addColumn("options", function ($data) use ($link) {
+                $edit = "<a href=\"javascript:void(0);\" onClick=\"pageTrashMemberLink.info(" . $data->id . ");\" aria-expanded=\"false\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
+                <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                    <i class=\"pe-7s-rocket fa-w-20\"></i>
+                </span>
+                Show Info
+                </a>";
+                return $edit;
+            })
+            ->rawColumns(['status', 'options'])
+            ->make(true);
     }
 
     public function dtb_link(User $user)
@@ -295,6 +414,9 @@ class LinkController extends Controller
                     return '<div class="mb-2 mr-2 badge badge-danger">Selesai</div>';
                 }
             })
+            ->editColumn("method_pay", function ($data) {
+                return $data->method_pay == 'bank_transfer' ? 'bank' : 'multi';
+            })
             ->editColumn("link_path", function ($data) {
                 return route('form.link.view', ['link' => $data->link_path]);
             })
@@ -303,14 +425,14 @@ class LinkController extends Controller
             })
             ->addColumn('hide_button', function ($data) {
                 if ($data->hide_events) {
-                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-' . $data->id . '" class="mb-2 mr-2 badge border-0 badge-pill badge-danger" style="margin-right:0.2rem;" title="Event Hide">
                     <span class="btn-icon-wrapper pr-2 opacity-7">
                         <i class="pe-7s-close-circle fa-w-20"></i>
                     </span>
                     Hide
                     </button>';
                 } else {
-                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-'.$data->id.'" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
+                    return '<button onclick="showHideEvent(' . $data->id . ')" id="show-hide-' . $data->id . '" class="mb-2 mr-2 badge border-0 badge-pill badge-success" style="margin-right:0.2rem;" title="Event Showing">
                     <span class="btn-icon-wrapper pr-2 opacity-7">
                         <i class="pe-7s-check fa-w-20"></i>
                     </span>
@@ -362,35 +484,6 @@ class LinkController extends Controller
             ->make(true);
     }
 
-    private function getToken($length_token = 5)
-    {
-        $fix_token = '';
-        $lock = 0;
-        $data_token = Link::select('link_path')->get();
-        if (count($data_token) > 0) {
-            $loop = count($data_token);
-            for ($i = 0; $i < $loop;) {
-                foreach ($data_token as $tok) {
-                    $temp = $this->generate_token($length_token);
-                    if ($tok->link_path != $temp) {
-                        $lock++;
-                    } else {
-                        $lock = 0;
-                    }
-                }
-                if ($loop == $lock) {
-                    $fix_token = $temp;
-                    $i = $loop;
-                } else {
-                    $i++;
-                }
-            }
-            return $fix_token;
-        } else {
-            return $this->generate_token($length_token);
-        }
-    }
-
     public function generate_token($length = 5)
     {
         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -413,11 +506,18 @@ class LinkController extends Controller
 
     public function payMemberList($data, $link)
     {
+        if (request()->has('order')) $colOrder = request()->order[0]['column'];
         // sort desc id
-        $data = $data->sortByDesc('id');
+        $data = $data
+        ->join('invoices', 'members.id', '=', 'invoices.member_id')
+        ->select('members.*', 'invoices.status as invoice_status')
+        ->when($colOrder === '0', function ($query) {
+            $query->orderBy('id', 'desc'); // Default order if no sorting is applied
+        });
+
         return DataTables::of($data)
             ->addIndexColumn()
-            ->removeColumn('created_at', 'updated_at')
+            ->removeColumn('created_at', 'updated_at', 'invoices')
             ->addColumn("status", function ($data) {
                 $date = date("Y-m-d");
                 if ($data->invoices->status == 0) {
@@ -437,18 +537,20 @@ class LinkController extends Controller
                 $link = $data->link;
                 if ($data->invoices->status == 1) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewPayment(" . $data->id . ");\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Cek Bukti Bayar
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Cek Bukti Bayar
                 </a>";
-                } else if ($data->invoices->status == 2) {
+                } else if ($data->invoices->status == 2 && (!$data->invoices->is_automatic)) {
                     $edit = "<a href=\"javascript:void(0);\" onClick=\"viewProof('" . asset('storage/bukti_image/' . $data->bukti_bayar) . "');\" aria-expanded=\"false\" data-toggle=\"modal\" data-target=\"#ModalViewPict\" class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">
-                  <span class=\"btn-icon-wrapper pr-2 opacity-7\">
-                      <i class=\"pe-7s-rocket fa-w-20\"></i>
-                  </span>
-                  Lihat Bukti Bayar
-                </a>";
+                    <span class=\"btn-icon-wrapper pr-2 opacity-7\">
+                        <i class=\"pe-7s-rocket fa-w-20\"></i>
+                    </span>
+                    Lihat Bukti Bayar
+                    </a>";
+                } else if ($data->invoices->status == 2 && ($data->invoices->is_automatic)) {
+                    $edit = "<span class=\"mb-2 mr-2 badge badge-pill badge-info\" style=\"margin-right:0.2rem;\">Method: " . $data->invoices->payment_method . "</span>";
                 } else {
                     $edit = '';
                 }
@@ -475,16 +577,47 @@ class LinkController extends Controller
 
                 return $edit;
             })
+            ->filterColumn('status', function ($query, $keyword) {
+                //
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                $query->where('full_name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('email', function ($query, $keyword) {
+                $query->where('email', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('corporation', function ($query, $keyword) {
+                $query->where('corporation', 'like', '%' . $keyword . '%');
+            })
+            ->orderColumn('full_name', function ($query, $direction) {
+                $query->orderBy('full_name', $direction);
+            })
+            ->orderColumn('email', function ($query, $direction) {
+                $query->orderBy('email', $direction);
+            })
+            ->orderColumn('corporation', function ($query, $direction) {
+                $query->orderBy('corporation', $direction);
+            })
+            ->orderColumn('status', function ($query, $direction) {
+                $query->orderBy('invoice_status', $direction)->orderBy('id', $direction);
+            })
             ->rawColumns(['status', 'options'])
             ->make(true);
     }
 
     public function freeMemberList($data, $link)
     {
-        $data = $data->sortByDesc('id');
+        if (request()->has('order')) $colOrder = request()->order[0]['column'];
+        $data = $data->when($colOrder === '0', function ($query) {
+            $query->orderBy('id', 'desc'); // Default order if no sorting is applied
+        });
+
         return DataTables::of($data)
             ->addIndexColumn()
             ->removeColumn('created_at', 'updated_at')
+            ->orderColumn('DT_RowIndex', function ($query, $keyword) {
+                // $query->where('email', 'like', '%' . $keyword . '%');
+            })
             ->addColumn('registered', function ($data) {
                 return date("d/M/Y, H:i", strtotime($data->created_at)) . ' WIB';
             })
@@ -505,6 +638,30 @@ class LinkController extends Controller
                     </a>";
                 }
                 return $edit;
+            })
+            ->filterColumn('status', function ($query, $keyword) {
+                //
+            })
+            ->filterColumn('full_name', function ($query, $keyword) {
+                $query->where('full_name', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('email', function ($query, $keyword) {
+                $query->where('email', 'like', '%' . $keyword . '%');
+            })
+            ->filterColumn('corporation', function ($query, $keyword) {
+                $query->where('corporation', 'like', '%' . $keyword . '%');
+            })
+            ->orderColumn('full_name', function ($query, $direction) {
+                $query->orderBy('full_name', $direction);
+            })
+            ->orderColumn('email', function ($query, $direction) {
+                $query->orderBy('email', $direction);
+            })
+            ->orderColumn('corporation', function ($query, $direction) {
+                $query->orderBy('corporation', $direction);
+            })
+            ->orderColumn('status', function ($query, $direction) {
+                //
             })
             ->rawColumns(['status', 'options'])
             ->make(true);

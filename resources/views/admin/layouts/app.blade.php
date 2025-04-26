@@ -2,6 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
+    <meta name="robots" content="noindex">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- CSRF Token -->
@@ -9,7 +10,11 @@
 
     <title>@yield('title', 'Halaman Admin')</title>
 
-    <link rel="shortcut icon" href="{{ asset('icon/favicon.png') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ asset('icon/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ asset('icon/favicon.ico') }}">
         
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -55,12 +60,12 @@
           </div>            
         </div>
     </div>
+    @stack('modal')
     {{-- <script src="{{ asset('vendor/bootstrap/js/popper.min.js') }}" defer></script> --}}
     <script src="{{ asset('vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('/admin_assets/assets/scripts/main.js') }}"></script> 
     <script src="{{ asset('js/session.js') }}" defer></script>
     @stack('scripts')
     @yield('scriptOptional')
-    @stack('modal')
 </body>
 </html>

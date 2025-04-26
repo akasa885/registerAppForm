@@ -10,6 +10,8 @@ use App\Mail\ConfirmPay;
 use App\Mail\RejectedPay;
 use App\Mail\EventInfo;
 use App\Mail\ConfirmedPay;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendEmailJob;
 
 trait MailPaymentTrait {
 
@@ -46,15 +48,16 @@ trait MailPaymentTrait {
         $from_mail = Email::EMAIL_FROM;
 
         try {
-            Mail::to($member->email)->send(new ConfirmedPay($data, $from_mail));
-            $mail_db = new Email;
-            $mail_db->send_from = $from_mail;
-            $mail_db->send_to = $member->email;
-            $mail_db->message = $information;
-            $mail_db->user_id = $member->id;
-            $mail_db->type_email = Email::TYPE_EMAIL[2];
-            $mail_db->sent_count = 1;
-            $mail_db->save();
+            SendEmailJob::sendMail(dataMail: $data, member: $member, link: $link, type: 'confirmed_pay');
+            // Mail::to($member->email)->send(new ConfirmedPay($data, $from_mail));
+            // $mail_db = new Email;
+            // $mail_db->send_from = $from_mail;
+            // $mail_db->send_to = $member->email;
+            // $mail_db->message = $information;
+            // $mail_db->user_id = $member->id;
+            // $mail_db->type_email = Email::TYPE_EMAIL[2];
+            // $mail_db->sent_count = 1;
+            // $mail_db->save();
         } catch (\Throwable $th) {
             Log::error('Error send mail payment received');
             Log::error($th->getMessage());
@@ -85,18 +88,20 @@ trait MailPaymentTrait {
 
         try {
             if ($reject) {
-                Mail::to($member->email)->send(new RejectedPay($data, $from_mail));
+                SendEmailJob::sendMail(dataMail: $data, member: $member, link: $link, type: 'reject_pay');
+                // Mail::to($member->email)->send(new RejectedPay($data, $from_mail));
             } else {
-                Mail::to($member->email)->send(new ConfirmPay($data, $from_mail));
+                SendEmailJob::sendMail(dataMail: $data, member: $member, link: $link, type: 'confirm_pay');
+                // Mail::to($member->email)->send(new ConfirmPay($data, $from_mail));
             }
-            $mail_db = new Email;
-            $mail_db->send_from = $from_mail;
-            $mail_db->send_to = $member->email;
-            $mail_db->message = $information;
-            $mail_db->user_id = $member->id;
-            $mail_db->type_email = Email::TYPE_EMAIL[0];
-            $mail_db->sent_count = 1;
-            $mail_db->save();
+            // $mail_db = new Email;
+            // $mail_db->send_from = $from_mail;
+            // $mail_db->send_to = $member->email;
+            // $mail_db->message = $information;
+            // $mail_db->user_id = $member->id;
+            // $mail_db->type_email = Email::TYPE_EMAIL[0];
+            // $mail_db->sent_count = 1;
+            // $mail_db->save();
         } catch (\Throwable $th) {
             throw $th;
         }

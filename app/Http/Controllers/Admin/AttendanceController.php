@@ -16,7 +16,7 @@ use App\Models\Order;
 use App\Models\Email;
 use App\Models\Link;
 
-use App\Http\Traits\GenerateTokenUniqueColumnTrait;
+use App\Helpers\GenerateStringUnique;
 use App\Http\Traits\SnapTokenCreate;
 use App\Http\Traits\FileUploadTrait;
 use App\Http\Traits\AttendingTrait;
@@ -33,7 +33,7 @@ use Illuminate\Support\Facades\Log;
 
 class AttendanceController extends Controller
 {
-    use GenerateTokenUniqueColumnTrait, FileUploadTrait, AttendingTrait, SnapTokenCreate;
+    use FileUploadTrait, AttendingTrait, SnapTokenCreate;
     /**
      * Display a listing of the resource.
      *
@@ -80,7 +80,7 @@ class AttendanceController extends Controller
             }
             $validated['link_id'] = $validated['link_id']->id;
             $attend = Attendance::select('attendance_path')->get();
-            $token = $this->getToken($attend->toArray(), 'attendance_path', 6);
+            $token = GenerateStringUnique::make('Attendance', 'attendance_path')->getToken(6);
             $validated['attendance_path'] = $token;
 
             // create attendance

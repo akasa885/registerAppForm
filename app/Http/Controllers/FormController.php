@@ -216,7 +216,7 @@ class FormController extends Controller
                     $dataReturn['used'] = $used;
                     $dataReturn['expired'] = $expired;
 
-                    if (config('app.version') && config('app.version') == '1.1.0' && Invoice::PAYMENT_TYPE == 'multipayment') {
+                    if (config('app.version') && config('app.version') == '1.1.0' && Invoice::PAYMENT_TYPE == 'multipayment' && $link_detail->method_pay == 'multipayment') {
                         $this->checkSnapToken($pay_detail);
                         if ($pay_detail->order->snap_token_midtrans) {
                             $dataReturn['snap_token'] = $pay_detail->order->snap_token_midtrans;
@@ -284,9 +284,9 @@ class FormController extends Controller
                     DB::commit();
 
                     if (config('app.locale') == 'id')
-                        return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya. Terima Kasih..!!!');
+                        return back()->with('success', 'Bukti berhasil di upload, silahkan tunggu untuk verifikasinya dan balasan email. Terima kasih..!!!');
                     else
-                        return back()->with('success', 'Proof of payment has been uploaded, please wait for verification. Thank you..!!!');
+                        return back()->with('success', 'Proof of payment has been uploaded, please wait for verification and email reply. Thank you..!!!');
                 }
             }else{
                 abort(404);
@@ -316,16 +316,17 @@ class FormController extends Controller
         $from_mail = Email::EMAIL_FROM;
 
         try {
-            Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
-            $mail_db = new Email;
-            $mail_db->send_from = $from_mail;
-            $mail_db->send_to = $member->email;
-            $mail_db->message = $information;
-            $mail_db->user_id = $member->id;
-            $mail_db->type_email = Email::TYPE_EMAIL[3];
-            $mail_db->sent_count = 1;
-            $mail_db->save();
-            // SendEmailJob::sendMail($data, $link, $member, 'event_info');
+            // Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
+            // $mail_db = new Email;
+            // $mail_db->send_from = $from_mail;
+            // $mail_db->send_to = $member->email;
+            // $mail_db->message = $information;
+            // $mail_db->user_id = $member->id;
+            // $mail_db->type_email = Email::TYPE_EMAIL[3];
+            // $mail_db->sent_count = 1;
+            // $mail_db->save();
+            
+            SendEmailJob::sendMail(dataMail: $data, link: $link, member: $member, type: 'event_info');
         } catch (\Throwable $th) {
             throw $th;
             // abort(500);

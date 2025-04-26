@@ -11,6 +11,7 @@ use App\Models\Member;
 use App\Models\Email;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\SendEmailJob;
 
 class EventReminderCron extends Command
 {
@@ -90,6 +91,10 @@ class EventReminderCron extends Command
             if ($this->checkDoesMemberAlreadySentReminder($member, $link)) {
                 continue;
             }
+            if ($this->pendingJobAvailable($member, 'reminder_event')) {
+                continue;
+            }
+
             $this->sentMailReminder($member, $link, 'pay');
         }
     }
@@ -112,6 +117,10 @@ class EventReminderCron extends Command
             if ($this->checkDoesMemberAlreadySentReminder($member, $link)) {
                 continue;
             }
+            if ($this->pendingJobAvailable($member, 'reminder_event')) {
+                continue;
+            }
+
             $this->sentMailReminder($member, $link, 'free');
         }
     }
@@ -158,6 +167,18 @@ class EventReminderCron extends Command
         return false;
     }
 
+    private function pendingJobAvailable($member, $type)
+    {
+        $fullNameCheck = "%{$member->full_name}%";
+        $memberEmailCheck = "%reminder_event_{$member->email}%";
+        $job = DB::table('jobs')
+            ->where('payload', 'like', "%reminder_event%")
+            ->where('payload', 'like', $fullNameCheck)
+            ->where('payload', 'like', $memberEmailCheck);
+
+        return $job->exists();
+    }
+
     private function sentMailReminder(Member $member, Link $link, $type = 'pay')
     {
         $data = [
@@ -174,16 +195,7 @@ class EventReminderCron extends Command
 
         $from_mail = Email::EMAIL_FROM;
 
-        Mail::to($member->email)->send(new ReminderEvent($data, $from_mail));
-
-        $mail_db = new Email;
-        $mail_db->send_from = $from_mail;
-        $mail_db->send_to = $member->email;
-        $mail_db->message = $data['message'];
-        $mail_db->user_id = $member->id;
-        $mail_db->type_email = Email::TYPE_EMAIL[1];
-        $mail_db->sent_count = 1;
-        $mail_db->save();
+        SendEmailJob::sendMail(dataMail: $data, link: $link, member: $member, type: 'reminder_event');
 
         $this->sendedCount["link_id_".$link->id][$type] += 1;
     }

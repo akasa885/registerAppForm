@@ -114,6 +114,11 @@
                 class="text-center break-words bg-white lg:rounded-lg sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
                 <h3 class="font-semibold p-10 sm:mx-auto"> {{ __('form_regist.alert.close') }} </h3>
             </div>
+        @elseif ($isLinkFull)
+            <div
+                class="text-center break-words bg-white lg:rounded-lg sm:border-1 sm:rounded-md sm:shadow-sm sm:shadow-lg">
+                <h3 class="font-semibold p-10 sm:mx-auto"> {{ __('form_regist.alert.quota') }} </h3>
+            </div>
         @else
             <!--begin::card form register event-->
             <div class="break-words bg-white rounded-lg shadow-lg dark:bg-neutral-700">
@@ -129,10 +134,6 @@
                     action="{{ route('form.link.store', ['link' => $link->link_path]) }}">
                     @csrf
                     <input type="hidden" name="link" value="{{ $link->link_path }}">
-                    <!--begin::helper text-->
-                    <div class="text-center text-blue-800 text-sm font-bold">
-                        <p>{{ __('form_regist.main_help') }}</p>
-                    </div>
                     @error('message')
                         <div class="flex items-center bg-red-500 text-white text-sm font-bold px-4 py-3" role="alert">
                             <svg class="fill-current w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -199,9 +200,18 @@
                             {{ __('Domicile (City)') }}:
                         </label>
 
-                        <input id="input-4" type="text"
-                            class="form-input w-full @error('domisili') border-red-500 @enderror" name="domisili"
-                            value="{{ old('domisili') }}" required autofocus>
+                        @if (isset($selectCities) && count($selectCities) > 0)
+                            <select name="sel_domisili" id="sel2_domisili"
+                                class="form-control w-full form-select @error('sel_domisili') border-red-500 @enderror">
+                                @foreach ($selectCities as $key => $item)
+                                    <option value="{{ $key }}">{{ $item }}</option>
+                                @endforeach
+                            </select>
+                        @else
+                            <input id="input-4" type="text"
+                                class="form-input w-full @error('domisili') border-red-500 @enderror"
+                                name="domisili" value="{{ old('domisili') }}" required>
+                        @endif
 
                         @error('domisili')
                             <p class="text-red-500 text-xs italic mt-4">
@@ -241,6 +251,13 @@
 @push('scripts')
     <script>
         $(function() {
+            @if (isset($selectCities) && count($selectCities) > 0)
+                $('#sel2_domisili').select2({
+                    placeholder: '{{ __('Select City') }}',
+                    allowClear: true,
+                });
+            @endif
+
             let imageOverlayHtml =
                 '<div class="absolute inset-0 bg-gray-500 opacity-75 transition duration-300 ease-in-out hover:opacity-0"></div>';
             let imageLoaderHtml =
@@ -263,12 +280,18 @@
                 });
             });
         });
-        $(document).ready(function() {
-            $('#submit-register').click(function() {
-                $(this).prop('disabled', true);
-                $(this).text('Loading...');
-                $(this).closest('form').submit();
-            });
-        });
+        @php
+            $pageRegHelp = [
+                'warn_txt' => __('form_regist.alert.warn_confirmation'),
+                'submit_txt' => __('Submit'),
+                'event_txt' => __('form_regist.alert.warn_subTxt', ['event' => Str::limit($link->title, 40)]),
+                'swal_ok' => __('Yes'),
+                'swal_cancel' => __('Cancel'),
+                'err_filled' => __('form_regist.alert.err_filled'),
+            ];
+        @endphp
+        const pageRegHelper = @json($pageRegHelp);
+        window.pageRegHelper = pageRegHelper;
     </script>
+    <script defer id="front_script" src="{{ mix('js/front.js') }}" data-page="form_reg" data-page-script="true"></script>
 @endpush

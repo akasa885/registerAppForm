@@ -14,6 +14,7 @@ class Link extends Model
     use HasFactory, FormatNumberTrait;
     const TOKEN_LENGTH = 5;
     const LINK_TYPE = ['pay', 'free'];
+    const METHOD = ['bank_transfer', 'multipayment'];
 
     protected $fillable = [
         'link_path', 
@@ -21,6 +22,8 @@ class Link extends Model
         'description',
         'registration_info',
         'banner', 
+        'bank_information',
+        'method_pay',
         'active_from', 
         'active_until',
         'event_date',
@@ -45,6 +48,7 @@ class Link extends Model
         'has_member_limit' => 'boolean',
         'is_multiple_registrant_allowed' => 'boolean',
         'hide_events' => 'boolean',
+        'bank_information' => 'array',
     ];
 
     protected $appends = [
@@ -59,6 +63,11 @@ class Link extends Model
     public function members()
     {
         return $this->hasMany(Member::class, 'link_id', 'id');
+    }
+
+    public function membersTrash()
+    {
+        return $this->hasMany(MemberTrash::class, 'link_id', 'id');
     }
 
     public function getPriceFormattedAttribute()
@@ -128,7 +137,7 @@ class Link extends Model
 
     public function ownsMember(Member $member)
     {
-      return $this->id === $member->link->id;
+        return $this->id === $member->link->id;
     }
 
     /**
