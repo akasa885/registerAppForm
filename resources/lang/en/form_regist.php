@@ -1,7 +1,8 @@
 <?php
 
 return [
-    "main_help" => "Make sure your NIN is correct. The data on this form is used for access verification on Plataran Sehat.",
+    "main_help" => "Make sure your email address and contact number are correct. The data on this form is used to verify your participation!",
+    "member_help" => "Please fill in with your membership registration number! And make sure your email address is registered in our system.",
     "head" => [
         "info_block" => "Event Information",
         "desc_block" => "Event Description",

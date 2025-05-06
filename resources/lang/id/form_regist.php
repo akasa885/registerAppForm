@@ -1,7 +1,8 @@
 <?php
 
 return [
-    "main_help" => "Pastikan NIK Anda sudah tepat. Data pada form ini kami gunakan untuk verifikasi akses di Plataran Sehat.",
+    "main_help" => "Pastikan alamat email dan nomor kontak Anda benar. Data pada formulir ini digunakan untuk verifikasi kepesertaan Anda!",
+    "member_help" => "Silahkan isi dengan nomor registrasi member Anda!. Dan pastikan Alamat email Anda sudah terdaftar di sistem kami.",
     "head" => [
         "info_block" => "Informasi Acara",
         "desc_block" => "Tentang Acara",
