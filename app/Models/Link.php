@@ -15,6 +15,7 @@ class Link extends Model
     const TOKEN_LENGTH = 5;
     const LINK_TYPE = ['pay', 'free'];
     const METHOD = ['bank_transfer', 'multipayment'];
+    const ENDPOINTMEMBERSHIP = 'https://9067-118-99-84-62.ngrok-free.app';
 
     protected $fillable = [
         'link_path', 
@@ -30,6 +31,7 @@ class Link extends Model
         'created_by',
         'link_type',
         'category',
+        'is_membership_only',
         'price',
         'has_member_limit',
         'member_limit',
@@ -45,6 +47,7 @@ class Link extends Model
     ];
 
     protected $casts = [
+        'is_membership_only' => 'boolean',
         'has_member_limit' => 'boolean',
         'is_multiple_registrant_allowed' => 'boolean',
         'hide_events' => 'boolean',
