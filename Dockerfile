@@ -1,12 +1,4 @@
-# Stage 1: Build assets with Node
-FROM node:20 AS node_builder
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run build
-
-# Stage 2: PHP dependencies
+# Use official PHP image with necessary extensions
 FROM php:8.2-fpm
 
 # Install system dependencies
@@ -23,24 +15,21 @@ RUN apt-get update && apt-get install -y \
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www
 
 # Copy composer files first for caching
 COPY composer.json composer.lock ./
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Copy project files
+# Copy full project (including pre-built assets in /public)
 COPY . .
-
-# Copy built assets from node stage
-COPY --from=node_builder /app/public/js /var/www/public/js
-COPY --from=node_builder /app/public/css /var/www/public/css
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Expose FPM port
+# Expose FPM port (internal only)
 EXPOSE 9000
 
-# Run php-fpm (not artisan serve!)
+# Start PHP-FPM
 CMD ["php-fpm"]
