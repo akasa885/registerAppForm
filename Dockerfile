@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+    libzip-dev \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
@@ -20,16 +21,18 @@ WORKDIR /var/www
 
 # Copy composer files first for caching
 COPY composer.json composer.lock ./
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts --verbose
 
-# Copy full project (including pre-built assets in /public)
+# Install PHP dependencies (skip scripts to avoid issues during build)
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+
+# Copy full project
 COPY . .
 
-# Permissions
+# Set permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Expose FPM port (internal only)
+# Expose port 9000 for PHP-FPM
 EXPOSE 9000
 
-# Start PHP-FPM
+# Start php-fpm (Coolify will handle proxying)
 CMD ["php-fpm"]
