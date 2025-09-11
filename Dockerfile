@@ -7,11 +7,12 @@ RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
+    nginx \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
     libzip-dev \
-    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip redis
 
 # Install Composer
 COPY --from=composer:2.6 /usr/bin/composer /usr/bin/composer
@@ -31,8 +32,11 @@ COPY . .
 # Set permissions
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Expose port 9000 for PHP-FPM
-EXPOSE 9000
+# Nginx config
+COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Start php-fpm (Coolify will handle proxying)
-CMD ["php-fpm"]
+# Expose port 80 for Nginx
+EXPOSE 80
+
+# Start Nginx and PHP-FPM
+CMD ["nginx", "-g", "daemon off;"]
