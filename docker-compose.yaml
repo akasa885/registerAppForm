@@ -33,8 +33,11 @@ services:
     ports:
       - "8080:80"
     volumes:
+      # Mount your custom nginx config into a new, separate directory
+      - ./docker/nginx.conf:/etc/nginx/my-custom.conf
       - ./:/var/www
-      - ./docker/nginx.conf:/etc/nginx/conf.d/default.conf
+    # Use a command to run Nginx and include the new config file
+    command: /bin/sh -c 'ln -sf /etc/nginx/my-custom.conf /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"'
     depends_on:
       - app
 
