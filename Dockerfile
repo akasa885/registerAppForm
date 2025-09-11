@@ -7,7 +7,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     zip \
     unzip \
-    nginx \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
@@ -36,10 +35,10 @@ COPY . .
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 # Nginx config
-COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
+#COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 80 for Nginx
-EXPOSE 80
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
 
 # Start Nginx and PHP-FPM
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["php-fpm"]

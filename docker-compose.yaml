@@ -21,7 +21,7 @@ services:
       - DB_USERNAME=root
       - DB_PASSWORD=secret
     expose:
-      - "9000" # PHP-FPM default port
+      - "9000"
     depends_on:
       - db
       - cache
