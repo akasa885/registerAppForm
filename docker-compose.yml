@@ -25,6 +25,7 @@ services:
       - "8080:80"
     depends_on:
       - db
+      - cache
 
   db:
     image: mysql:8.0
@@ -38,16 +39,12 @@ services:
     ports:
       - "33060:3306"
 
-  node:
-    image: node:18
-    container_name: registerappform-node
-    working_dir: /var/www
-    volumes:
-      - ./:/var/www
-    command: >
-      sh -c "npm install && npm run production"
-    depends_on:
-      - app
+  cache:
+    image: redis:latest
+    container_name: registerappform-cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
 
 volumes:
   db_data:
