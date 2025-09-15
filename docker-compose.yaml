@@ -9,34 +9,31 @@ services:
     container_name: registerappform-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-      - ./:/var/www
     environment:
       - APP_ENV=production
-      - APP_KEY=base64:your_app_key_here
       - DB_CONNECTION=mysql
-      - DB_HOST=db
       - DB_PORT=3306
       - DB_DATABASE=registerappform
-      - DB_USERNAME=root
-      - DB_PASSWORD=secret
-    expose:
-      - "9000"
+      - APP_KEY=${APP_KEY}
+    networks:
+      - eform-network
     depends_on:
       - db
       - cache
 
   nginx:
-    image: nginx:stable-alpine
+    image: nginx:alpine
     container_name: registerappform-nginx
     restart: unless-stopped
     ports:
       - "8081:80"
     volumes:
       - ./:/var/www
-    # Use a command to run Nginx and include the new config file
+      - ./docker/nginx/:/etc/nginx/conf.d
     depends_on:
       - app
+    networks:
+      - eform-network
 
   db:
     image: mysql:8.0
@@ -44,9 +41,19 @@ services:
     restart: unless-stopped
     environment:
       MYSQL_DATABASE: registerappform
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - eform-network
+    command: --default-authentication-plugin=mysql_native_password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     ports:
       - "33060:3306"
 
@@ -57,5 +64,8 @@ services:
     ports:
       - "6379:6379"
 
+networks:
+  eform-network:
+    driver: bridge
 volumes:
   db_data:
