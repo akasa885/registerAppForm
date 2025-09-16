@@ -42,8 +42,8 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 # Nginx config
 #COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port 8081 for nginx
-EXPOSE 8081
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
 
-# Start Nginx and PHP-FPM
+# Start PHP-FPM
 CMD ["php-fpm"]
