@@ -24,8 +24,6 @@ services:
     image: nginx:alpine
     container_name: registerappform-nginx
     restart: unless-stopped
-    ports:
-      - "80:80"
     volumes:
       - ./:/var/www
       - ./docker/nginx/:/etc/nginx/conf.d
