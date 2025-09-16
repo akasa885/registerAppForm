@@ -54,14 +54,14 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "3306:3306"
+      - "3306"
 
   cache:
     image: redis:latest
     container_name: registerappform-cache
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - "6379"
     networks:
       - eform-network
 
