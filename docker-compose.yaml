@@ -8,9 +8,6 @@ services:
     container_name: registerappform-app
     restart: unless-stopped
     working_dir: /var/www
-    volumes:
-    - ./storage:/var/www/storage
-    - ./bootstrap/cache:/var/www/bootstrap/cache
     environment:
       - APP_ENV=production
       - DB_CONNECTION=mysql
