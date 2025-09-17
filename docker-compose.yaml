@@ -10,9 +10,7 @@ services:
     working_dir: /var/www
     volumes:
       - app_form:/var/www
-      - storage_data:/var/www/storage
-      - cache_data:/var/www/bootstrap/cache
-      - upload_bukti:/var/www/public/bukti_image
+      - storage_data:/var/www/storage/app/public
     environment:
       - APP_ENV=production
       - DB_CONNECTION=mysql
@@ -36,7 +34,7 @@ services:
     volumes:
       - ./docker/nginx/:/etc/nginx/conf.d
       - app_form:/var/www
-      - upload_bukti:/var/www/public/bukti_image
+      - storage_data:/var/www/public/storage
     depends_on:
       - app
     networks:
@@ -77,5 +75,4 @@ volumes:
   db_data:
   app_form:
   storage_data:
-  cache_data:
-  upload_bukti:
+    driver: local
