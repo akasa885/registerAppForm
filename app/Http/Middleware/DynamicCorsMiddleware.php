@@ -109,6 +109,18 @@ class DynamicCorsMiddleware
         $parsedUrl = parse_url($origin);
         $host = $parsedUrl['host'] ?? '';
 
-        return preg_match('/\.?upquality\.net$/', $host);
+        $app_url = env('APP_URL', '');//https://lixak.site or https://event.lixak.site
+        $parsedAppUrl = parse_url($app_url); // ['scheme' => 'https', 'host' => 'lixak.site']
+        $appHost = $parsedAppUrl['host'] ?? '';
+        if ($host === $appHost) {
+            return true;
+        }
+
+        $subdomain = str_replace($appHost, '', $host);
+        if ($subdomain && Str::endsWith($subdomain, '.' . $appHost)) {
+            return true;
+        }
+
+        return false;
     }
 }
