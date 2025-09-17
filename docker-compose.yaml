@@ -33,6 +33,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./docker/nginx/:/etc/nginx/conf.d
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/form.ini
       - app_form:/var/www
       - storage_data:/var/www/public/storage
     depends_on:
