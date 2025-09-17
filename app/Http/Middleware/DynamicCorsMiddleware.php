@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class DynamicCorsMiddleware
 {
@@ -16,6 +17,10 @@ class DynamicCorsMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
+        if ($request->getMethod() === "OPTIONS") {
+            $response = response('', 204);
+        }
+
         // Handle the response
         $response = $next($request);
 
@@ -56,8 +61,12 @@ class DynamicCorsMiddleware
             'users.*' => 'GET, POST, PUT, DELETE',
         ];
 
+        if (!$packageType) {
+            return 'GET, POST, PUT';
+        }
+
         foreach ($allowedMethods as $pattern => $methods) {
-            if (fnmatch($pattern, $packageType)) {
+            if (Str::is($pattern, $packageType)) {
                 return $methods;
             }
         }
@@ -76,7 +85,12 @@ class DynamicCorsMiddleware
     {
         // Example: Extract package type from route name or custom attribute
         // Assuming route names are prefixed with package type, e.g., 'admins.manage.users.show'
-        $routeName = $request->route()->getName();
+        try {
+            $routeName = $request->route()->getName();
+        } catch (\Throwable $th) {
+            return null;
+        }
+
         return $routeName;
     }
 
