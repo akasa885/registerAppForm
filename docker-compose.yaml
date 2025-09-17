@@ -9,7 +9,8 @@ services:
     restart: unless-stopped
     working_dir: /var/www
     volumes:
-      - ./:/var/www
+    - ./storage:/var/www/storage
+    - ./bootstrap/cache:/var/www/bootstrap/cache
     environment:
       - APP_ENV=production
       - DB_CONNECTION=mysql
@@ -31,7 +32,6 @@ services:
     container_name: registerappform-nginx
     restart: unless-stopped
     volumes:
-      - ./:/var/www
       - ./docker/nginx/:/etc/nginx/conf.d
     depends_on:
       - app

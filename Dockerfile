@@ -33,6 +33,10 @@ COPY composer.json composer.lock ./
 # Install PHP dependencies (skip scripts to avoid issues during build)
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 
+# Copy .env.example and generate application key
+COPY .env.example .env
+RUN php artisan key:generate
+
 # Copy application files
 COPY . .
 
