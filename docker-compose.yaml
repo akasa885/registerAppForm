@@ -30,7 +30,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./docker/nginx/:/etc/nginx/conf.d
-      - ./app:/var/www
+      - ./:/var/www
     depends_on:
       - app
     networks:
