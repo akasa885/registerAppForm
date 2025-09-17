@@ -35,7 +35,6 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader --no-s
 
 # Copy .env.example and generate application key
 COPY .env.example .env
-RUN php artisan key:generate
 
 # Copy application files
 COPY . .
