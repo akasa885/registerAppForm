@@ -70,6 +70,22 @@ services:
     networks:
       - eform-network
 
+  supervisor:
+    build:
+      context: ./docker/supervisor
+      dockerfile: Dockerfile
+    container_name: registerappform-supervisor
+    restart: always
+    working_dir: /var/www
+    volumes:
+      - app_form:/var/www
+    command: ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+    depends_on:
+      - db
+      - cache
+    env_file:
+      - .env
+
 networks:
   eform-network:
 volumes:
