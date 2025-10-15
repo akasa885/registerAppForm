@@ -46,6 +46,7 @@ class EventInfo extends Mailable
                 ->addTextHeader('X-Category', 'EventInfo');
         })
         ->view('mails.event_info')
+        ->text('mails.event_info_plain')
         ->with('data', $this->data);
     }
 }
