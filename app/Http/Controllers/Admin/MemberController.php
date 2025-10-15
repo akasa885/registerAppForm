@@ -209,7 +209,7 @@ class MemberController extends Controller
             $isPay = $link->link_type == 'pay' ? true : false;
 
             // check member is registered in the link
-            $data = Member::where('link_id', $link->id)->first();
+            $data = Member::where('link_id', $link->id)->find($member->id);
             if (!$data || $data->id != $member->id) {
                 return response()->json(['success' => false, 'message' => 'Registrant not found'], 404);
             }
