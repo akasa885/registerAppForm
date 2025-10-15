@@ -45,6 +45,7 @@ class ConfirmPay extends Mailable
         return $this
         ->from($this->from_mail, "Event Organizer Upquality")
         ->subject($this->subject)
+        ->header('X-Category', 'PaymentConfirmation')
         ->view('mails.bukti_bayar')
         ->with('data', $this->data);
     }
