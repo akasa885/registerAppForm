@@ -84,8 +84,12 @@ class SendEmailJob implements ShouldQueue
         $from = Email::EMAIL_FROM;
 
         try {
+            $userMail = (object)[
+                'email' => $this->member->email,
+                'name' => strtoupper(strtolower($this->member->full_name)),
+            ];
             DB::beginTransaction();
-            Mail::to($this->member->email)->send(new $mail($this->datamail, $from, $this->datamail['subject'] ?? null));
+            Mail::to($userMail)->send(new $mail($this->datamail, $from, $this->datamail['subject'] ?? null));
             $emailDb = new Email();
             $emailDb->send_from = $from;
             $emailDb->send_to = $this->member->email;
