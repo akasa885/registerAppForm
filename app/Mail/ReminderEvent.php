@@ -40,7 +40,10 @@ class ReminderEvent extends Mailable
         return $this
         ->from($this->from_mail, "Event Organizer Upquality")
         ->subject($this->subject)
-        ->header('X-Category', 'ReminderEvent')
+        ->withSwiftMessage(function ($message) {
+            $message->getHeaders()
+                ->addTextHeader('X-Category', 'ReminderEvent');
+        })
         ->view('mails.reminder_event')
         ->with('data', $this->data);
     }

@@ -41,7 +41,10 @@ class EventInfo extends Mailable
         return $this
         ->from($this->from_mail, "Event Organizer Upquality")
         ->subject($this->subject)
-        ->header('X-Category', 'EventInfo')
+        ->withSwiftMessage(function ($message) {
+            $message->getHeaders()
+                ->addTextHeader('X-Category', 'EventInfo');
+        })
         ->view('mails.event_info')
         ->with('data', $this->data);
     }
