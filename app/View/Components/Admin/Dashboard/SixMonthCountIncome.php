@@ -4,43 +4,54 @@ namespace App\View\Components\Admin\Dashboard;
 
 use Illuminate\View\Component;
 use App\Models\Order;
-use App\Models\Link;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class SixMonthCountIncome extends Component
 {
     public $title = 'Six Month Count Transaction';
     public $subtitle = 'Count Income';
     public $dataChart = [];
+    private $cacheTime = 300; // 5 minutes
+
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($itle = null, $subtitle = null)
+    public function __construct($title = null, $subtitle = null)
     {
         $this->title = $title ?? 'Six Month Count Transaction';
         $this->subtitle = $subtitle ?? 'Count Income';
-        $this->dataChart = $this->getDataChart();
-        // dd($this->dataChart);
+        
+        $this->dataChart = Cache::remember('six_month_income', $this->cacheTime, function () {
+            return $this->getDataChart();
+        });
     }
 
     private function getDataChart()
     {
         list($dateFRange, $dateRange) = $this->getDateRange();
-        $data = [];
-        foreach ($dateRange as $key => $date) {
-            $data[$key] = Order::where('status', 'completed')
-                ->whereDate('created_at', 'like', $date . '%')
-                ->sum('net_total');
-        }
+        
+        $startDate = Carbon::createFromFormat('Y-m', $dateRange[0])->startOfMonth();
+        $endDate = Carbon::createFromFormat('Y-m', end($dateRange))->endOfMonth();
 
-        $data = array_reverse($data);
-        $dateFRange = array_reverse($dateFRange);
+        // Single optimized query
+        $results = DB::table('orders')
+            ->select(
+                DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month"),
+                DB::raw("COALESCE(SUM(net_total), 0) as total")
+            )
+            ->where('status', 'completed')
+            ->whereBetween('created_at', [$startDate, $endDate])
+            ->groupBy('month')
+            ->pluck('total', 'month');
 
-        $data = array_map(function ($item) {
-            return intval($item);
-        }, $data);
+        // Fill missing months with 0
+        $data = collect($dateRange)->map(function ($month) use ($results) {
+            return (int) ($results[$month] ?? 0);
+        })->toArray();
 
         return [
             'labels' => collect($dateFRange),
@@ -58,15 +69,16 @@ class SixMonthCountIncome extends Component
 
     private function getDateRange()
     {
+        $dateRangeFormatted = [];
         $dateRange = [];
-        $date = Carbon::now();
-        for ($i = 0; $i < 6; $i++) {
-            $dateRange['formatted'][] = $date->format('M Y');
-            $dateRange['date'][] = $date->format('Y-m');
-            $date->subMonth();
+
+        for ($i = 5; $i >= 0; $i--) {
+            $date = Carbon::now()->subMonths($i);
+            $dateRangeFormatted[] = $date->format('M Y');
+            $dateRange[] = $date->format('Y-m');
         }
 
-        return [$dateRange['formatted'], $dateRange['date']];
+        return [$dateRangeFormatted, $dateRange];
     }
 
     /**

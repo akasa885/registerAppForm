@@ -7,12 +7,16 @@ use App\Models\Link;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class Top10ListEventLink extends Component
 {
     public $formattedData = [];
     public $title = 'Top 10 List Event Link';
     public $subtitle = 'Peserta terbanyak dalam 1 Tahun Terakhir';
+    private $cacheTime = 300; // 5 minutes
+
     /**
      * Create a new component instance.
      *
@@ -22,78 +26,66 @@ class Top10ListEventLink extends Component
     {
         $this->title = $title ?? $this->title;
         $this->subtitle = $subtitle ?? $this->subtitle;
-        $this->formattedData = $this->getLinks();
+        
+        $userId = Auth::id();
+        $isAdmin = Auth::user()->can('isAdmin');
+        $cacheKey = $isAdmin ? "top10_links_admin_{$userId}" : "top10_links_superadmin";
+        
+        $this->formattedData = Cache::remember($cacheKey, $this->cacheTime, function () {
+            return $this->getLinks();
+        });
     }
 
     private function getLinks()
     {
-        // last 365 days
-        $links = Link::select('id', 'link_path', 'title', 'link_type', 'created_at')
-            ->where('created_at', '>=', Carbon::now()->subDays(365))
-            ->with('members')
+        $startDate = Carbon::now()->subDays(365);
+        $userId = Auth::id();
+        $isAdmin = Auth::user()->can('isAdmin');
+
+        // Single optimized query
+        $links = DB::table('links')
+            ->select(
+                'links.id',
+                'links.link_path',
+                'links.title',
+                'links.link_type',
+                'links.created_at',
+                DB::raw("
+                    CASE 
+                        WHEN links.link_type = 'free' THEN (
+                            SELECT COUNT(*) 
+                            FROM members 
+                            WHERE members.link_id = links.id
+                        )
+                        WHEN links.link_type = 'pay' THEN (
+                            SELECT COUNT(*) 
+                            FROM members 
+                            INNER JOIN invoices ON invoices.member_id = members.id
+                            WHERE members.link_id = links.id 
+                            AND invoices.status = 2
+                        )
+                        ELSE 0
+                    END as count_members
+                ")
+            )
+            ->where('links.created_at', '>=', $startDate)
+            ->when($isAdmin, function ($query) use ($userId) {
+                return $query->where('links.created_by', $userId);
+            })
+            ->orderByDesc('count_members')
+            ->limit(10)
             ->get();
-        
-        $linksFree = $links->filter(function ($link) {
-            return $link->link_type == 'free';
-        });
 
-        $linksPay = $links->filter(function ($link) {
-            return $link->link_type == 'pay';
-        });
-
-        // link pay, filter member on linkpay is invoices status = 2
-        foreach ($linksPay as $pay) {
-            $pay->filtered_members = $pay->members->filter(function ($member) {
-                if ($member->invoices == null) {
-                    return false;
-                }
-
-                return $member->invoices->status == 2;
-            })->values();
-        }
-
-        // unset members on link pay
-        foreach ($linksPay as $pay) {
-            unset($pay->members);
-            $pay->members = $pay->filtered_members;
-            unset($pay->filtered_members);
-        }
-
-        // count members on link free & pay
-        foreach ($linksFree as $free) {
-            $free->count_members = $free->members->count();
-            unset($free->members);
-        }
-
-        foreach ($linksPay as $pay) {
-            $pay->count_members = $pay->members->count();
-            unset($pay->members);
-        }
-
-        // merge link free & pay
-        $links = $linksFree->merge($linksPay);
-
-        // sort by count members
-        $links = $links->sortByDesc('count_members')->values();
-
-        // get top 10
-        $links = $links->take(10);
-
-        // format data
-        $formattedData = [];
-
-        foreach ($links as $link) {
-            $formattedData[] = [
+        return $links->map(function ($link) {
+            return [
                 'id' => $link->id,
                 'link_url' => route('form.link.view', ['link' => $link->link_path]),
                 'title' => $link->title,
                 'link_type' => $link->link_type,
-                'count_members' => $link->count_members,
-                'created_at' => $link->created_at->format('d M Y'),
+                'count_members' => (int) $link->count_members,
+                'created_at' => Carbon::parse($link->created_at)->format('d M Y'),
             ];
-        }
-
-        return $formattedData;
+        })->toArray();
     }
 
     /**
