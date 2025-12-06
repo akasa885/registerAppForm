@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Link;
@@ -15,6 +17,7 @@ class DashboardController extends Controller
     use FormatNumberTrait;
 
     private $user;
+    private $cacheTime = 300; // 5 minutes
 
     public function __construct()
     {
@@ -24,143 +27,107 @@ class DashboardController extends Controller
     public function index()
     {
         $this->user = auth()->user();
-        $membersCount = null;
-        $viewdStatus = null; // will be drop, up, or same
-        $linkCount = $this->getLinkCountLastOneYear();
-        $memberFreeCount = $this->getMemberCountLinkTypeFreeLastOneYear();
-        $memberPayCount = $this->getMemberCountLInkTypePayLastOneYear();
-        $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
+        $userId = $this->user->id;
+        $isAdmin = Gate::allows('isAdmin');
+        
+        $cacheKey = $isAdmin ? "dashboard_admin_{$userId}" : "dashboard_superadmin";
+        
+        $dashboardData = Cache::remember($cacheKey, $this->cacheTime, function () use ($isAdmin) {
+            return $this->getDashboardData($isAdmin);
+        });
 
-        // comparing the last two month. is last month bigger than previous month?
-        $lastMonth = Carbon::now()->copy()->subMonthNoOverflow()->format('Y-m');
+        return view('admin.pages.home', $dashboardData);
+    }
+
+    private function getDashboardData($isAdmin)
+    {
+        $startDate = Carbon::now()->subMonths(12)->startOfMonth();
+        $endDate = Carbon::now()->subMonth()->endOfMonth();
+
+        // Single optimized query for link count
+        $linkCount = $this->getOptimizedLinkCount($startDate, $endDate, $isAdmin);
+
+        // Combined query for member counts
+        $memberCounts = $this->getOptimizedMemberCounts($startDate, $endDate, $isAdmin);
+
+        // Optimized viewed count
+        $viewedData = $this->getOptimizedViewedData($isAdmin);
+
+        $membersCount = $memberCounts['free'] + $memberCounts['pay'];
+
+        return [
+            'linkCount' => $this->shorterCounting($linkCount),
+            'membersCount' => $this->shorterCounting($membersCount),
+            'viewdStatus' => $viewedData['status'],
+            'lastViewedLinkCount' => $this->shorterCounting($viewedData['lastCount'])
+        ];
+    }
+
+    private function getOptimizedLinkCount($startDate, $endDate, $isAdmin)
+    {
+        $query = Link::whereBetween('created_at', [$startDate, $endDate]);
+        
+        if ($isAdmin) {
+            $query->where('created_by', $this->user->id);
+        }
+
+        return $query->count();
+    }
+
+    private function getOptimizedMemberCounts($startDate, $endDate, $isAdmin)
+    {
+        $baseQuery = DB::table('members')
+            ->join('links', 'links.id', '=', 'members.link_id')
+            ->whereBetween('members.created_at', [$startDate, $endDate]);
+
+        if ($isAdmin) {
+            $baseQuery->where('links.created_by', $this->user->id);
+        }
+
+        // Single query to get both counts
+        $counts = $baseQuery
+            ->selectRaw("
+                COUNT(CASE WHEN links.link_type = 'free' THEN 1 END) as free_count,
+                COUNT(CASE WHEN links.link_type = 'pay' AND EXISTS (
+                    SELECT 1 FROM invoices 
+                    WHERE invoices.member_id = members.id 
+                    AND invoices.status = 2
+                ) THEN 1 END) as pay_count
+            ")
+            ->first();
+
+        return [
+            'free' => (int) $counts->free_count,
+            'pay' => (int) $counts->pay_count
+        ];
+    }
+
+    private function getOptimizedViewedData($isAdmin)
+    {
+        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
         $previousMonth = Carbon::now()->subMonths(2)->format('Y-m');
-        $viewdStatus = $this->compareLastTwoMonth($lastMonth, $previousMonth);
 
-        // summing array value
-        $linkCount = array_sum($linkCount);
-        $memberFreeCount = array_sum($memberFreeCount);
-        $memberPayCount = array_sum($memberPayCount);
+        $query = Link::selectRaw("
+                DATE_FORMAT(created_at, '%Y-%m') as month,
+                COALESCE(SUM(viewed_count), 0) as total
+            ")
+            ->whereRaw("DATE_FORMAT(created_at, '%Y-%m') IN (?, ?)", [$previousMonth, $lastMonth]);
 
-        $membersCount = $memberFreeCount + $memberPayCount;
-        $lastViewedLinkCount = end($viewedLinkCount);
-
-        // format number
-        $linkCount = $this->shorterCounting($linkCount);
-        $membersCount = $this->shorterCounting($membersCount);
-        $lastViewedLinkCount = $this->shorterCounting($lastViewedLinkCount);
-        
-        return view('admin.pages.home', compact('linkCount', 'membersCount', 'viewdStatus', 'lastViewedLinkCount'));
-    }
-
-    private function getLinkCountLastOneYear()
-    {
-        $linkCount = Link::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, count(*) as total')
-            ->when(Gate::allows('isAdmin'), function ($query) {
-                return $query->where('created_by', $this->user->id);
-            })
-            ->whereRaw('created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
-            ->whereMonth('created_at', '<', Carbon::now()->format('m'))
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
-
-        $linkCount = $linkCount->pluck('total', 'month')->toArray();
-
-        $linkCount = $this->fillMissingMonth($linkCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
-        
-        return $linkCount;
-    }
-
-    private function getMemberCountLinkTypeFreeLastOneYear()
-    {
-        $memberCount = Member::selectRaw('DATE_FORMAT(members.created_at, "%Y-%m") as month, count(*) as total')
-            ->join('links', 'links.id', '=', 'members.link_id')
-            ->where('links.link_type', 'free')
-            ->when(Gate::allows('isAdmin'), function ($query) {
-                return $query->where('created_by', $this->user->id);
-            })
-            ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
-            ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
-
-        $memberCount = $memberCount->pluck('total', 'month')->toArray();
-
-        $memberCount = $this->fillMissingMonth($memberCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
-
-        return $memberCount;
-    }
-
-    public function getMemberCountLInkTypePayLastOneYear()
-    {
-        // member = link, member = invoice, invoice.status = 2
-        $memberCount = Member::selectRaw('DATE_FORMAT(members.created_at, "%Y-%m") as month, count(*) as total')
-            ->join('links', 'links.id', '=', 'members.link_id')
-            ->join('invoices', 'invoices.member_id', '=', 'members.id')
-            ->where('links.link_type', 'pay')
-            ->when(Gate::allows('isAdmin'), function ($query) {
-                return $query->where('created_by', $this->user->id);
-            })
-            ->where('invoices.status', 2)
-            ->whereRaw('members.created_at >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)')
-            ->whereMonth('members.created_at', '<', Carbon::now()->format('m'))
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
-
-        $memberCount = $memberCount->pluck('total', 'month')->toArray();
-
-        $memberCount = $this->fillMissingMonth($memberCount, Carbon::now()->subMonths(12)->format('Y-m'), Carbon::now()->subMonth()->format('Y-m'));
-
-        return $memberCount;
-    }
-
-    private function getViewedLinkCountLastTwoMonth()
-    {
-        $viewedLinkCount = Link::selectRaw('DATE_FORMAT(created_at, "%Y-%m") as month, sum(viewed_count) as total')
-            ->when(Gate::allows('isAdmin'), function ($query) {
-                return $query->where('created_by', $this->user->id);
-            })
-            ->where('created_at', '>=', Carbon::now()->subMonths(2))
-            ->groupBy('month')
-            ->orderBy('month', 'asc')
-            ->get();
-
-        $viewedLinkCount = $viewedLinkCount->pluck('total', 'month')->toArray();
-        $twoMonthAgo = Carbon::now()->subMonths(2)->format('Y-m');
-
-        // if two month ago is not exist, then add it with value 0
-        if (!isset($viewedLinkCount[$twoMonthAgo])) {
-            $viewedLinkCount[$twoMonthAgo] = 0;
+        if ($isAdmin) {
+            $query->where('created_by', $this->user->id);
         }
 
-        $today = Carbon::now()->format('Y-m');
-        unset($viewedLinkCount[$today]);
+        $results = $query->groupBy('month')->pluck('total', 'month')->toArray();
 
-        ksort($viewedLinkCount);
+        $lastCount = (int) ($results[$lastMonth] ?? 0);
+        $prevCount = (int) ($results[$previousMonth] ?? 0);
 
-        // format all array value to int
-        foreach ($viewedLinkCount as $key => $value) {
-            $viewedLinkCount[$key] = (int) $value;
-        }
+        $status = $lastCount > $prevCount ? 'up' : ($lastCount < $prevCount ? 'down' : 'same');
 
-        return $viewedLinkCount;
-    }
-
-    private function compareLastTwoMonth($lastMonth, $previousMonth)
-    {
-        $viewedLinkCount = $this->getViewedLinkCountLastTwoMonth();
-
-        if (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] > $viewedLinkCount[$previousMonth]) {
-            $viewdStatus = 'up';
-        } elseif (( count($viewedLinkCount) > 1 ) && $viewedLinkCount[$lastMonth] < $viewedLinkCount[$previousMonth]) {
-            $viewdStatus = 'down';
-        } else {
-            $viewdStatus = 'same';
-        }
-
-        return $viewdStatus;
+        return [
+            'lastCount' => $lastCount,
+            'status' => $status
+        ];
     }
 
     private function fillMissingMonth($linkCount, $startMonthYear = null, $endMonthYear = null)
