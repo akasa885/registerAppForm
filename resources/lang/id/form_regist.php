@@ -32,5 +32,7 @@ return [
         "close" => 'Pendaftaran ditutup!',
         "not yet open" => 'Pendaftaran belum dibuka!',
         "quota" => 'Kuota pendaftaran sudah penuh!',
-    ]
+    ],
+    'standard_form_title' => 'Formulir Pendaftaran',
+    'membership_form_title' => 'Formulir Pendaftaran Khusus Member',
 ];

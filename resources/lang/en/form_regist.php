@@ -32,5 +32,7 @@ return [
         "close" => 'Registration closed!',
         "not yet open" => 'Registration not yet open!',
         "quota" => 'Registration quota is full!',
-    ]
+    ],
+    'standard_form_title' => 'Registration Form',
+    'membership_form_title' => 'Membership Only Registration Form',
 ];
