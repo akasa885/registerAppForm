@@ -19,9 +19,8 @@
 
     <div class="bg-white rounded-lg shadow-md overflow-hidden relative">
         <div class="relative">
-            <img class="w-full transition bg-cool-gray-200 duration-300 object-contain h-72 ease-in-out md:h-64 sm:h-56 hover:scale-110 image-lazy-load"
-                src="{{ $item->banner == null ? asset('/images/default/no-image.png') : $item->banner }}"
-                alt="banner">
+            <img class="w-full transition bg-cool-gray-200 duration-700 object-contain h-72 ease-in-out md:h-64 sm:h-56 hover:scale-110 image-lazy-load"
+                src="{{ $item->banner == null ? asset('/images/default/no-image.png') : $item->banner }}" alt="banner">
             @if ($item->link_type == 'free')
                 <span
                     class="absolute top-2 left-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded">{{ __('Free') }}</span>
@@ -87,7 +86,8 @@
             </div>
             <span class="text-xs text-green-500">Online</span>
         </div> --}}
-        <button class="w-full bg-blue-500 text-white py-2 mt-4 rounded-md" onclick="window.location.href= '{{ route('form.link.view', ['link' => $item->link_path]) }}'">{{ __('Register') }}</button>
+            <button class="w-full bg-blue-500 text-white py-2 mt-4 rounded-md"
+                onclick="window.location.href= '{{ route('form.link.view', ['link' => $item->link_path]) }}'">{{ __('Register') }}</button>
         </div>
     </div>
 @endforeach

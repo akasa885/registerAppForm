@@ -14,13 +14,13 @@
                 d="m1 1 4 4 4-4" />
         </svg>
     </button>
-    <ul class="dropdown-menu absolute hidden text-gray-700 pt-1 bg-blue-800 rounded-b right-0">
+    <ul class="dropdown-menu absolute hidden text-gray-700 pt-1 bg-blue-800 rounded-b right-0" style="z-index:9999">
         @foreach ($available_locales as $locale_name => $available_locale)
             <li class="w-100 px-5 hover:bg-blue-400">
                 @if ($available_locale === $current_locale)
                     <span class="block px-4 py-2 text-center text-white">{{ $locale_name }}</span>
                 @else
-                    <a class="block ml-1 py-2 text-white underline text-center dark:hover:bg-gray-600 dark:hover:text-white"
+                    <a class="block ml-1 py-2 text-white underline text-center"
                         href="{{ route('language.change', ['locale' => $available_locale]) }}">
                         <span>{{ $locale_name }}</span>
                     </a>

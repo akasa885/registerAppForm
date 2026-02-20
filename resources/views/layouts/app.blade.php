@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{{ $information_site['description'] }}">
     <meta name="keywords" content="{{ $information_site['keywords'] }}">
-    <meta name="og:title" content="@yield('og_title', "")">
+    <meta name="og:title" content="@yield('og_title', '')">
     <meta name="og:description" content="{{ $information_site['description'] }}">
     <meta name="og:url" content="{{ url()->current() }}">
     <meta name="og:locale" content="id_ID">
@@ -143,31 +143,186 @@
     <div id="app">
         <header class="bg-blue-900 py-5">
             <div class="container mx-auto flex flex-wrap justify-between gap-2 items-center px-6">
-                <!--begin::logo-->
-                <div class="block">
-                    <a href="{{ url('/') }}" class="text-lg font-semibold text-gray-100 no-underline">
-                        {{ config('app.name', 'Laravel') }}
-                    </a>
-                </div>
-                <!--end::logo-->
-                <nav class="md:space-x-4 flex items-center text-left flex-wrap gap-2 text-gray-300 text-sm sm:text-base">
-                    <!--begin::lang-->
-                    @include('partials.language_switcher_front')
-                    <!--end::lang-->
-                    @guest
-                        <!-- Authentication Links -->
-                    @else
-                    <div class="space-x-1">
-                        <a href="{{ route('admin.dashboard') }}">
-                            <span>{{ Auth::user()->name }}</span>
-                        </a>
-
-                        <a href="{{ route('admin.logout') }}" class="no-underline hover:underline" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            {{ __('Logout') }}
+                <div class="flex items-center justify-between w-full">
+                    <!--begin::logo-->
+                    <div class="block">
+                        <a href="{{ url('/') }}" class="text-lg font-semibold text-gray-100 no-underline">
+                            {{ config('app.name', 'Laravel') }}
                         </a>
                     </div>
-                    @endguest
-                </nav>
+                    <!--end::logo-->
+
+                    <!--begin::desktop navbar-->
+                    <div class="hidden md:flex items-center space-x-6">
+                        <!--begin::navigation menu-->
+                        <nav class="flex space-x-6 items-center">
+                            <a href="{{ url('/') }}"
+                                class="text-gray-300 hover:text-white transition duration-200">
+                                {{ __('Home') }}
+                            </a>
+                        </nav>
+                        <!--end::navigation menu-->
+
+                        <!--begin::user menu-->
+                        <div class="flex items-center space-x-4">
+                            <!--begin::language switcher-->
+                            <div class="relative">
+                                @include('partials.language_switcher_front')
+                            </div>
+                            <!--end::language switcher-->
+
+                            @guest
+                                <div class="flex space-x-3">
+                                    <a href="{{ route('admin.login') }}"
+                                        class="text-gray-300 hover:text-white transition duration-200">
+                                        {{ __('Login') }}
+                                    </a>
+                                </div>
+                            @else
+                                <div class="relative dropdown">
+                                    <button
+                                        class="flex items-center space-x-2 text-gray-300 hover:text-white transition duration-200">
+                                        <span>{{ Auth::user()->name }}</span>
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div
+                                        class="dropdown-menu absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border hidden">
+                                        <div class="py-1">
+                                            <a href="{{ route('admin.dashboard') }}"
+                                                class="block px-4 py-2 text-gray-700 hover:bg-gray-100 transition duration-200">
+                                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z">
+                                                    </path>
+                                                </svg>
+                                                {{ __('Dashboard') }}
+                                            </a>
+                                            <hr class="border-gray-200">
+                                            <a href="{{ route('admin.logout') }}"
+                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                                class="block px-4 py-2 text-red-600 hover:bg-red-50 transition duration-200">
+                                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                                    </path>
+                                                </svg>
+                                                {{ __('Logout') }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endguest
+                        </div>
+                        <!--end::user menu-->
+                    </div>
+                    <!--end::desktop navbar-->
+
+                    <!--begin::mobile menu button-->
+                    <div class="md:hidden">
+                        <button id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <!--end::mobile menu button-->
+                </div>
+
+                <!--begin::mobile menu-->
+                <div id="mobile-menu"
+                    class="md:hidden fixed left-0 right-0 bg-blue-900 shadow-lg opacity-0 invisible z-50 transition-all duration-300 ease-in-out transform -translate-y-4"
+                    style="top: 10%">
+                    <div class="px-6 py-4 space-y-3">
+                        <a href="{{ url('/') }}"
+                            class="block text-gray-300 hover:text-white transition duration-200">
+                            {{ __('Home') }}
+                        </a>
+
+                        <hr class="border-blue-700 my-3">
+
+                        <!--begin::language switcher mobile-->
+                        <div class="py-2">
+                            @include('partials.language_switcher_front')
+                        </div>
+                        <!--end::language switcher mobile-->
+
+                        @guest
+                            <div class="space-y-2 pt-2">
+                                <a href="{{ route('admin.login') }}"
+                                    class="block text-gray-300 hover:text-white transition duration-200">
+                                    {{ __('Login') }}
+                                </a>
+                            </div>
+                        @else
+                            <div class="space-y-2 pt-2">
+                                <div class="text-gray-100 font-medium">{{ Auth::user()->name }}</div>
+                                <a href="{{ route('admin.dashboard') }}"
+                                    class="block text-gray-300 hover:text-white transition duration-200">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                                    </svg>
+                                    {{ __('Dashboard') }}
+                                </a>
+                                <a href="{{ route('admin.logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                                    class="block text-red-300 hover:text-red-200 transition duration-200">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                        </path>
+                                    </svg>
+                                    {{ __('Logout') }}
+                                </a>
+                            </div>
+                        @endguest
+                    </div>
+                </div>
+                <!--end::mobile menu-->
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const mobileMenuButton = document.getElementById('mobile-menu-button');
+                        const mobileMenu = document.getElementById('mobile-menu');
+
+                        if (mobileMenuButton && mobileMenu) {
+                            mobileMenuButton.addEventListener('click', function() {
+                                if (mobileMenu.classList.contains('invisible')) {
+                                    // Show menu
+                                    mobileMenu.classList.remove('invisible', 'opacity-0', '-translate-y-4');
+                                    mobileMenu.classList.add('opacity-100', 'translate-y-0');
+                                } else {
+                                    // Hide menu
+                                    mobileMenu.classList.remove('opacity-100', 'translate-y-0');
+                                    mobileMenu.classList.add('opacity-0', '-translate-y-4');
+                                    setTimeout(() => {
+                                        mobileMenu.classList.add('invisible');
+                                    }, 300);
+                                }
+                            });
+
+                            // Close menu when clicking outside
+                            document.addEventListener('click', function(event) {
+                                if (!mobileMenuButton.contains(event.target) && !mobileMenu.contains(event.target)) {
+                                    if (!mobileMenu.classList.contains('invisible')) {
+                                        mobileMenu.classList.remove('opacity-100', 'translate-y-0');
+                                        mobileMenu.classList.add('opacity-0', '-translate-y-4');
+                                        setTimeout(() => {
+                                            mobileMenu.classList.add('invisible');
+                                        }, 300);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
             </div>
         </header>
         <form id="logout-form" action="{{ route('admin.logout') }}" method="POST" class="hidden">
