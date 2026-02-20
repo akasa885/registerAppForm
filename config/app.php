@@ -5,11 +5,11 @@ return [
      * --------------------------------------------------------------------------
      * Application Version
      * --------------------------------------------------------------------------
-     * 
+     *
      * This value is the version of your application. This value is used when the
      * framework needs to place the application's version in a notification or
      * any other location as required by the application or its packages.
-     * 
+     *
      */
     'version' => '1.1.0',
 
@@ -215,6 +215,7 @@ return [
         'Blade' => Illuminate\Support\Facades\Blade::class,
         'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
         'Bus' => Illuminate\Support\Facades\Bus::class,
+        'Carbon' => Illuminate\Support\Carbon::class,
         'Cache' => Illuminate\Support\Facades\Cache::class,
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,
