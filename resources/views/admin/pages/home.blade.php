@@ -90,4 +90,11 @@
         @endcan
     </div>
     <!--end::row info 2-->
+    <!--begin::row info 3 - YTD Chart-->
+    <div class="row">
+        @can('isSuperAdmin')
+            <x-admin.dashboard.ytd-trend-chart />
+        @endcan
+    </div>
+    <!--end::row info 3-->
 @endsection
