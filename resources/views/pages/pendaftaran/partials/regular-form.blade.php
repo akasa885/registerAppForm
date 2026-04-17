@@ -26,7 +26,7 @@
 
         <div class="w-full">
             <label for="input-1" class="block text-sm font-medium text-gray-700 mb-1.5">
-                {{ __('Full Name (as pelataran account)') }}
+                {{ __('Full Name') }}
                 <span class="text-red-500">*</span>
             </label>
             <input id="input-1" type="text"
@@ -40,7 +40,7 @@
 
         <div class="w-full">
             <label for="input-2" class="block text-sm font-medium text-gray-700 mb-1.5">
-                {{ __('Email Address (used in pelataran account)') }}
+                {{ __('Email Address') }}
                 <span class="text-red-500">*</span>
             </label>
             <input id="input-2" type="email"
