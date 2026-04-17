@@ -22,11 +22,18 @@
     <div class="row justify-content-md-center">
         <x-admin.linkable-nav :menu="$menu" />
         <div class="col-md-11 col-lg-11">
+            <div class="card">
+                <div class="card-header">
+                    <div style="float: left; font-size: 1.5em; font-weight: bold;">
+                        <i class="pe-7s-box2 icon-gradient bg-amy-crisp"></i>
+                    </div>
+                    <span class="card-title mb-0 ml-2">Link: {{ Str::limit($link->title, 100) }}</span>
+                </div>
+            </div>
             <div class="mb-3 card">
                 <div class="card-header-tab card-header-tab-animation card-header">
-                    <div class="card-header-title" style="white-space:normal">
-                        <i class="header-icon lnr-apartment icon-gradient bg-love-kiss"> </i>
-                        Member List : {{ $title }}
+                    <div class="btn-actions-pane-left">
+                        <!-- test-->
                     </div>
                     <div class="btn-actions-pane-right">
                         <div class="nav">
@@ -38,6 +45,13 @@
                     </div>
                 </div>
                 <div class="card-body">
+                    <div class="d-flex justify-content-center align-items-center mb-3">
+                        <div class="mr-2">Refresh Table:</div>
+                        <button type="button" class="btn btn-outline-secondary"
+                            onclick="$('#data_users_side').DataTable().ajax.reload();">
+                            <i class="fa fa-sync"></i> Refresh
+                        </button>
+                    </div>
                     <div class="table-responsive">
                         <table id="data_users_side" class="mb-0 table display" style="width:100%">
                             <thead>
@@ -234,7 +248,7 @@
                     }
                 });
             }
-            
+
             const _updateMoneyCount = (linkId) => {
                 let url = "{{ route('admin.ajax.transaction.link.total', ['linkId' => ':id']) }}";
                 url = url.replace(':id', linkId);
@@ -328,7 +342,7 @@
                 document.getElementById("bukti-diterima").style.display = "none";
                 document.getElementById("bukti-ditolak").style.display = "none";
             }
-            
+
             return {
                 init: function() {
                     _dataTableCall();
