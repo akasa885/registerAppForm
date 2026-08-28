@@ -64,7 +64,7 @@ class FormController extends Controller
 
             if ($link_coll->link_type == 'pay' && $member = Member::where('email', $validated['email'])->where('link_id', $link_coll->id)->first()) {
                 if ($member->invoices->status == 0 && $member->invoices->valid_until > Carbon::now()) {
-                    return redirect()->route('form.link.pay', 
+                    return redirect()->route('form.link.pay',
                     ['link' => $link_coll->link_path, 'payment' => $member->invoices->token]
                     )->with('info', 'Anda sudah melakukan pendaftaran sebelumnya, silahkan lanjutkan pembayaran');
                 }
@@ -92,7 +92,6 @@ class FormController extends Controller
             $member = Member::create($validated);
 
             if ($link_coll->link_type == 'free') {
-                $this->sendMailEventDeskripsi($link_coll, $member);
 
                 DB::commit();
 
@@ -108,6 +107,10 @@ class FormController extends Controller
                 }
                 // $dt_carbon = Carbon::now()->addDays(3);
                 $invoice = $this->createInvoice($member, $link_coll);
+
+                if (!$invoice) {
+                    throw new \Exception('Failed to create invoice');
+                }
 
                 $this->sendMailPayment($link_coll, $member, $invoice);
 
@@ -128,7 +131,7 @@ class FormController extends Controller
         }
     }
 
-    public function pageMultiRegistrant(Member $member, Link $link) 
+    public function pageMultiRegistrant(Member $member, Link $link)
     {
         $data = [
             'member' => $member,
@@ -265,7 +268,7 @@ class FormController extends Controller
                 DB::beginTransaction();
                 // request save file to server
                 $filesimpan = $this->saveInvoice($request->file('bukti'));
-                
+
                 if($filesimpan){
                     // request save file to db
                     $invo->status = 1;
@@ -296,36 +299,6 @@ class FormController extends Controller
                 return back()->withErrors(['message' => 'Terjadi kesalahan, silahkan coba beberapa saat lagi']);
             else
                 return back()->withErrors(['message' => 'An error occurred, please try again later']);
-        }
-    }
-
-    public function sendMailEventDeskripsi($link, $member){
-        $information = $link->registration_info ?? $link->description;
-        $data = array(
-            'name'      =>  $member->full_name,
-            'acara'     => $link->title,
-            'message'   =>   $link->registration_info ?? $link->description,
-        );
-        $subject = 'Registrasi '.$link->title;
-        $data['subject'] = $subject;
-
-        $from_mail = Email::EMAIL_FROM;
-
-        try {
-            // Mail::to($member->email)->send(new EventInfo($data, $from_mail, $subject));
-            // $mail_db = new Email;
-            // $mail_db->send_from = $from_mail;
-            // $mail_db->send_to = $member->email;
-            // $mail_db->message = $information;
-            // $mail_db->user_id = $member->id;
-            // $mail_db->type_email = Email::TYPE_EMAIL[3];
-            // $mail_db->sent_count = 1;
-            // $mail_db->save();
-            
-            SendEmailJob::sendMail(dataMail: $data, link: $link, member: $member, type: 'event_info');
-        } catch (\Throwable $th) {
-            throw $th;
-            // abort(500);
         }
     }
 
