@@ -59,6 +59,20 @@
             background: #f1f1f1;
         }
 
+        blockquote {
+            border-left: 4px solid #e8e658;
+            padding-left: 16px;
+            margin-left: 0;
+            color: #7e2626;
+            font-style: italic;
+            margin-bottom: 1em;
+        }
+
+        blockquote p {
+            margin: 0;
+            font-size: 1.145em;
+        }
+
     </style>
 @endpush
 
