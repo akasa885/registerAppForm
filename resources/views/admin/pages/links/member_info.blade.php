@@ -395,6 +395,11 @@
 
         function viewPayment(member_id) {
             buktiReset();
+            
+            // reset button visibility
+            document.getElementById("bukti-diterima").style.display = "";
+            document.getElementById("bukti-ditolak").style.display = "";
+
             let url = "{{ route('admin.member.lihat.bukti', ['id' => ':id']) }}";
             url = url.replace(':id', member_id);
             $.ajax({
